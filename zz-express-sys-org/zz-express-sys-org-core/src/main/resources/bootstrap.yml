@@ -1,0 +1,36 @@
+server:
+  port: 9101
+
+spring:
+  application:
+    name: express-sys-org
+  # 允许bean重写
+  main:
+    allow-bean-definition-overriding: true
+  cloud:
+    nacos:
+      discovery:
+        namespace: dev
+        server-addr: 192.168.247.128:8848
+      config:
+        server-addr: 192.168.247.128:8848
+        group: DEV_GROUP   # 指定分组名
+        file-extension: yaml
+        namespace: dev
+        extension-configs:
+          - express-dataSource.yaml
+          - express-redis.yaml
+  #jpa配置
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+
+    
+
+mybatis-plus:
+  type-aliases-package: com.zouzhao.sys.org.entity
+  mapper-locations:
+    - classpath*:/mybatis/mapper/*.xml
+
