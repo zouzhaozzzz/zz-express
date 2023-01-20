@@ -17,6 +17,6 @@ public class SysOrgApplicationTest {
 
     @Test
     public void testRedis(){
-        redisTemplate.opsForValue().set("kkk","123");
+        redisTemplate.opsForValue().set("kkk","1234");
     }
 }

@@ -8,7 +8,7 @@ import lombok.Data;
  * @DATE: 2023-1-7
  */
 @Data
-public  class IViewObject {
+public  class BaseVO {
     @ApiModelProperty(
             value = "记录主键",
             required = false
@@ -19,4 +19,17 @@ public  class IViewObject {
             required = false
     )
     private String fdName;
+
+    public static BaseVO of(String fdId) {
+        BaseVO vo = new BaseVO();
+        vo.setFdId(fdId);
+        return vo;
+    }
+
+    public static BaseVO of(String fdId,String fdName) {
+        BaseVO vo = new BaseVO();
+        vo.setFdId(fdId);
+        vo.setFdName(fdName);
+        return vo;
+    }
 }

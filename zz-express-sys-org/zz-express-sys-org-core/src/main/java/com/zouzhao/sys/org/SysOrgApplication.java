@@ -5,6 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.context.annotation.ComponentScan;
 
 /**
  * @author 姚超
@@ -15,6 +16,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @EnableDiscoveryClient
 @MapperScan("com.zouzhao.sys.org.dao")
 @EnableFeignClients
+@ComponentScan("com.zouzhao")
 public class SysOrgApplication {
     public static void main(String[] args) {
     SpringApplication.run(SysOrgApplication.class,args);

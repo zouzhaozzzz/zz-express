@@ -12,7 +12,7 @@ import java.util.List;
  * @DESCRIPTION:
  */
 @Data
-public class IdsDTO {
+public class IdsDTO extends BaseVO{
     private List<String> fdIds;
 
     public static IdsDTO of(String... fdIds) {
