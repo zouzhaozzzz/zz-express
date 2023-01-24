@@ -14,7 +14,7 @@ import org.springframework.context.annotation.ComponentScan;
  */
 @SpringBootApplication
 @EnableDiscoveryClient
-@MapperScan("com.zouzhao.sys.org.dao")
+@MapperScan("com.zouzhao.sys.org.mapper")
 @EnableFeignClients
 @ComponentScan("com.zouzhao")
 public class SysOrgApplication {

@@ -1,16 +1,14 @@
 package com.zouzhao.sys.org.security.service;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.zouzhao.sys.org.dao.SysOrgAccountDao;
 import com.zouzhao.sys.org.entity.SysOrgAccount;
+import com.zouzhao.sys.org.mapper.SysOrgAccountMapper;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
 import java.util.List;
 
@@ -19,7 +17,7 @@ import java.util.List;
 public class MyUserDetailsService implements UserDetailsService {
 
     @Autowired
-    private SysOrgAccountDao sysOrgAccountDao;
+    private SysOrgAccountMapper sysOrgAccountDao;
 
 
     @Override
@@ -28,27 +26,22 @@ public class MyUserDetailsService implements UserDetailsService {
         SysOrgAccount user = null;
 
         try {
-            LambdaQueryWrapper<SysOrgAccount> wrapper = new LambdaQueryWrapper<>();
-            wrapper.eq(SysOrgAccount::getFdLoginName, loginName);
+            SysOrgAccount query = new SysOrgAccount();
+            query.setOrgAccountLoginName(loginName);
+            List<SysOrgAccount> list = sysOrgAccountDao.findList(query);
+            if(!ObjectUtils.isEmpty(list))user=list.get(0);
 
-            user = sysOrgAccountDao.selectOne(wrapper);
-
-            // FIXME 以后补充基于方法颗粒度的鉴权：适可而止（用户敏感信息、财务相关）
             // user.setMenus(Arrays.asList("类别信息管理", "电影基本信息管理"));
-
             // 从db中查询出用户信息，然后在业务逻辑中进行判断是否合法
             // select * from user_info where username=? and password=?
             // 在业务逻辑中 SpringSecurity 为了保护密码，做了很多类似于加密工作，为的是不让密码以“明文”方式呈现在代码逻辑中（日志中）
 
-            // select * from user_info where username=?
-
             // 先创建一个基于ROLE_USER（“角色名称”）的一套权限
-            List<GrantedAuthority> authorities =
-                    // AuthorityUtils.commaSeparatedStringToAuthorityList("create,search");
-                    // AuthorityUtils.commaSeparatedStringToAuthorityList("ROLE_admin,ROLE_user,ROLE_guest");
-                    AuthorityUtils.commaSeparatedStringToAuthorityList("ROLE_DEFAULT");
-
-            user.setAuthorities(authorities);
+            // List<GrantedAuthority> authorities =
+            //         // AuthorityUtils.commaSeparatedStringToAuthorityList("create,search");
+            //         // AuthorityUtils.commaSeparatedStringToAuthorityList("ROLE_admin,ROLE_user,ROLE_guest");
+            //         AuthorityUtils.commaSeparatedStringToAuthorityList("ROLE_DEFAULT");
+            // user.setAuthorities(null);
         } catch (Exception e) {
             log.error("认证出现异常:{}", e.getMessage());
             // if (user == null) throw new UsernameNotFoundException("用户未找到");

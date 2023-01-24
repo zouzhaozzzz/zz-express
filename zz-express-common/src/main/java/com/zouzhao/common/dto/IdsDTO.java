@@ -1,8 +1,8 @@
 package com.zouzhao.common.dto;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -12,18 +12,22 @@ import java.util.List;
  * @DESCRIPTION:
  */
 @Data
-public class IdsDTO extends BaseVO{
-    private List<String> fdIds;
+public class IdsDTO {
+    @ApiModelProperty(
+            value = "记录主键ids",
+            required = false
+    )
+    private List<String> ids;
 
     public static IdsDTO of(String... fdIds) {
         IdsDTO result = new IdsDTO();
-        result.setFdIds((List)(fdIds == null ? new ArrayList() : Arrays.asList(fdIds)));
+        result.setIds((fdIds == null ? null : Arrays.asList(fdIds)));
         return result;
     }
 
     public static IdsDTO of(List<String> fdIds) {
         IdsDTO result = new IdsDTO();
-        result.setFdIds(fdIds);
+        result.setIds(fdIds);
         return result;
     }
 }

@@ -1,7 +1,8 @@
 package com.zouzhao.sys.org.controller;
 
 import com.zouzhao.common.controller.BaseController;
-import com.zouzhao.common.dto.ResultVO;
+import com.zouzhao.common.controller.CombineController;
+import com.zouzhao.common.dto.Response;
 import com.zouzhao.sys.org.api.ISysOrgAccountApi;
 import com.zouzhao.sys.org.dto.SysOrgAccountVO;
 import io.swagger.annotations.Api;
@@ -20,19 +21,22 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(
         tags = "用户账号"
 )
-public class SysOrgAccountController extends BaseController<ISysOrgAccountApi, SysOrgAccountVO> {
+public class SysOrgAccountController extends BaseController<ISysOrgAccountApi, SysOrgAccountVO> implements CombineController<ISysOrgAccountApi, SysOrgAccountVO> {
 
 
     @PostMapping("/checkLogin")
     @ApiOperation("登陆")
-    public ResultVO<String> checkLogin(@RequestBody SysOrgAccountVO user) {
+    public Response<String> checkLogin(@RequestBody SysOrgAccountVO user) {
        return super.getApi().checkLogin(user);
     }
 
     @PostMapping("/layout")
     @ApiOperation("退出登陆")
-    public ResultVO<String> layout(@RequestBody SysOrgAccountVO user){
+    public Response<String> layout(@RequestBody SysOrgAccountVO user){
         return  super.getApi().layout(user);
     }
 
+
+
 }
+

@@ -10,11 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @DATE: 2023-1-7
  */
 @NoArgsConstructor
-public class BaseController<A extends IApi<V>, V extends BaseVO> {
+public class BaseController<A extends IApi<V>, V extends BaseVO> implements IController<A,V>{
     @Autowired
     A api;
 
     public A getApi() {
         return this.api;
     }
+
+
 }

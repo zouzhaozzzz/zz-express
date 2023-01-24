@@ -1,20 +1,21 @@
 package com.zouzhao.sys.org.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.zouzhao.common.entity.BaseEntity;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import java.util.Collection;
+import javax.persistence.*;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author 姚超
@@ -26,38 +27,68 @@ import java.util.Collection;
 @Entity
 @Table(name = "sys_org_account")
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class SysOrgAccount extends BaseEntity implements UserDetails {
-    @Column
-    private String fdLoginName;
-    @Column
-    private String fdPassword;
-    @Column
-    private String fdDefPersonId;
-    @Column
-    private String fdEncryption;
+public class SysOrgAccount  implements UserDetails, BaseEntity {
+    @Id
+    @Column(
+            length = 36
+    )
+    @TableId(
+            type = IdType.ASSIGN_ID
+    )
+    // @GeneratedValue(strategy = GenerationType.AUTO)
+    private String orgAccountId;
+    @Column(insertable = false,updatable = false,columnDefinition="DATETIME  DEFAULT CURRENT_TIMESTAMP")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", locale = "zh", timezone = "GMT+8")
+    private Date orgAccountCreateTime;
+    @Column(insertable = false,updatable = false,columnDefinition="DATETIME  DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", locale = "zh", timezone = "GMT+8")
+    private Date orgAccountAlterTime;
+
+    @ApiModelProperty("登录名")
+    @Column(unique = true)
+    private String orgAccountLoginName;
+    @ApiModelProperty("密码")
+    private String orgAccountPassword;
+    @ApiModelProperty("默认人员")
+    private String orgAccountDefPersonId;
+    @ApiModelProperty("加密方式")
+    private String orgAccountEncryption;
+    @ManyToMany
+    @JoinTable(
+            name = "sys_right_go_rela",
+            joinColumns = {@JoinColumn(
+                    name = "org_account_id"
+            )},
+            inverseJoinColumns = {@JoinColumn(
+                    name = "right_group_id"
+            )}
+    )
+    @TableField(exist = false)
+    @JsonIgnore
+    private List<SysRightGroup> sysRightGroups;
+
+    @TableField(exist = false)
     @Transient
     @JsonIgnore
-    @TableField(exist = false)
-    private Collection<? extends GrantedAuthority> authorities; // 使用JSON还原的时候，该集合中的元素无法被实例化出来
+    private List<SysRightRole> authorities;
 
 
-    public void setAuthorities(Collection<? extends GrantedAuthority> authorities) {
+    public void setAuthorities(List<SysRightRole> authorities) {
         this.authorities = authorities;
     }
 
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+    public List<SysRightRole> getAuthorities() {
+        return this.authorities;
     }
 
-    @Override
     public String getPassword() {
-        return this.fdPassword;
+        return this.orgAccountPassword;
     }
 
     @Override
     public String getUsername() {
-        return this.fdLoginName;
+        return this.orgAccountLoginName;
     }
 
     @Override
@@ -78,5 +109,10 @@ public class SysOrgAccount extends BaseEntity implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    @Override
+    public String getId() {
+        return this.orgAccountId;
     }
 }

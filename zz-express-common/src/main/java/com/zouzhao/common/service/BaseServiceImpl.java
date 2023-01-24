@@ -1,12 +1,14 @@
 package com.zouzhao.common.service;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zouzhao.common.api.IApi;
-import com.zouzhao.common.dao.IRepository;
 import com.zouzhao.common.dto.BaseVO;
+import com.zouzhao.common.dto.IdDTO;
 import com.zouzhao.common.dto.IdsDTO;
 import com.zouzhao.common.entity.BaseEntity;
-import org.springframework.beans.BeanUtils;
+import com.zouzhao.common.mapper.IMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
 import java.util.List;
@@ -16,63 +18,69 @@ import java.util.List;
  * @DATE: 2023-1-17
  * @DESCRIPTION:
  */
-public class BaseServiceImpl<R extends IRepository<E>, E extends BaseEntity, V extends BaseVO> extends ServiceImpl<R, E> implements IApi<V> {
+@Transactional(
+        readOnly = true,
+        rollbackFor = {}
+)
+public abstract class BaseServiceImpl<M extends IMapper<E,V>, E extends BaseEntity, V extends BaseVO> extends ServiceImpl<M, E> implements IApi<V> {
 
 
-    public BaseVO add(V vo) {
-           E e = voToEntity(vo);
+    @Autowired
+    M mapper;
+
+    public M getMapper() {
+        return this.mapper;
+    }
+
+    @Transactional(
+            rollbackFor = {}
+    )
+    public IdDTO add(V vo) {
+        E e = voToEntity(vo);
         super.save(e);
-        return BaseVO.of(e.getFdId());
+        return IdDTO.of(e.getId());
     }
 
 
+    @Transactional(
+            rollbackFor = {}
+    )
     public void update(V vo) {
         E e = voToEntity(vo);
-        if (ObjectUtils.isEmpty(super.getById(e.getFdId()))) {
+        if (ObjectUtils.isEmpty(super.getById(e.getId()))) {
             super.save(e);
         } else super.updateById(e);
     }
 
 
-    public void delete(BaseVO vo) {
-        super.removeById(vo.getFdId());
+    @Transactional(
+            rollbackFor = {}
+    )
+    public void delete(IdDTO vo) {
+        super.removeById(vo.getId());
     }
 
 
+    @Transactional(
+            rollbackFor = {}
+    )
     public void deleteAll(IdsDTO idsDTO) {
-        super.removeBatchByIds(idsDTO.getFdIds());
+        super.removeBatchByIds(idsDTO.getIds());
     }
 
 
-    public V loadById(BaseVO var1) {
-        E e = super.getById(var1.getFdId());
-        return entityToVo(e);
+    public V findVOById(IdDTO vo) {
+        return getMapper().findVOById(vo.getId());
     }
 
-
-    public Page<V> findAll(Page<V> var1) {
-        Page<E> result = super.page(Page.of(var1.getCurrent(), var1.getSize()));
-        Page<V> page = new Page<>();
-        BeanUtils.copyProperties(result,page);
-        List<V> records = page.getRecords();
-        result.getRecords().forEach(e -> {
-            V instance = (V)new BaseVO();
-            BeanUtils.copyProperties(e, instance);
-            records.add(instance);
-        });
-        return page;
+    @Override
+    public List<V> findAll(V var1) {
+        E e = voToEntity(var1);
+        return getMapper().findVOList(e);
     }
 
-    protected E voToEntity(V vo) {
-        E e = (E) new BaseEntity();
-        BeanUtils.copyProperties(vo, e);
-        return e;
-    }
+    public abstract E voToEntity(V vo);
 
-    protected V entityToVo(E entity) {
-        V v = (V) new BaseVO();
-        BeanUtils.copyProperties(entity, v);
-        return v;
-    }
+
 
 }

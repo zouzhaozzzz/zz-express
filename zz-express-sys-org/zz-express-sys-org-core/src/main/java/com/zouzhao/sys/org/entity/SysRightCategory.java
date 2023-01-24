@@ -8,24 +8,28 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.security.core.GrantedAuthority;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Date;
 
 /**
  * @author 姚超
- * @DATE: 2023-1-18
+ * @DATE: 2023-1-20
  */
 @Entity
-@Table(name = "sys_right_role")
+@Table(
+        name = "sys_right_category",
+        indexes = {@Index(
+                columnList = "rightCategoryName"
+        )}
+)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SysRightRole implements BaseEntity, GrantedAuthority {
+public class SysRightCategory implements BaseEntity {
+    public static final String DEFAULT_CATEGORY_ID = "0";
+    public static final String DEFAULT_CATEGORY_NAME = "未分类";
+
     @Id
     @Column(
             length = 36
@@ -33,36 +37,27 @@ public class SysRightRole implements BaseEntity, GrantedAuthority {
     @TableId(
             type = IdType.ASSIGN_ID
     )
-    // @GeneratedValue(strategy = GenerationType.AUTO)
-    private String rightRoleId;
+    private String rightCategoryId;
+
     @Column(insertable = false,updatable = false,columnDefinition="DATETIME  DEFAULT CURRENT_TIMESTAMP")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", locale = "zh", timezone = "GMT+8")
-    private Date rightRoleCreateTime;
+    private Date rightCategoryCreateTime;
     @Column(insertable = false,updatable = false,columnDefinition="DATETIME  DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", locale = "zh", timezone = "GMT+8")
-    private Date rightRoleAlterTime;
+    private Date rightCategoryAlterTime;
 
-    private String rightRoleName;
-    @Column(length = 50)
-    @ApiModelProperty("权限Code")
-    private String rightRoleCode;
-    @Column(length = 200)
-    @ApiModelProperty("权限label")
-    private String rightRoleLabel;
-    @Column(length = 30)
-    @ApiModelProperty("类别模块")
-    private String rightRoleModule;
-    @Column(length = 200)
-    @ApiModelProperty("类别描述")
-    private String rightRoleDesc;
+    @ApiModelProperty("类别名字")
+    private String rightCategoryName;
 
-    @Override
-    public String getAuthority() {
-        return this.rightRoleCode;
+    public static SysRightCategory getDefault() {
+        SysRightCategory category = new SysRightCategory();
+        category.setRightCategoryId("0");
+        category.setRightCategoryName("未分类");
+        return category;
     }
 
     @Override
     public String getId() {
-        return this.rightRoleId;
+        return this.rightCategoryId;
     }
 }
