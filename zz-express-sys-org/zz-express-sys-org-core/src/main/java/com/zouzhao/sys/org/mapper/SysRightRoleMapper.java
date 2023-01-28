@@ -3,6 +3,7 @@ package com.zouzhao.sys.org.mapper;
 import com.zouzhao.common.mapper.IMapper;
 import com.zouzhao.sys.org.dto.SysRightRoleVO;
 import com.zouzhao.sys.org.entity.SysRightRole;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -12,15 +13,9 @@ import java.util.List;
  */
 public interface SysRightRoleMapper extends IMapper<SysRightRole,SysRightRoleVO> {
 
-    List<SysRightRole> findList(SysRightRole sysRightRole);
+    void saveOrUpdateBatchByName(@Param("list") List<SysRightRole> role);
 
-    List<SysRightRoleVO> findVOList (SysRightRole sysRightRole);
+    List<String> getAllModules();
 
-    SysRightRole findById(String rightRoleId);
-
-    SysRightRoleVO findVOById(String rightRoleId);
-
-
-
-
+    void deleteWithRelation(@Param("rightRoleCodeList") List<String> rightRoleCodeList);
 }

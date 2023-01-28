@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @DATE: 2023-1-18
  */
 @RestController
-@RequestMapping("/data/sys-org/SysOrgAccount")
+@RequestMapping("/data/sys-org/sysOrgAccount")
 @Api(
         tags = "用户账号"
 )

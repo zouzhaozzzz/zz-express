@@ -35,7 +35,7 @@ import java.util.concurrent.TimeUnit;
  */
 @Service
 @RestController
-@RequestMapping("/api/sys-org/SysOrgAccount")
+@RequestMapping("/api/sys-org/sysOrgAccount")
 public class SysOrgAccountService extends BaseServiceImpl<SysOrgAccountMapper, SysOrgAccount, SysOrgAccountVO> implements ISysOrgAccountApi {
 
     private static final Logger log = LoggerFactory.getLogger(SysOrgAccountService.class);

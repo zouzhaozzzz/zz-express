@@ -1,7 +1,6 @@
 package com.zouzhao.sys.org.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.zouzhao.common.dto.BaseVO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -15,7 +14,7 @@ import java.util.List;
  */
 @ApiModel("用户账号VO")
 @Data
-public class SysOrgAccountVO implements BaseVO {
+public class SysOrgAccountVO  {
     private String orgAccountId;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", locale = "zh", timezone = "GMT+8")
     private Date orgAccountCreateTime;
@@ -34,9 +33,6 @@ public class SysOrgAccountVO implements BaseVO {
     private List<SysRightGroupVO> sysRightGroups;
     @ApiModelProperty("权限")
     private List<SysRightRoleVO> authorities;
+    private Boolean orgAccountStatus;
 
-    @Override
-    public String getId() {
-        return this.orgAccountId;
-    }
 }

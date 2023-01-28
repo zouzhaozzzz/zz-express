@@ -1,7 +1,6 @@
 package com.zouzhao.sys.org.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.zouzhao.common.dto.BaseVO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -14,7 +13,7 @@ import java.util.Date;
  */
 @ApiModel("权限类别VO")
 @Data
-public class SysRightCategoryVO implements BaseVO {
+public class SysRightCategoryVO  {
     private String rightCategoryId;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", locale = "zh", timezone = "GMT+8")
     private Date rightCategoryCreateTime;
@@ -23,9 +22,6 @@ public class SysRightCategoryVO implements BaseVO {
 
     @ApiModelProperty("类别名字")
     private String rightCategoryName;
+    private Boolean rightCategoryStatus;
 
-    @Override
-    public String getId() {
-        return this.rightCategoryId;
-    }
 }

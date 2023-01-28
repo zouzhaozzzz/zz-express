@@ -11,7 +11,7 @@ import lombok.Data;
 @Data
 public class IdDTO {
     @ApiModelProperty(
-            value = "记录主键ids",
+            value = "记录主键id",
             required = false
     )
     private String id;

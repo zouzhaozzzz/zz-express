@@ -2,7 +2,6 @@ package com.zouzhao.common.service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zouzhao.common.api.IApi;
-import com.zouzhao.common.dto.BaseVO;
 import com.zouzhao.common.dto.IdDTO;
 import com.zouzhao.common.dto.IdsDTO;
 import com.zouzhao.common.entity.BaseEntity;
@@ -22,7 +21,7 @@ import java.util.List;
         readOnly = true,
         rollbackFor = {}
 )
-public abstract class BaseServiceImpl<M extends IMapper<E,V>, E extends BaseEntity, V extends BaseVO> extends ServiceImpl<M, E> implements IApi<V> {
+public abstract class BaseServiceImpl<M extends IMapper<E,V>, E extends BaseEntity, V > extends ServiceImpl<M, E> implements IApi<V> {
 
 
     @Autowired

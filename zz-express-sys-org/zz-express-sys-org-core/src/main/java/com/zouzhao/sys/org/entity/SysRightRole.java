@@ -10,10 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Date;
 
 /**
@@ -21,11 +18,15 @@ import java.util.Date;
  * @DATE: 2023-1-18
  */
 @Entity
-@Table(name = "sys_right_role")
+@Table(name = "sys_right_role",
+        indexes = {
+                @Index(columnList = "rightRoleModule"),
+                @Index(columnList = "rightRoleCode",unique = true)
+        })
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SysRightRole implements BaseEntity, GrantedAuthority {
+public class SysRightRole extends BaseEntity implements GrantedAuthority {
     @Id
     @Column(
             length = 36
@@ -35,10 +36,10 @@ public class SysRightRole implements BaseEntity, GrantedAuthority {
     )
     // @GeneratedValue(strategy = GenerationType.AUTO)
     private String rightRoleId;
-    @Column(insertable = false,updatable = false,columnDefinition="DATETIME  DEFAULT CURRENT_TIMESTAMP")
+    @Column(insertable = false, updatable = false, columnDefinition = "DATETIME  DEFAULT CURRENT_TIMESTAMP")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", locale = "zh", timezone = "GMT+8")
     private Date rightRoleCreateTime;
-    @Column(insertable = false,updatable = false,columnDefinition="DATETIME  DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
+    @Column(insertable = false, updatable = false, columnDefinition = "DATETIME  DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", locale = "zh", timezone = "GMT+8")
     private Date rightRoleAlterTime;
 
@@ -46,14 +47,11 @@ public class SysRightRole implements BaseEntity, GrantedAuthority {
     @Column(length = 50)
     @ApiModelProperty("权限Code")
     private String rightRoleCode;
-    @Column(length = 200)
-    @ApiModelProperty("权限label")
-    private String rightRoleLabel;
     @Column(length = 30)
     @ApiModelProperty("类别模块")
-    private String rightRoleModule;
+    private String rightRoleModule = "未分类";
     @Column(length = 200)
-    @ApiModelProperty("类别描述")
+    @ApiModelProperty("权限描述")
     private String rightRoleDesc;
 
     @Override

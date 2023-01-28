@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.zouzhao.common.entity.BaseEntity;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,14 +15,14 @@ import java.util.List;
 
 /**
  * @author 姚超
- * @DATE: 2023-1-18
+ * @DATE: 2023-1-24
  */
-@Table(name="sys_right_group")
-@Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SysRightGroup extends BaseEntity {
+@Entity
+@Table(name="sys_menu_element")
+public class SysMenuElement extends BaseEntity {
     @Id
     @Column(
             length = 36
@@ -32,44 +31,36 @@ public class SysRightGroup extends BaseEntity {
             type = IdType.ASSIGN_ID
     )
     // @GeneratedValue(strategy = GenerationType.AUTO)
-    private String rightGroupId;
-
-    @Column(insertable = false,updatable = false,columnDefinition="DATETIME  DEFAULT CURRENT_TIMESTAMP")
+    private String menuElementId;
+    @Column(insertable = false, updatable = false, columnDefinition = "DATETIME  DEFAULT CURRENT_TIMESTAMP")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", locale = "zh", timezone = "GMT+8")
-    private Date rightGroupCreateTime;
-    @Column(insertable = false,updatable = false,columnDefinition="DATETIME  DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
+    private Date menuElementCreateTime;
+    @Column(insertable = false, updatable = false, columnDefinition = "DATETIME  DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", locale = "zh", timezone = "GMT+8")
-    private Date rightGroupAlterTime;
-    private String rightGroupName;
-    @ApiModelProperty("描述")
-    private String fdDesc;
+    private Date menuElementAlterTime;
 
-    @ManyToOne
-    @JoinColumn(
-            name = "right_category_id"
-    )
-    @TableField(exist = false)
-    @ApiModelProperty("类别")
-    private SysRightCategory sysRightCategory;
-    @Transient
-    @ApiModelProperty("类别id")
-    private String rightCategoryId;
+    private String menuElementName;
+    private String menuElementPath;
+    private String menuElementParentId;
+    private String menuElementIcon;
+    private String menuElementType;
+    private Integer menuElementOrder=1;
+    private Boolean menuElementStatus;
     @ManyToMany
     @JoinTable(
-            name = "sys_right_gr_rela",
+            name = "sys_menu_mr_rela",
             joinColumns = {@JoinColumn(
-                    name = "right_group_id"
+                    name = "menu_element_id"
             )},
             inverseJoinColumns = {@JoinColumn(
                     name = "right_role_id"
             )}
     )
     @TableField(exist = false)
-    @ApiModelProperty("权限")
     private List<SysRightRole> sysRightRoles;
 
     @Override
     public String getId() {
-        return this.rightGroupId;
+        return this.menuElementId;
     }
 }

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @DATE: 2023-1-20
  */
 @RestController
-@RequestMapping("/sys-right/SysRightGroup")
+@RequestMapping("/data/sys-right/sysRightGroup")
 @Api(
         tags = "角色"
 )

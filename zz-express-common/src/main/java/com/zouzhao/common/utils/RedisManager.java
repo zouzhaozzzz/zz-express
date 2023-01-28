@@ -17,9 +17,9 @@ import java.util.function.Function;
 public class RedisManager {
 
     @Autowired
-    private RedisTemplate<String,Object> redisTemplate;
+    private static RedisTemplate<String,Object> redisTemplate;
 
-    public <T> T getValue(String key, Function<Integer,T> mapper) {
+    public static  <T> T getValue(String key, Function<Integer,T> mapper) {
         Object o = redisTemplate.opsForValue().get(key);
         if (ObjectUtils.isEmpty(o)) {
             String[] split = key.split(":");
@@ -30,12 +30,18 @@ public class RedisManager {
         return (T) o;
     }
 
+    public static String getValue(String key) {
+        Object o = redisTemplate.opsForValue().get(key);
+        if (ObjectUtils.isEmpty(o)) return null;
+        return (String) o;
+    }
 
-    public void setValue(String key,Object value){
+
+    public static void setValue(String key,Object value){
         redisTemplate.opsForValue().set(key,value,1, TimeUnit.DAYS);
     }
 
-    public <T> T getHashValue(String key,String hashKey, Function<Integer,T> mapper) {
+    public static <T> T getHashValue(String key,String hashKey, Function<Integer,T> mapper) {
         Object o = redisTemplate.opsForHash().get(key,hashKey);
         if (ObjectUtils.isEmpty(o)) {
             T t = mapper.apply(Integer.valueOf(hashKey));
@@ -44,7 +50,7 @@ public class RedisManager {
         }
         return (T) o;
     }
-    public void setHashValue(String key,String hashKey,Object value){
+    public static void setHashValue(String key,String hashKey,Object value){
         redisTemplate.opsForHash().put(key,hashKey,value);
     }
 }

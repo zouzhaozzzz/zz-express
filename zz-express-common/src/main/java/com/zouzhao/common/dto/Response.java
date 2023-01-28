@@ -45,7 +45,7 @@ public class Response<T>{
     }
 
     public static <T> Response<T> ok(T data) {
-        return new Response<T>(true, HttpStatus.OK.value(), null, data);
+        return new Response<T>(true, HttpStatus.OK.value(), "成功", data);
     }
 
     public static <T> Response<T> ok(String msg) {
@@ -57,7 +57,7 @@ public class Response<T>{
     }
 
     public static <T> Response<T> err(T data) {
-        return new Response<T>(true, HttpStatus.INTERNAL_SERVER_ERROR.value(), null, data);
+        return new Response<T>(true, HttpStatus.INTERNAL_SERVER_ERROR.value(), "失败", data);
     }
 
     public static <T> Response<T> err(String msg) {

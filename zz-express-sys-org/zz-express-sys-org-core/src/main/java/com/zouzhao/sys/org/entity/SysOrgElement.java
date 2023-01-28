@@ -1,8 +1,6 @@
 package com.zouzhao.sys.org.entity;
 
-import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.zouzhao.common.entity.BaseEntity;
@@ -27,7 +25,7 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SysOrgElement implements BaseEntity {
+public class SysOrgElement extends BaseEntity {
     @Id
     @Column(
             length = 36
@@ -66,9 +64,8 @@ public class SysOrgElement implements BaseEntity {
     private String orgElementPostId;
     @ApiModelProperty("父id")
     private String orgElementParentId;
-    @Column(nullable = false)
     @ApiModelProperty("是否可用")
-    private Boolean orgElementIsAvailable;
+    private Boolean orgElementStatus;
     @Column(length = 200)
     @ApiModelProperty("描述")
     private String orgElementDesc;

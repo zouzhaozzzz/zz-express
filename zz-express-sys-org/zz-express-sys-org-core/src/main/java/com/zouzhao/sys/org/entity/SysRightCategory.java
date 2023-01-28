@@ -26,7 +26,7 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SysRightCategory implements BaseEntity {
+public class SysRightCategory extends BaseEntity {
     public static final String DEFAULT_CATEGORY_ID = "0";
     public static final String DEFAULT_CATEGORY_NAME = "未分类";
 
@@ -48,6 +48,7 @@ public class SysRightCategory implements BaseEntity {
 
     @ApiModelProperty("类别名字")
     private String rightCategoryName;
+    private Boolean rightCategoryStatus;
 
     public static SysRightCategory getDefault() {
         SysRightCategory category = new SysRightCategory();

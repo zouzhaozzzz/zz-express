@@ -39,7 +39,7 @@ public class JwtFilter extends OncePerRequestFilter { // 保证每一个请求�
     private Integer expirationTime;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException,RuntimeException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException, RuntimeException {
         // 首先从request中获取token信息
         String jwtToken = request.getHeader("jwtToken");
         log.debug("接收到的jwtToken:{}", jwtToken);
@@ -50,31 +50,28 @@ public class JwtFilter extends OncePerRequestFilter { // 保证每一个请求�
             return;
         }
         // jwtToken证明是非登录请求，需要对jwtToken进行有效性检查
-        try {
-            Jws<Claims> claims = JwtUtils.getClaims(jwtToken);
-            String subject = claims.getBody().getSubject();
-            ObjectMapper mapper = new ObjectMapper();
-            SysOrgAccount user = mapper.readValue(subject, SysOrgAccount.class);
-            String redisKey = "jwtToken:" + user.getOrgAccountLoginName();
-            if (ObjectUtils.isEmpty(redisTemplate.opsForValue().get(redisKey)))
-                throw new RuntimeException("该用户已经注销了");
-            redisTemplate.opsForValue().set(redisKey, user, expirationTime, TimeUnit.SECONDS);
-            //去dao查询用户权限
-            SysOrgAccount sysOrgAccount = sysOrgAccountService.findById(IdDTO.of(user.getOrgAccountId()));
-            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                    user.getOrgAccountLoginName(),
-                    null,
-                    // AuthorityUtils.commaSeparatedStringToAuthorityList("default")
-                    sysOrgAccount.getAuthorities());
-            // authentication.setAuthenticated(true);
-            //把认证信息放入到SecurityContextHolder中
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            // 把请求往后传递（DispatcherServlet -> Controller）
-            filterChain.doFilter(request, response);
-        } catch (Exception e) {
-            log.error("Token无效", e);
-            throw new RuntimeException(e);
-        }
+
+        Jws<Claims> claims = JwtUtils.getClaims(jwtToken);
+        String subject = claims.getBody().getSubject();
+        ObjectMapper mapper = new ObjectMapper();
+        SysOrgAccount user = mapper.readValue(subject, SysOrgAccount.class);
+        String redisKey = "jwtToken:" + user.getOrgAccountLoginName();
+        if (ObjectUtils.isEmpty(redisTemplate.opsForValue().get(redisKey)))
+            throw new RuntimeException("该用户已经注销了");
+        redisTemplate.opsForValue().set(redisKey, user, expirationTime, TimeUnit.SECONDS);
+        //去dao查询用户权限
+        SysOrgAccount sysOrgAccount = sysOrgAccountService.findById(IdDTO.of(user.getOrgAccountId()));
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                user.getOrgAccountLoginName(),
+                null,
+                // AuthorityUtils.commaSeparatedStringToAuthorityList("default")
+                sysOrgAccount.getAuthorities());
+        // authentication.setAuthenticated(true);
+        //把认证信息放入到SecurityContextHolder中
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        // 把请求往后传递（DispatcherServlet -> Controller）
+        filterChain.doFilter(request, response);
+
     }
 
 }

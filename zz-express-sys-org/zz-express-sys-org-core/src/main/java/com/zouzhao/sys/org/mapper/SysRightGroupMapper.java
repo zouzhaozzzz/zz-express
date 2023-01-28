@@ -12,11 +12,4 @@ import java.util.List;
  */
 public interface SysRightGroupMapper extends IMapper<SysRightGroup,SysRightGroupVO> {
 
-    List<SysRightGroup> findList(SysRightGroup sysRightGroup);
-
-    List<SysRightGroupVO> findVOList(SysRightGroup sysRightGroup);
-
-    SysRightGroup findById(String rightGroupId);
-
-    SysRightGroupVO findVOById(String rightGroupId);
 }

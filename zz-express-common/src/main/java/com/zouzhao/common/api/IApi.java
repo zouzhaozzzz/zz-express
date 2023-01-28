@@ -1,6 +1,5 @@
 package com.zouzhao.common.api;
 
-import com.zouzhao.common.dto.BaseVO;
 import com.zouzhao.common.dto.IdDTO;
 import com.zouzhao.common.dto.IdsDTO;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,7 +12,7 @@ import java.util.List;
  * @DATE: 2023-1-17
  * @DESCRIPTION:
  */
-public interface IApi<V extends BaseVO> {
+public interface IApi<V> {
 
     @PostMapping({"add"})
     IdDTO add(@RequestBody V var1);

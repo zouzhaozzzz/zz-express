@@ -27,7 +27,7 @@ import java.util.List;
 @Entity
 @Table(name = "sys_org_account")
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class SysOrgAccount  implements UserDetails, BaseEntity {
+public class SysOrgAccount extends BaseEntity implements UserDetails {
     @Id
     @Column(
             length = 36
@@ -37,10 +37,10 @@ public class SysOrgAccount  implements UserDetails, BaseEntity {
     )
     // @GeneratedValue(strategy = GenerationType.AUTO)
     private String orgAccountId;
-    @Column(insertable = false,updatable = false,columnDefinition="DATETIME  DEFAULT CURRENT_TIMESTAMP")
+    @Column(insertable = false, updatable = false, columnDefinition = "DATETIME  DEFAULT CURRENT_TIMESTAMP")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", locale = "zh", timezone = "GMT+8")
     private Date orgAccountCreateTime;
-    @Column(insertable = false,updatable = false,columnDefinition="DATETIME  DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
+    @Column(insertable = false, updatable = false, columnDefinition = "DATETIME  DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", locale = "zh", timezone = "GMT+8")
     private Date orgAccountAlterTime;
 
@@ -53,6 +53,7 @@ public class SysOrgAccount  implements UserDetails, BaseEntity {
     private String orgAccountDefPersonId;
     @ApiModelProperty("加密方式")
     private String orgAccountEncryption;
+    private Boolean orgAccountStatus;
     @ManyToMany
     @JoinTable(
             name = "sys_right_go_rela",

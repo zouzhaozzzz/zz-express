@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @Service
 @RestController
-@RequestMapping("/api/sys-org/SysRightGroup")
+@RequestMapping("/api/sys-org/sysRightGroup")
 public class SysRightGroupService extends BaseServiceImpl<SysRightGroupMapper, SysRightGroup, SysRightGroupVO> implements ISysRightGroupApi {
 
 

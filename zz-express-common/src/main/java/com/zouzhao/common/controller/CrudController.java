@@ -1,7 +1,6 @@
 package com.zouzhao.common.controller;
 
 import com.zouzhao.common.api.IApi;
-import com.zouzhao.common.dto.BaseVO;
 import com.zouzhao.common.dto.IdDTO;
 import com.zouzhao.common.dto.Response;
 import io.swagger.annotations.ApiOperation;
@@ -13,11 +12,13 @@ import org.springframework.web.bind.annotation.RequestBody;
  * @author 姚超
  * @DATE: 2023-1-20
  */
-public interface CrudController<A extends IApi<V>, V extends BaseVO> extends IController<A,V>{
+public interface CrudController<A extends IApi<V>, V > extends IController<A,V>{
     @PostMapping({"add"})
     @ApiOperation("新增接口")
     default Response<IdDTO> add(@RequestBody V vo) {
-        return Response.ok("成功",this.getApi().add(vo));
+        String id = this.getApi().add(vo).getId();
+        if(("-1".equals(id))) return Response.err(IdDTO.of("-1"));
+        return Response.ok(IdDTO.of(id));
     }
 
     @PostMapping({"get"})
@@ -35,7 +36,7 @@ public interface CrudController<A extends IApi<V>, V extends BaseVO> extends ICo
     @ApiOperation("更新接口")
     default Response<?> update(@RequestBody V vo) {
         this.getApi().update(vo);
-        return Response.ok("更新"+vo.getId()+"成功");
+        return Response.ok("更新成功");
     }
 
     @PostMapping({"delete"})
