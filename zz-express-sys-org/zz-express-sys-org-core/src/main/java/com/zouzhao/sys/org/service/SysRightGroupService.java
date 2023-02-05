@@ -1,6 +1,7 @@
 package com.zouzhao.sys.org.service;
 
 import com.zouzhao.common.service.BaseServiceImpl;
+import com.zouzhao.common.service.PageServiceImpl;
 import com.zouzhao.sys.org.api.ISysRightGroupApi;
 import com.zouzhao.sys.org.dto.SysRightGroupVO;
 import com.zouzhao.sys.org.entity.SysRightGroup;
@@ -17,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Service
 @RestController
 @RequestMapping("/api/sys-org/sysRightGroup")
-public class SysRightGroupService extends BaseServiceImpl<SysRightGroupMapper, SysRightGroup, SysRightGroupVO> implements ISysRightGroupApi {
+public class SysRightGroupService extends PageServiceImpl<SysRightGroupMapper, SysRightGroup, SysRightGroupVO> implements ISysRightGroupApi {
 
 
     @Override

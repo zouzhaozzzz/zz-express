@@ -2,7 +2,6 @@ package com.zouzhao.sys.org.controller;
 
 import com.zouzhao.common.controller.BaseController;
 import com.zouzhao.common.controller.CombineController;
-import com.zouzhao.common.dto.Response;
 import com.zouzhao.sys.org.api.ISysMenuElementApi;
 import com.zouzhao.sys.org.dto.SysMenuElementVO;
 import io.swagger.annotations.Api;
@@ -27,14 +26,14 @@ public class SysMenuElementController extends BaseController<ISysMenuElementApi,
 
     @PostMapping("/listInRoles")
     // @Secured({"ROLE_DEFAULT"})
-    public Response<List<SysMenuElementVO>> listInRoles(@RequestBody SysMenuElementVO vo){
-        return Response.ok(getApi().listInRoles(vo));
+    public List<SysMenuElementVO> listInRoles(@RequestBody SysMenuElementVO vo){
+        return getApi().listInRoles(vo);
     }
 
-    @PostMapping({"list"})
+    @PostMapping({"/list"})
     @ApiOperation("列表查询接口")
-    public Response<List<SysMenuElementVO>> list(@RequestBody SysMenuElementVO request) {
-        Response<List<SysMenuElementVO>> list = CombineController.super.list(request);
+    public List<SysMenuElementVO> list(@RequestBody SysMenuElementVO request) {
+        List<SysMenuElementVO> list = CombineController.super.list(request);
         return  list;
     }
 }

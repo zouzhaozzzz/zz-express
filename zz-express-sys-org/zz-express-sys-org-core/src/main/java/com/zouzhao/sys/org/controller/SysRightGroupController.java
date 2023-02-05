@@ -1,7 +1,7 @@
 package com.zouzhao.sys.org.controller;
 
 import com.zouzhao.common.controller.BaseController;
-import com.zouzhao.common.controller.CombineController;
+import com.zouzhao.common.controller.PageController;
 import com.zouzhao.sys.org.api.ISysRightGroupApi;
 import com.zouzhao.sys.org.dto.SysRightGroupVO;
 import io.swagger.annotations.Api;
@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(
         tags = "角色"
 )
-public class SysRightGroupController extends BaseController<ISysRightGroupApi, SysRightGroupVO> implements CombineController<ISysRightGroupApi, SysRightGroupVO> {
+public class SysRightGroupController extends BaseController<ISysRightGroupApi, SysRightGroupVO> implements PageController<ISysRightGroupApi, SysRightGroupVO> {
 
 
 

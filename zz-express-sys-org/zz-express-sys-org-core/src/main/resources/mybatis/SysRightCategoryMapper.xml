@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zouzhao.sys.org.mapper.SysRightCategoryMapper">
+
+
+    <resultMap type="SysRightCategory" id="SysRightCategoryResult">
+        <id property="rightCategoryId" column="right_category_id"/>
+        <result property="rightCategoryAlterTime" column="right_category_alter_time"/>
+        <result property="rightCategoryCreateTime" column="right_category_create_time"/>
+        <result property="rightCategoryName" column="right_category_name"/>
+        <result property="rightCategoryStatus" column="right_category_status"/>
+    </resultMap>
+    <resultMap type="com.zouzhao.sys.org.dto.SysRightCategoryVO" id="SysRightCategoryVOResult">
+        <id property="rightCategoryId" column="right_category_id"/>
+        <result property="rightCategoryAlterTime" column="right_category_alter_time"/>
+        <result property="rightCategoryCreateTime" column="right_category_create_time"/>
+        <result property="rightCategoryName" column="right_category_name"/>
+        <result property="rightCategoryStatus" column="right_category_status"/>
+    </resultMap>
+
+    <sql id="selectSysRightCategoryVo">
+        select right_category_id,
+               right_category_alter_time,
+               right_category_create_time,
+               right_category_name,
+               right_category_status
+        from sys_right_category
+    </sql>
+
+    <select id="findList" parameterType="SysRightCategory" resultMap="SysRightCategoryResult">
+        <include refid="selectSysRightCategoryVo"/>
+        <where>
+            <if test="rightCategoryName != null  and rightCategoryName != ''">and right_category_name like concat('%',
+                #{rightCategoryName}, '%')
+            </if>
+            <if test="rightCategoryStatus != null ">and right_category_status = #{rightCategoryStatus}</if>
+        </where>
+    </select>
+    <select id="findVOList" parameterType="SysRightCategory" resultMap="SysRightCategoryVOResult">
+        <include refid="selectSysRightCategoryVo"/>
+        <where>
+            <if test="rightCategoryName != null  and rightCategoryName != ''">and right_category_name like concat('%',
+                #{rightCategoryName}, '%')
+            </if>
+            <if test="rightCategoryStatus != null ">and right_category_status = #{rightCategoryStatus}</if>
+        </where>
+    </select>
+
+    <select id="findById" parameterType="String" resultMap="SysRightCategoryResult">
+        <include refid="selectSysRightCategoryVo"/>
+        where right_category_id = #{rightCategoryId}
+    </select>
+    <select id="findVOById" parameterType="String" resultMap="SysRightCategoryVOResult">
+        <include refid="selectSysRightCategoryVo"/>
+        where right_category_id = #{rightCategoryId}
+    </select>
+
+    <select id="page" parameterType="map" resultMap="SysRightCategoryVOResult">
+        <include refid="selectSysRightCategoryVo"/>
+        <where>
+            <if test="v != null">
+                <if test="v.rightCategoryName != null  and v.rightCategoryName != ''">and right_category_name like
+                    concat('%',
+                    #{v.rightCategoryName}, '%')
+                </if>
+                <if test="v.rightCategoryStatus != null ">and right_category_status = #{v.rightCategoryStatus}</if>
+            </if>
+        </where>
+    </select>
+
+</mapper>

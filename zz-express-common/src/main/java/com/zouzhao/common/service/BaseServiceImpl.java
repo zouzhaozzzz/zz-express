@@ -44,27 +44,30 @@ public abstract class BaseServiceImpl<M extends IMapper<E,V>, E extends BaseEnti
     @Transactional(
             rollbackFor = {}
     )
-    public void update(V vo) {
+    public IdDTO update(V vo) {
         E e = voToEntity(vo);
         if (ObjectUtils.isEmpty(super.getById(e.getId()))) {
             super.save(e);
         } else super.updateById(e);
+        return IdDTO.of(e.getId());
     }
 
 
     @Transactional(
             rollbackFor = {}
     )
-    public void delete(IdDTO vo) {
+    public IdDTO delete(IdDTO vo) {
         super.removeById(vo.getId());
+        return vo;
     }
 
 
     @Transactional(
             rollbackFor = {}
     )
-    public void deleteAll(IdsDTO idsDTO) {
+    public IdsDTO deleteAll(IdsDTO idsDTO) {
         super.removeBatchByIds(idsDTO.getIds());
+        return  idsDTO;
     }
 
 

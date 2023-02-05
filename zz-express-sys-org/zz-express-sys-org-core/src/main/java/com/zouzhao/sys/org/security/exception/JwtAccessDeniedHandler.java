@@ -1,7 +1,6 @@
 package com.zouzhao.sys.org.security.exception;
 
 
-import com.zouzhao.common.dto.Response;
 import com.zouzhao.common.utils.JsonUtils;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
@@ -21,7 +20,8 @@ public class JwtAccessDeniedHandler implements AccessDeniedHandler {
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
         log.error("鉴权JwtAccessDeniedHandler:handle()=>{}", accessDeniedException.getMessage());
         //以JSON格式给前端响应
-        Response<String> vo = Response.err(HttpStatus.FORBIDDEN.value(), "鉴权失败");
-        JsonUtils.writeToJson(response, vo);
+        // Response.err(HttpStatus.FORBIDDEN.value(), "鉴权失败");
+        JsonUtils.writeToJson(response, HttpStatus.FORBIDDEN.value());
     }
+
 }

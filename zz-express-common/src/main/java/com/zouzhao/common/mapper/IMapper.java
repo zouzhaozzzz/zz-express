@@ -1,7 +1,6 @@
 package com.zouzhao.common.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.springframework.data.repository.NoRepositoryBean;
 
 import java.util.List;
 
@@ -10,7 +9,7 @@ import java.util.List;
  * @DATE: 2023-1-17
  * @DESCRIPTION:
  */
-@NoRepositoryBean
+// @NoRepositoryBean
 public interface IMapper<E,V> extends BaseMapper<E> {
     List<E> findList(E e);
 
@@ -19,4 +18,5 @@ public interface IMapper<E,V> extends BaseMapper<E> {
     E findById(String id);
 
     V findVOById(String id);
+
 }

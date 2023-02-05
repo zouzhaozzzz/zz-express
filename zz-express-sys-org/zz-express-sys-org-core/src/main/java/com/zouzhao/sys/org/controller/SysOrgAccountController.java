@@ -2,7 +2,6 @@ package com.zouzhao.sys.org.controller;
 
 import com.zouzhao.common.controller.BaseController;
 import com.zouzhao.common.controller.CombineController;
-import com.zouzhao.common.dto.Response;
 import com.zouzhao.sys.org.api.ISysOrgAccountApi;
 import com.zouzhao.sys.org.dto.SysOrgAccountVO;
 import io.swagger.annotations.Api;
@@ -26,13 +25,13 @@ public class SysOrgAccountController extends BaseController<ISysOrgAccountApi, S
 
     @PostMapping("/checkLogin")
     @ApiOperation("登陆")
-    public Response<String> checkLogin(@RequestBody SysOrgAccountVO user) {
+    public String checkLogin(@RequestBody SysOrgAccountVO user) {
        return super.getApi().checkLogin(user);
     }
 
     @PostMapping("/layout")
     @ApiOperation("退出登陆")
-    public Response<String> layout(@RequestBody SysOrgAccountVO user){
+    public String layout(@RequestBody SysOrgAccountVO user){
         return  super.getApi().layout(user);
     }
 

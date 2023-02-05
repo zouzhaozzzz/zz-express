@@ -1,7 +1,6 @@
 package com.zouzhao.common.controller;
 
 import com.zouzhao.common.api.IApi;
-import com.zouzhao.common.dto.Response;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,10 +13,10 @@ import java.util.List;
  */
 public interface ListController<A extends IApi<V>, V> extends IController<A, V> {
 
-    @PostMapping({"list"})
+    @PostMapping({"/list"})
     @ApiOperation("列表查询接口")
-    default Response<List<V>> list(@RequestBody V request) {
-        return Response.ok(this.getApi().findAll(request));
+    default List<V> list(@RequestBody V request) {
+        return this.getApi().findAll(request);
     }
 
 

@@ -3,7 +3,6 @@ package com.zouzhao.sys.org.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zouzhao.common.dto.IdDTO;
-import com.zouzhao.common.dto.Response;
 import com.zouzhao.common.service.BaseServiceImpl;
 import com.zouzhao.sys.org.api.ISysOrgAccountApi;
 import com.zouzhao.sys.org.dto.SysOrgAccountVO;
@@ -49,8 +48,7 @@ public class SysOrgAccountService extends BaseServiceImpl<SysOrgAccountMapper, S
     private PasswordEncoder passwordEncoder;
 
     @Override
-    public Response<String>
-    checkLogin(SysOrgAccountVO user) {
+    public String checkLogin(SysOrgAccountVO user) {
         log.debug("checkLogin->user:{}", user);
         try {
             UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(user.getOrgAccountLoginName(), user.getOrgAccountPassword());
@@ -59,7 +57,7 @@ public class SysOrgAccountService extends BaseServiceImpl<SysOrgAccountMapper, S
             log.debug("login认证信息:{}", authentication);
             // 根据认证通过的authentication包装token，返回客户端
             String token = wrapAndStoreToken(authentication);
-            return Response.ok("登陆成功", token);
+            return token;
         } catch (AuthenticationException e) {
             log.error("登录发生异常", e);
             throw new RuntimeException(e);
@@ -67,12 +65,12 @@ public class SysOrgAccountService extends BaseServiceImpl<SysOrgAccountMapper, S
     }
 
     @Override
-    public Response<String> layout(SysOrgAccountVO user) {
+    public String layout(SysOrgAccountVO user) {
         //清空token和authentication.context
         redisTemplate.delete("jwtToken:" + user.getOrgAccountLoginName());
         SecurityContextHolder.getContext().setAuthentication(null);
         log.debug("用户{}退出成功", user.getOrgAccountLoginName());
-        return Response.ok("退出成功");
+        return "退出成功";
     }
 
     @Override

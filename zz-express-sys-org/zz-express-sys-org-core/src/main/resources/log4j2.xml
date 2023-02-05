@@ -9,6 +9,7 @@
 
     <Loggers>
         <Logger name="com.zouzhao" level="debug"/>
+        <Logger name="com.zouzhao.sys.org.security" level="info"/>
         <Root level="info">
             <AppenderRef ref="Console"/>
             <!--<AppenderRef ref="Roll"/>-->

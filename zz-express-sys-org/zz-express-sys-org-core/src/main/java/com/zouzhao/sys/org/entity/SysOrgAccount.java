@@ -1,5 +1,6 @@
 package com.zouzhao.sys.org.entity;
 
+import com.baomidou.mybatisplus.annotation.FieldStrategy;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -37,9 +38,11 @@ public class SysOrgAccount extends BaseEntity implements UserDetails {
     )
     // @GeneratedValue(strategy = GenerationType.AUTO)
     private String orgAccountId;
+    @TableField(updateStrategy = FieldStrategy.NEVER)
     @Column(insertable = false, updatable = false, columnDefinition = "DATETIME  DEFAULT CURRENT_TIMESTAMP")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", locale = "zh", timezone = "GMT+8")
     private Date orgAccountCreateTime;
+    @TableField(updateStrategy = FieldStrategy.NEVER)
     @Column(insertable = false, updatable = false, columnDefinition = "DATETIME  DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", locale = "zh", timezone = "GMT+8")
     private Date orgAccountAlterTime;

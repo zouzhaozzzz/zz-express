@@ -1,7 +1,6 @@
 package com.zouzhao.sys.org.controller.init;
 
 import com.zouzhao.common.dto.IdNameDTO;
-import com.zouzhao.common.dto.Response;
 import com.zouzhao.sys.org.api.init.ISysInitApi;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +24,7 @@ public class SysInitController {
     private ISysInitApi sysInitApi;
 
     @PostMapping("/init")
-    public Response<List<IdNameDTO>> init() {
-        return Response.ok(sysInitApi.init());
+    public List<IdNameDTO> init() {
+        return sysInitApi.init();
     }
 }

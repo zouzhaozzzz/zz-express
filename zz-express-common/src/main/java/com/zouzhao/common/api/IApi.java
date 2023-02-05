@@ -14,22 +14,22 @@ import java.util.List;
  */
 public interface IApi<V> {
 
-    @PostMapping({"add"})
+    @PostMapping({"/add"})
     IdDTO add(@RequestBody V var1);
 
-    @PostMapping({"update"})
-    void update(@RequestBody V var1);
+    @PostMapping({"/update"})
+    IdDTO update(@RequestBody V var1);
 
-    @PostMapping({"delete"})
-    void delete(@RequestBody IdDTO var1);
+    @PostMapping({"/delete"})
+    IdDTO delete(@RequestBody IdDTO var1);
 
-    @PostMapping({"deleteAll"})
-    void deleteAll(@RequestBody IdsDTO var1);
+    @PostMapping({"/deleteAll"})
+    IdsDTO deleteAll(@RequestBody IdsDTO var1);
 
-    @PostMapping({"loadById"})
+    @PostMapping({"/loadById"})
     V findVOById(@RequestBody IdDTO var1);
 
-    @PostMapping({"findAll"})
+    @PostMapping({"/findAll"})
     List<V> findAll(@RequestBody V var1);
 
 

@@ -1,5 +1,6 @@
 package com.zouzhao.sys.org.entity;
 
+import com.baomidou.mybatisplus.annotation.FieldStrategy;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -32,9 +33,11 @@ public class SysMenuElement extends BaseEntity {
     )
     // @GeneratedValue(strategy = GenerationType.AUTO)
     private String menuElementId;
+    @TableField(updateStrategy = FieldStrategy.NEVER)
     @Column(insertable = false, updatable = false, columnDefinition = "DATETIME  DEFAULT CURRENT_TIMESTAMP")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", locale = "zh", timezone = "GMT+8")
     private Date menuElementCreateTime;
+    @TableField(updateStrategy = FieldStrategy.NEVER)
     @Column(insertable = false, updatable = false, columnDefinition = "DATETIME  DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", locale = "zh", timezone = "GMT+8")
     private Date menuElementAlterTime;

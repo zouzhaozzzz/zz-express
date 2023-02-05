@@ -1,6 +1,5 @@
 package com.zouzhao.sys.org.security.exception;
 
-import com.zouzhao.common.dto.Response;
 import com.zouzhao.common.utils.JsonUtils;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
@@ -22,7 +21,7 @@ public class JwtEntryPoint implements AuthenticationEntryPoint {
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
         log.error("认证JwtEntryPoint:commence()=>{}", authException.getMessage());
         //以JSON格式给前端响应
-        Response<String> vo = Response.err(HttpStatus.UNAUTHORIZED.value(), "认证失败");
-        JsonUtils.writeToJson(response, vo);
+       // Response.err(, "认证失败");
+        JsonUtils.writeToJson(response, HttpStatus.UNAUTHORIZED.value());
     }
 }

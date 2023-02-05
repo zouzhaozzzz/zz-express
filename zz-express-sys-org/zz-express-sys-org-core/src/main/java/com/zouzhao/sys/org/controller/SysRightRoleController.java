@@ -2,7 +2,6 @@ package com.zouzhao.sys.org.controller;
 
 import com.zouzhao.common.controller.BaseController;
 import com.zouzhao.common.controller.CombineController;
-import com.zouzhao.common.dto.Response;
 import com.zouzhao.sys.org.api.ISysRightRoleApi;
 import com.zouzhao.sys.org.dto.SysRightRoleVO;
 import io.swagger.annotations.Api;
@@ -24,7 +23,7 @@ import java.util.List;
 public class SysRightRoleController extends BaseController<ISysRightRoleApi, SysRightRoleVO> implements CombineController<ISysRightRoleApi, SysRightRoleVO> {
 
     @PostMapping("/allModule")
-    public Response<List<String>>  allModule(){
-        return Response.ok(getApi().allModule());
+    public List<String> allModule(){
+        return getApi().allModule();
     }
 }
