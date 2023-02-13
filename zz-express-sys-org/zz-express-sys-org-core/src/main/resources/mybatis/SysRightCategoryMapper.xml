@@ -66,6 +66,7 @@
                 <if test="v.rightCategoryStatus != null ">and right_category_status = #{v.rightCategoryStatus}</if>
             </if>
         </where>
+        order by right_category_status desc
     </select>
 
 </mapper>

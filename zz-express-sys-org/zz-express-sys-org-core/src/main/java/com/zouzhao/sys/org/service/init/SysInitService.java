@@ -8,6 +8,7 @@ import com.zouzhao.sys.org.mapper.SysRightRoleMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +29,7 @@ public class SysInitService implements ISysInitApi {
     private static final String LockKey="initLock";
 
     @Override
+    @Transactional
     public List<IdNameDTO> init() {
         String uuid = UUID.randomUUID().toString();
         Boolean lock = redisTemplate.opsForValue().setIfAbsent(LockKey, uuid, 5, TimeUnit.MINUTES);

@@ -4,7 +4,8 @@
 
     <resultMap type="SysRightGroup" id="SysRightGroupResult">
         <id property="rightGroupId" column="right_group_id"/>
-        <result property="fdDesc" column="fd_desc"/>
+        <result property="rightGroupDesc" column="right_group_desc"/>
+        <result property="rightGroupName" column="right_group_name"/>
         <result property="rightGroupAlterTime" column="right_group_alter_time"/>
         <result property="rightGroupCreateTime" column="right_group_create_time"/>
         <result property="rightCategoryId" column="right_category_id"/>
@@ -13,13 +14,15 @@
     </resultMap>
     <resultMap type="com.zouzhao.sys.org.dto.SysRightGroupVO" id="SysRightGroupVOResult">
         <id property="rightGroupId" column="right_group_id"/>
-        <result property="fdDesc" column="fd_desc"/>
+        <result property="rightGroupDesc" column="right_group_desc"/>
+        <result property="rightGroupName" column="right_group_name"/>
         <result property="rightGroupAlterTime" column="right_group_alter_time"/>
         <result property="rightGroupCreateTime" column="right_group_create_time"/>
         <result property="rightCategoryId" column="right_category_id"/>
         <collection property="sysRightRoles" javaType="java.util.List"
                     resultMap="com.zouzhao.sys.org.mapper.SysRightRoleMapper.SysRightRoleVOResult"/>
     </resultMap>
+
 
     <sql id="selectSysRightGroupVo">
         SELECT a.*,
@@ -28,12 +31,28 @@
                  LEFT JOIN sys_right_gr_rela gr ON gr.right_group_id = a.right_group_id
                  LEFT JOIN sys_right_role r ON r.right_role_id = gr.right_role_id
     </sql>
+    <sql id="selectPageVo">
+        SELECT a.*
+        FROM sys_right_group a
+    </sql>
+    <insert id="addRoleRela" parameterType="map">
+        insert into sys_right_gr_rela values <foreach collection="list" item="rightRole" separator=",">
+        (#{id},#{rightRole.rightRoleId})
+    </foreach>
+    </insert>
+    <delete id="removeRela" parameterType="string">
+        delete from sys_right_gr_rela where right_group_id = #{id}
+    </delete>
+    <delete id="removeRelaList">
+        delete from sys_right_gr_rela where right_group_id in
+        <foreach collection="list" item="id" open="(" separator="," close=")"> #{id}</foreach>
+    </delete>
 
     <select id="findList" parameterType="SysRightGroup" resultMap="SysRightGroupResult">
         <include refid="selectSysRightGroupVo"/>
         <where>
-           <!-- <if test="rightCategoryId != null  and rightCategoryId != ''">and a.right_category_id = #{rightCategoryId}
-            </if>-->
+            <if test="rightCategoryId != null  and rightCategoryId != ''">and a.right_category_id = #{rightCategoryId}
+            </if>
             <if test="rightGroupName != null  and rightGroupName != ''">and a.right_group_name like concat('%',
                 #{rightGroupName}, '%')
             </if>
@@ -43,12 +62,13 @@
     <select id="findVOList" parameterType="SysRightGroup" resultMap="SysRightGroupVOResult">
         <include refid="selectSysRightGroupVo"/>
         <where>
-           <!-- <if test="rightCategoryId != null  and rightCategoryId != ''">and a.right_category_id = #{rightCategoryId}
-            </if>-->
+            <if test="rightCategoryId != null  and rightCategoryId != ''">and a.right_category_id = #{rightCategoryId}
+            </if>
             <if test="rightGroupName != null  and rightGroupName != ''">and a.right_group_name like concat('%',
                 #{rightGroupName}, '%')
             </if>
         </where>
+
     </select>
 
     <select id="findById" parameterType="String" resultMap="SysRightGroupResult">
@@ -62,9 +82,11 @@
     </select>
 
     <select id="page" parameterType="map" resultMap="SysRightGroupVOResult">
-        <include refid="selectSysRightGroupVo"/>
+        <include refid="selectPageVo"/>
         <where>
             <if test="v != null">
+                <if test="v.rightCategoryId != null  and v.rightCategoryId != ''">and a.right_category_id = #{v.rightCategoryId}
+                </if>
                 <if test="v.rightGroupName != null  and v.rightGroupName != ''">and a.right_group_name like concat('%',
                     #{v.rightGroupName}, '%')
                 </if>

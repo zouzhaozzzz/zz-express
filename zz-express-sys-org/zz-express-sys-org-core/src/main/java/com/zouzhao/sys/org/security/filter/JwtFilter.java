@@ -1,7 +1,6 @@
 package com.zouzhao.sys.org.security.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zouzhao.common.dto.IdDTO;
 import com.zouzhao.sys.org.entity.SysOrgAccount;
 import com.zouzhao.sys.org.service.SysOrgAccountService;
 import com.zouzhao.sys.org.utils.JwtUtils;
@@ -59,13 +58,12 @@ public class JwtFilter extends OncePerRequestFilter { // 保证每一个请求�
         if (ObjectUtils.isEmpty(redisTemplate.opsForValue().get(redisKey)))
             throw new RuntimeException("该用户已经注销了");
         redisTemplate.opsForValue().set(redisKey, user, expirationTime, TimeUnit.SECONDS);
-        //去dao查询用户权限
-        SysOrgAccount sysOrgAccount = sysOrgAccountService.findById(IdDTO.of(user.getOrgAccountId()));
+
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                 user.getOrgAccountLoginName(),
                 null,
                 // AuthorityUtils.commaSeparatedStringToAuthorityList("default")
-                sysOrgAccount.getAuthorities());
+                user.getAuthorities());
         // authentication.setAuthenticated(true);
         //把认证信息放入到SecurityContextHolder中
         SecurityContextHolder.getContext().setAuthentication(authentication);

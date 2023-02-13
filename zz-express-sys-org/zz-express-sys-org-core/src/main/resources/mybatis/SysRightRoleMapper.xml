@@ -66,6 +66,7 @@
                 #{rightRoleName}, '%')
             </if>
         </where>
+        order by  right_role_module
     </select>
 
     <select id="findVOList" parameterType="SysRightRole" resultMap="SysRightRoleVOResult">

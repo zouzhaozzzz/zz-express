@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 public abstract class PageServiceImpl<M extends IPageMapper<E,V>, E extends BaseEntity, V> extends BaseServiceImpl<M,E,V> implements IPageApi<V> {
 
     public Page<V> page(@RequestBody Page<V> page){
-        return getMapper().page(page, ObjectUtils.isEmpty(page.getRecords())?null:page.getRecords().get(0));
+        Page<V> page1 = getMapper().page(page, ObjectUtils.isEmpty(page.getRecords()) ? null : page.getRecords().get(0));
+        return page1;
     }
 }

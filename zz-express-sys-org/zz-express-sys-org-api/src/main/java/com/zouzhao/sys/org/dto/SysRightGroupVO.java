@@ -23,7 +23,7 @@ public class SysRightGroupVO  {
 
     private String rightGroupName;
     @ApiModelProperty("描述")
-    private String fdDesc;
+    private String rightGroupDesc;
     @ApiModelProperty("类别")
     private SysRightCategoryVO sysRightCategory;
     @ApiModelProperty("类别id")

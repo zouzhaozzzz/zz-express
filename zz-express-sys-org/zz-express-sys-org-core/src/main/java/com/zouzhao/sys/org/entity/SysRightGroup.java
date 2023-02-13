@@ -44,7 +44,7 @@ public class SysRightGroup extends BaseEntity {
     private Date rightGroupAlterTime;
     private String rightGroupName;
     @ApiModelProperty("描述")
-    private String fdDesc;
+    private String rightGroupDesc;
 
     @ManyToOne
     @JoinColumn(
