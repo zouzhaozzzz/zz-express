@@ -36,7 +36,9 @@ public abstract class BaseServiceImpl<M extends IMapper<E,V>, E extends BaseEnti
     )
     public IdDTO add(V vo) {
         E e = voToEntity(vo);
+        beforeSaveOrUpdate(e,true);
         super.save(e);
+        afterSaveOrUpdate(e,true);
         return IdDTO.of(e.getId());
     }
 
@@ -46,9 +48,15 @@ public abstract class BaseServiceImpl<M extends IMapper<E,V>, E extends BaseEnti
     )
     public IdDTO update(V vo) {
         E e = voToEntity(vo);
+        beforeSaveOrUpdate(e,false);
         if (ObjectUtils.isEmpty(super.getById(e.getId()))) {
             super.save(e);
-        } else super.updateById(e);
+            afterSaveOrUpdate(e,true);
+        } else {
+            super.updateById(e);
+            afterSaveOrUpdate(e,false);
+        }
+
         return IdDTO.of(e.getId());
     }
 
@@ -57,6 +65,7 @@ public abstract class BaseServiceImpl<M extends IMapper<E,V>, E extends BaseEnti
             rollbackFor = {}
     )
     public IdDTO delete(IdDTO vo) {
+        beforeDelete(vo);
         super.removeById(vo.getId());
         return vo;
     }
@@ -66,8 +75,13 @@ public abstract class BaseServiceImpl<M extends IMapper<E,V>, E extends BaseEnti
             rollbackFor = {}
     )
     public IdsDTO deleteAll(IdsDTO idsDTO) {
+        beforeDeleteAll(idsDTO);
         super.removeBatchByIds(idsDTO.getIds());
         return  idsDTO;
+    }
+
+    protected  void beforeDeleteAll(IdsDTO idsDTO) {
+
     }
 
 
@@ -81,8 +95,17 @@ public abstract class BaseServiceImpl<M extends IMapper<E,V>, E extends BaseEnti
         return getMapper().findVOList(e);
     }
 
-    public abstract E voToEntity(V vo);
+    protected abstract E voToEntity(V vo);
 
+
+    protected void beforeSaveOrUpdate(E entity, boolean isAdd) {
+    }
+
+    protected void afterSaveOrUpdate(E entity, boolean isAdd) {
+    }
+
+    protected void beforeDelete(IdDTO vo ) {
+    }
 
 
 }

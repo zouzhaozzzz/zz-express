@@ -32,7 +32,6 @@ public class SysRightGroup extends BaseEntity {
     @TableId(
             type = IdType.ASSIGN_ID
     )
-    // @GeneratedValue(strategy = GenerationType.AUTO)
     private String rightGroupId;
     @TableField(updateStrategy = FieldStrategy.NEVER)
     @Column(insertable = false,updatable = false,columnDefinition="DATETIME  DEFAULT CURRENT_TIMESTAMP")

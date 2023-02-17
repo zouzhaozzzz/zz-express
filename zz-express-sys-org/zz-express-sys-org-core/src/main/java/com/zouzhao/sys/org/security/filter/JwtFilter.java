@@ -2,7 +2,7 @@ package com.zouzhao.sys.org.security.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zouzhao.sys.org.entity.SysOrgAccount;
-import com.zouzhao.sys.org.service.SysOrgAccountService;
+import com.zouzhao.sys.org.entity.SysRightRole;
 import com.zouzhao.sys.org.utils.JwtUtils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
@@ -23,6 +23,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Component
@@ -32,8 +33,7 @@ public class JwtFilter extends OncePerRequestFilter { // 保证每一个请求�
 
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
-    @Autowired
-    private SysOrgAccountService sysOrgAccountService;
+
     @Value("${jwt.expirationTime}")
     private Integer expirationTime;
 
@@ -55,15 +55,16 @@ public class JwtFilter extends OncePerRequestFilter { // 保证每一个请求�
         ObjectMapper mapper = new ObjectMapper();
         SysOrgAccount user = mapper.readValue(subject, SysOrgAccount.class);
         String redisKey = "jwtToken:" + user.getOrgAccountLoginName();
-        if (ObjectUtils.isEmpty(redisTemplate.opsForValue().get(redisKey)))
+        List<SysRightRole> roles =  (List<SysRightRole>)redisTemplate.opsForValue().get(redisKey);
+        if (ObjectUtils.isEmpty(roles))
             throw new RuntimeException("该用户已经注销了");
-        redisTemplate.opsForValue().set(redisKey, user, expirationTime, TimeUnit.SECONDS);
+        redisTemplate.opsForValue().set(redisKey, roles, expirationTime, TimeUnit.SECONDS);
 
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                 user.getOrgAccountLoginName(),
                 null,
                 // AuthorityUtils.commaSeparatedStringToAuthorityList("default")
-                user.getAuthorities());
+                roles);
         // authentication.setAuthenticated(true);
         //把认证信息放入到SecurityContextHolder中
         SecurityContextHolder.getContext().setAuthentication(authentication);

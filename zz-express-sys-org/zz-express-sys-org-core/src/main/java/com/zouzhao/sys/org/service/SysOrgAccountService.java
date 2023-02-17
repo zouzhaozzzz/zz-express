@@ -7,6 +7,7 @@ import com.zouzhao.common.service.BaseServiceImpl;
 import com.zouzhao.sys.org.api.ISysOrgAccountApi;
 import com.zouzhao.sys.org.dto.SysOrgAccountVO;
 import com.zouzhao.sys.org.entity.SysOrgAccount;
+import com.zouzhao.sys.org.entity.SysRightRole;
 import com.zouzhao.sys.org.mapper.SysOrgAccountMapper;
 import com.zouzhao.sys.org.utils.JwtUtils;
 import org.slf4j.Logger;
@@ -26,6 +27,8 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -83,6 +86,9 @@ public class SysOrgAccountService extends BaseServiceImpl<SysOrgAccountMapper, S
 
     private String wrapAndStoreToken(Authentication authentication) {
         SysOrgAccount user = (SysOrgAccount) authentication.getPrincipal();
+        List<SysRightRole> roles = user.getAuthorities();
+        //防止token过长
+        user.setAuthorities(null);
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             // 切记不要暴露密码给客户端
@@ -92,7 +98,15 @@ public class SysOrgAccountService extends BaseServiceImpl<SysOrgAccountMapper, S
             // SecurityContextHolder.getContext().setAuthentication(authentication); // session.setAttribute(threadId, new UsernamePasswordToken());
             // servletContext.setAttribute(info.getId().toString(), json);
             String token = JwtUtils.generateToken(json);
-            redisTemplate.opsForValue().set("jwtToken:" + user.getOrgAccountLoginName(), user, expirationTime, TimeUnit.SECONDS);
+            if (ObjectUtils.isEmpty(roles)) {
+                //将权限放在redis中
+                roles = new ArrayList<>();
+                roles.add(new SysRightRole(null, null, null, "anonym", null, null, null));
+            }
+            //将权限放在redis中
+            redisTemplate.opsForValue().set("jwtToken:" + user.getOrgAccountLoginName(),
+                    roles,
+                    expirationTime, TimeUnit.SECONDS);
             return token;
         } catch (JsonProcessingException e) {
             log.error("JSON解析出现异常", e);

@@ -113,5 +113,26 @@
         </where>
     </select>
 
+    <select id="findRoleRela" resultType="java.util.Map">
+        select right_role_id as roleId,menu_element_id from sys_menu_mr_rela where menu_element_id=#{id}
+    </select>
+
+    <insert id="insertRoleRela" parameterType="map">
+        insert into sys_menu_mr_rela values
+        <foreach collection="list" item="role" separator=",">
+            (#{id},#{role.rightRoleId})
+        </foreach>
+    </insert>
+
+    <delete id="deleteRoleRela" parameterType="map">
+        delete from sys_menu_mr_rela where menu_element_id=#{id} and right_role_id in
+        <foreach collection="list" item="rightRoleId" separator="," open="(" close=")">
+            #{rightRoleId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteAllRoleRela" >
+        delete from sys_menu_mr_rela where menu_element_id=#{id}
+    </delete>
 
 </mapper>

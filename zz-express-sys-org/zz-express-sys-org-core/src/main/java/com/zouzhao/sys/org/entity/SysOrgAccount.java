@@ -36,7 +36,6 @@ public class SysOrgAccount extends BaseEntity implements UserDetails {
     @TableId(
             type = IdType.ASSIGN_ID
     )
-    // @GeneratedValue(strategy = GenerationType.AUTO)
     private String orgAccountId;
     @TableField(updateStrategy = FieldStrategy.NEVER)
     @Column(insertable = false, updatable = false, columnDefinition = "DATETIME  DEFAULT CURRENT_TIMESTAMP")
@@ -73,7 +72,7 @@ public class SysOrgAccount extends BaseEntity implements UserDetails {
 
     @TableField(exist = false)
     @Transient
-    @JsonIgnore
+    // @JsonIgnore
     private List<SysRightRole> authorities;
 
 

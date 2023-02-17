@@ -36,7 +36,6 @@ public class SysRightRole extends BaseEntity implements GrantedAuthority {
     @TableId(
             type = IdType.ASSIGN_ID
     )
-    // @GeneratedValue(strategy = GenerationType.AUTO)
     private String rightRoleId;
     @TableField(updateStrategy = FieldStrategy.NEVER)
     @Column(insertable = false, updatable = false, columnDefinition = "DATETIME  DEFAULT CURRENT_TIMESTAMP")
@@ -66,5 +65,15 @@ public class SysRightRole extends BaseEntity implements GrantedAuthority {
     @Override
     public String getId() {
         return this.rightRoleId;
+    }
+
+
+    public void setAuthority(String Authority) {
+        this.rightRoleCode=Authority;
+    }
+
+
+    public void setId(String id) {
+        this.rightRoleId = id;
     }
 }

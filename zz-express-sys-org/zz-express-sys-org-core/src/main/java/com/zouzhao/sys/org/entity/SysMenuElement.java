@@ -31,7 +31,6 @@ public class SysMenuElement extends BaseEntity {
     @TableId(
             type = IdType.ASSIGN_ID
     )
-    // @GeneratedValue(strategy = GenerationType.AUTO)
     private String menuElementId;
     @TableField(updateStrategy = FieldStrategy.NEVER)
     @Column(insertable = false, updatable = false, columnDefinition = "DATETIME  DEFAULT CURRENT_TIMESTAMP")

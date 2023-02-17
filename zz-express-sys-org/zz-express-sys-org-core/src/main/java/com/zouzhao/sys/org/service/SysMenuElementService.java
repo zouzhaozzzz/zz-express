@@ -1,8 +1,10 @@
 package com.zouzhao.sys.org.service;
 
+import com.zouzhao.common.dto.IdDTO;
 import com.zouzhao.common.service.BaseServiceImpl;
 import com.zouzhao.sys.org.api.ISysMenuElementApi;
 import com.zouzhao.sys.org.dto.SysMenuElementVO;
+import com.zouzhao.sys.org.dto.SysRightRoleVO;
 import com.zouzhao.sys.org.entity.SysMenuElement;
 import com.zouzhao.sys.org.entity.SysRightRole;
 import com.zouzhao.sys.org.mapper.SysMenuElementMapper;
@@ -12,9 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -30,7 +30,64 @@ public class SysMenuElementService extends BaseServiceImpl<SysMenuElementMapper,
     public SysMenuElement voToEntity(SysMenuElementVO vo) {
         SysMenuElement sysMenuElement = new SysMenuElement();
         BeanUtils.copyProperties(vo, sysMenuElement);
+        List<SysRightRoleVO> voSysRightRoles = vo.getSysRightRoles();
+        List<SysRightRole> roles = new ArrayList<>();
+        if (voSysRightRoles != null && voSysRightRoles.size() > 0) {
+            voSysRightRoles.forEach(sysRightRoleVO -> {
+                SysRightRole sysRightRole = new SysRightRole();
+                BeanUtils.copyProperties(sysRightRoleVO, sysRightRole);
+                roles.add(sysRightRole);
+            });
+        }
+        if (roles.size() > 0) sysMenuElement.setSysRightRoles(roles);
         return sysMenuElement;
+    }
+
+    @Override
+    protected void beforeSaveOrUpdate(SysMenuElement entity, boolean isAdd) {
+        super.beforeSaveOrUpdate(entity, isAdd);
+        //更新菜单权限中间表
+        updateRoleRela(entity, isAdd);
+    }
+
+    @Override
+    protected void afterSaveOrUpdate(SysMenuElement entity, boolean isAdd) {
+        super.afterSaveOrUpdate(entity, isAdd);
+        List<SysRightRole> sysRightRoles = entity.getSysRightRoles();
+        if (isAdd) {
+            if (sysRightRoles != null && sysRightRoles.size() > 0)
+                getMapper().insertRoleRela(entity.getMenuElementId(), sysRightRoles);
+        }
+    }
+
+    @Override
+    protected void beforeDelete(IdDTO vo) {
+        super.beforeDelete(vo);
+        getMapper().deleteAllRoleRela(vo.getId());
+    }
+
+    private void updateRoleRela(SysMenuElement entity, boolean isAdd) {
+        if(isAdd){
+            return;
+        }
+        List<SysRightRole> sysRightRoles = entity.getSysRightRoles();
+        Map<String, Map<Object, Object>> oldRoles = getMapper().findRoleRela(entity.getMenuElementId());
+        if (sysRightRoles != null) {
+            for (int i = 0; i < sysRightRoles.size(); i++) {
+                SysRightRole rightRole = sysRightRoles.get(i);
+                if (oldRoles.get(rightRole.getRightRoleId()) != null) {
+                    oldRoles.remove(rightRole.getRightRoleId());
+                    sysRightRoles.remove(i);
+                    i--;
+                }
+            }
+            //添加需要新增的权限
+            if (sysRightRoles.size() > 0)
+                getMapper().insertRoleRela(entity.getMenuElementId(), sysRightRoles);
+        }
+        //删除多余的权限
+        if (oldRoles != null && oldRoles.keySet().size() > 0)
+            getMapper().deleteRoleRela(entity.getMenuElementId(), new ArrayList<String>(oldRoles.keySet()));
     }
 
     @Override

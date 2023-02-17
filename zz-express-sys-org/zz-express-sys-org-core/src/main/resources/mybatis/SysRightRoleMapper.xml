@@ -79,6 +79,7 @@
                 #{rightRoleName}, '%')
             </if>
         </where>
+        order by  right_role_module
     </select>
 
     <select id="findById" parameterType="String" resultMap="SysRightRoleResult">
@@ -98,6 +99,12 @@
 
     <delete id="deleteWithRelation" parameterType="list">
         delete from sys_right_gr_rela where right_role_id in(
+        select right_role_id from sys_right_role where right_role_code not in
+        <foreach collection="rightRoleCodeList" item="code" open="(" close=")" separator=",">
+            #{code}
+        </foreach>
+        );
+        delete from sys_menu_mr_rela where right_role_id in(
         select right_role_id from sys_right_role where right_role_code not in
         <foreach collection="rightRoleCodeList" item="code" open="(" close=")" separator=",">
             #{code}
