@@ -46,7 +46,7 @@ public class SysMenuElement extends BaseEntity {
     private String menuElementParentId;
     private String menuElementIcon;
     private String menuElementType;
-    private Integer menuElementOrder=1;
+    private Integer menuElementOrder=999999999;
     private Boolean menuElementStatus;
     @ManyToMany
     @JoinTable(

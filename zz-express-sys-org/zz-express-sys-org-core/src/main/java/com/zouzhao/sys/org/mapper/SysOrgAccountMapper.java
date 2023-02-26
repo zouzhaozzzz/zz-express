@@ -1,5 +1,6 @@
 package com.zouzhao.sys.org.mapper;
 
+import com.zouzhao.common.dto.IdDTO;
 import com.zouzhao.common.mapper.IMapper;
 import com.zouzhao.sys.org.dto.SysOrgAccountVO;
 import com.zouzhao.sys.org.entity.SysOrgAccount;
@@ -11,4 +12,5 @@ import com.zouzhao.sys.org.entity.SysOrgAccount;
 public interface SysOrgAccountMapper extends IMapper<SysOrgAccount,SysOrgAccountVO> {
 
 
+    IdDTO addOrUpdate(SysOrgAccountVO vo);
 }

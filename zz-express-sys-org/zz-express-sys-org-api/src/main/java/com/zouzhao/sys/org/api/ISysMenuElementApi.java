@@ -12,6 +12,9 @@ import java.util.List;
  * @DATE: 2023-1-24
  */
 public interface ISysMenuElementApi extends IApi<SysMenuElementVO> {
+    @PostMapping("/treeData")
+    List<SysMenuElementVO> treeData(@RequestBody SysMenuElementVO vo);
+
     @PostMapping("/listInRoles")
     List<SysMenuElementVO> listInRoles(@RequestBody SysMenuElementVO vo);
 

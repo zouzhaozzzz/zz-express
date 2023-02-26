@@ -56,6 +56,7 @@
                 #{menuElementStatus}
             </if>
         </where>
+        order by a.menu_element_order
     </select>
     <select id="findVOList" parameterType="SysMenuElement" resultMap="SysMenuElementVOResult">
         <include refid="selectSysMenuElementVo"/>
@@ -74,6 +75,7 @@
                 #{menuElementStatus}
             </if>
         </where>
+        order by a.menu_element_order
     </select>
 
     <select id="findById" parameterType="String" resultMap="SysMenuElementResult">
@@ -111,6 +113,7 @@
                 </foreach>
             </if>
         </where>
+        order by a.menu_element_order
     </select>
 
     <select id="findRoleRela" resultType="java.util.Map">

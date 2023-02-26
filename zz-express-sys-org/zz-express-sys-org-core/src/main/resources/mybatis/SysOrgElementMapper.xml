@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zouzhao.sys.org.mapper.SysOrgElementMapper">
+
+    <resultMap type="SysOrgElement" id="SysOrgElementResult">
+        <result property="orgElementId" column="org_element_id"/>
+        <result property="orgElementAlterTime" column="org_element_alter_time"/>
+        <result property="orgElementCreateTime" column="org_element_create_time"/>
+        <result property="orgElementDesc" column="org_element_desc"/>
+        <result property="orgElementEmail" column="org_element_email"/>
+        <result property="orgElementGender" column="org_element_gender"/>
+        <result property="orgElementName" column="org_element_name"/>
+        <result property="orgElementNo" column="org_element_no"/>
+        <result property="orgElementAddress" column="org_element_address"/>
+        <result property="orgElementParentId" column="org_element_parent_id"/>
+        <result property="orgElementPhone" column="org_element_phone"/>
+        <result property="orgElementThisLeaderId" column="org_element_this_leader_id_id"/>
+        <result property="orgElementType" column="org_element_type"/>
+        <result property="orgElementOrgId" column="org_element_org_id"/>
+        <result property="orgElementStatus" column="org_element_status"/>
+        <result property="orgElementOrder" column="org_element_order"/>
+    </resultMap>
+    <resultMap type="com.zouzhao.sys.org.dto.SysOrgElementVO" id="SysOrgElementVOResult">
+        <result property="orgElementId" column="org_element_id"/>
+        <result property="orgElementAlterTime" column="org_element_alter_time"/>
+        <result property="orgElementCreateTime" column="org_element_create_time"/>
+        <result property="orgElementDesc" column="org_element_desc"/>
+        <result property="orgElementEmail" column="org_element_email"/>
+        <result property="orgElementGender" column="org_element_gender"/>
+        <result property="orgElementName" column="org_element_name"/>
+        <result property="orgElementNo" column="org_element_no"/>
+        <result property="orgElementAddress" column="org_element_address"/>
+        <result property="orgElementParentId" column="org_element_parent_id"/>
+        <result property="orgElementPhone" column="org_element_phone"/>
+        <result property="orgElementThisLeaderId" column="org_element_this_leader_id"/>
+        <result property="orgElementType" column="org_element_type"/>
+        <result property="orgElementOrgId" column="org_element_org_id"/>
+        <result property="orgElementStatus" column="org_element_status"/>
+        <result property="orgElementOrder" column="org_element_order"/>
+    </resultMap>
+
+    <sql id="selectSysOrgElementVo">
+        select org_element_id,
+               org_element_alter_time,
+               org_element_create_time,
+               org_element_desc,
+               org_element_email,
+               org_element_gender,
+               org_element_name,
+               org_element_no,
+               org_element_address,
+               org_element_parent_id,
+               org_element_phone,
+               org_element_this_leader_id,
+               org_element_type,
+               org_element_org_id,
+               org_element_status,
+               org_element_order
+        from sys_org_element
+    </sql>
+
+    <select id="findList" parameterType="SysOrgElement" resultMap="SysOrgElementResult">
+        <include refid="selectSysOrgElementVo"/>
+        <where>
+            <if test="orgElementName != null  and orgElementName != ''">and org_element_name like concat('%',
+                #{orgElementName}, '%')
+            </if>
+            <if test="orgElementNo != null ">and org_element_no = #{orgElementNo}</if>
+            <if test="orgElementParentId != null  and orgElementParentId != ''">and org_element_parent_id =
+                #{orgElementParentId}
+            </if>
+            <if test="orgElementThisLeaderId != null  and orgElementThisLeaderId != ''">and org_element_this_leader_id =
+                #{orgElementThisLeaderId}
+            </if>
+            <if test="orgElementType != null ">and org_element_type = #{orgElementType}</if>
+            <if test="orgElementOrgId != null  and orgElementOrgId != ''">and org_element_org_id = #{orgElementOrgId}
+            </if>
+            <if test="orgElementStatus != null ">and org_element_status = #{orgElementStatus}</if>
+        </where>
+        order by org_element_order ,org_element_status desc
+    </select>
+    <select id="findVOList" parameterType="SysOrgElement" resultMap="SysOrgElementVOResult">
+        <include refid="selectSysOrgElementVo"/>
+        <where>
+            <if test="orgElementName != null  and orgElementName != ''">and org_element_name like concat('%',
+                #{orgElementName}, '%')
+            </if>
+            <if test="orgElementNo != null ">and org_element_no = #{orgElementNo}</if>
+            <if test="orgElementParentId != null  and orgElementParentId != ''">and org_element_parent_id =
+                #{orgElementParentId}
+            </if>
+            <if test="orgElementThisLeaderId != null  and orgElementThisLeaderId != ''">and org_element_this_leader_id =
+                #{orgElementThisLeaderId}
+            </if>
+            <if test="orgElementType != null ">and org_element_type = #{orgElementType}</if>
+            <if test="orgElementOrgId != null  and orgElementOrgId != ''">and org_element_org_id = #{orgElementOrgId}
+            </if>
+            <if test="orgElementStatus != null ">and org_element_status = #{orgElementStatus}</if>
+        </where>
+        order by org_element_order ,org_element_status desc
+    </select>
+
+    <select id="findById" parameterType="String" resultMap="SysOrgElementResult">
+        <include refid="selectSysOrgElementVo"/>
+        where org_element_id = #{orgElementId}
+    </select>
+    <select id="findVOById" parameterType="String" resultMap="SysOrgElementVOResult">
+        <include refid="selectSysOrgElementVo"/>
+        where org_element_id = #{orgElementId}
+    </select>
+
+    <select id="page" parameterType="map" resultMap="SysOrgElementVOResult">
+        <include refid="selectSysOrgElementVo"/>
+        <where>
+            <if test="v != null">
+                <if test="v.orgElementName != null  and v.orgElementName != ''">and org_element_name like
+                    concat('%', #{v.orgElementName}, '%')
+                </if>
+                <if test="v.orgElementNo != null ">and org_element_no = #{v.orgElementNo}</if>
+                <if test="v.orgElementParentId != null  and v.orgElementParentId != ''">and org_element_parent_id =
+                    #{v.orgElementParentId}
+                </if>
+                <if test="v.orgElementThisLeaderId != null  and v.orgElementThisLeaderId != ''">and
+                    org_element_this_leader_id = #{v.orgElementThisLeaderId}
+                </if>
+                <if test="v.orgElementType != null ">and org_element_type = #{v.orgElementType}</if>
+                <if test="v.orgElementOrgId != null  and v.orgElementOrgId != ''">and org_element_org_id =
+                    #{v.orgElementOrgId}
+                </if>
+                <if test="v.orgElementStatus != null ">and org_element_status = #{v.orgElementStatus}</if>
+            </if>
+        </where>
+        order by org_element_order ,org_element_status desc
+    </select>
+</mapper>

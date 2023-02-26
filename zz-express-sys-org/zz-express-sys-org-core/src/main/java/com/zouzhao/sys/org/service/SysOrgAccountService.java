@@ -76,10 +76,10 @@ public class SysOrgAccountService extends BaseServiceImpl<SysOrgAccountMapper, S
         return "退出成功";
     }
 
-    @Override
+
     public IdDTO add(SysOrgAccountVO vo) {
         String password = vo.getOrgAccountPassword();
-        if (ObjectUtils.isEmpty(password)) return IdDTO.of("-1");
+        vo.setOrgAccountEncryption("BCrypt");
         vo.setOrgAccountPassword(passwordEncoder.encode(password));
         return super.add(vo);
     }
@@ -121,9 +121,7 @@ public class SysOrgAccountService extends BaseServiceImpl<SysOrgAccountMapper, S
         return sysOrgAccount;
     }
 
-    public SysOrgAccount findById(IdDTO of) {
-        return getMapper().findById(of.getId());
-    }
+
 }
 
 

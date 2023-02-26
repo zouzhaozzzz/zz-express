@@ -25,7 +25,7 @@ public interface CrudController<A extends IApi<V>, V > extends IController<A,V>{
     default V get(@RequestBody IdDTO vo) {
         V result = this.getApi().findVOById(vo);
         if (ObjectUtils.isEmpty(result)) {
-            throw new RuntimeException("不存在id");
+            return null;
         } else {
             return result;
         }

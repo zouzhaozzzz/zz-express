@@ -30,10 +30,9 @@ public class SysMenuElementController extends BaseController<ISysMenuElementApi,
         return getApi().listInRoles(vo);
     }
 
-    @PostMapping({"/list"})
+    @PostMapping({"/treeData"})
     @ApiOperation("列表查询接口")
     public List<SysMenuElementVO> list(@RequestBody SysMenuElementVO request) {
-        List<SysMenuElementVO> list = CombineController.super.list(request);
-        return  list;
+        return getApi().treeData(request);
     }
 }

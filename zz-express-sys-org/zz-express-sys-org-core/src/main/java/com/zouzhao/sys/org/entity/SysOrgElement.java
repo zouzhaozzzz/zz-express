@@ -11,10 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Date;
 
 /**
@@ -23,7 +20,12 @@ import java.util.Date;
  * @DESCRIPTION:
  */
 @Entity
-@Table(name = "sys_org_element")
+@Table(name = "sys_org_element",indexes = {
+        @Index(columnList = "orgElementOrgId"),
+        @Index(columnList = "orgElementThisLeaderId"),
+        @Index(columnList = "orgElementParentId"),
+
+})
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -37,18 +39,18 @@ public class SysOrgElement extends BaseEntity {
     )
     private String orgElementId;
     @TableField(updateStrategy = FieldStrategy.NEVER)
-    @Column(insertable = false,updatable = false,columnDefinition="DATETIME  DEFAULT CURRENT_TIMESTAMP")
+    @Column(insertable = false, updatable = false, columnDefinition = "DATETIME  DEFAULT CURRENT_TIMESTAMP")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", locale = "zh", timezone = "GMT+8")
     private Date orgElementCreateTime;
     @TableField(updateStrategy = FieldStrategy.NEVER)
-    @Column(insertable = false,updatable = false,columnDefinition="DATETIME  DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
+    @Column(insertable = false, updatable = false, columnDefinition = "DATETIME  DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", locale = "zh", timezone = "GMT+8")
     private Date orgElementAlterTime;
     @Column(length = 200, nullable = false)
     @ApiModelProperty("名称")
     private String orgElementName;
     @Column(length = 19, nullable = false)
-    @ApiModelProperty("类型")
+    @ApiModelProperty("0|组织 1|人员")
     private Integer orgElementType;
     @Column(length = 200)
     @ApiModelProperty("编号")
@@ -59,12 +61,20 @@ public class SysOrgElement extends BaseEntity {
     private String orgElementPhone;
     @ApiModelProperty("性别")
     private String orgElementGender;
+    @ApiModelProperty("地址")
+    private String orgElementAddress;
+    @TableField(exist = false)
+    @Transient
+    @ApiModelProperty("组织")
+    private SysOrgElement orgElementOrg;
     @ApiModelProperty("组织id")
-    private String orgElement_orgId;
-    @ApiModelProperty("部门id")
-    private String orgElementDeptId;
-    @ApiModelProperty("岗位id")
-    private String orgElementPostId;
+    private String orgElementOrgId;
+    @ApiModelProperty("岗位")
+    private String orgElementPost;
+    @TableField(exist = false)
+    @Transient
+    @ApiModelProperty("父结点")
+    private SysOrgElement orgElementParent;
     @ApiModelProperty("父id")
     private String orgElementParentId;
     @ApiModelProperty("是否可用")
@@ -72,8 +82,16 @@ public class SysOrgElement extends BaseEntity {
     @Column(length = 200)
     @ApiModelProperty("描述")
     private String orgElementDesc;
+    @TableField(exist = false)
+    @Transient
     @ApiModelProperty("领导")
-    private String orgElementThisLeader;
+    private SysOrgElement orgElementThisLeader;
+    @ApiModelProperty("领导id")
+    private String orgElementThisLeaderId;
+    @ApiModelProperty("排序")
+    private Integer orgElementOrder=999999999;
+
+
 
     @Override
     public String getId() {

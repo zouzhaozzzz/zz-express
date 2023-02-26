@@ -58,6 +58,7 @@
     <select id="page" parameterType="map" resultMap="SysRightCategoryVOResult">
         <include refid="selectSysRightCategoryVo"/>
         <where>
+            right_category_id != '1621878599571996674'
             <if test="v != null">
                 <if test="v.rightCategoryName != null  and v.rightCategoryName != ''">and right_category_name like
                     concat('%',

@@ -1,7 +1,6 @@
 package com.zouzhao.sys.org.controller;
 
 import com.zouzhao.common.controller.BaseController;
-import com.zouzhao.common.controller.CombineController;
 import com.zouzhao.sys.org.api.ISysOrgAccountApi;
 import com.zouzhao.sys.org.dto.SysOrgAccountVO;
 import io.swagger.annotations.Api;
@@ -20,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(
         tags = "用户账号"
 )
-public class SysOrgAccountController extends BaseController<ISysOrgAccountApi, SysOrgAccountVO> implements CombineController<ISysOrgAccountApi, SysOrgAccountVO> {
+public class SysOrgAccountController extends BaseController<ISysOrgAccountApi, SysOrgAccountVO>  {
 
 
     @PostMapping("/checkLogin")

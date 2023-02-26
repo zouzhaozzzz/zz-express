@@ -11,6 +11,7 @@ import com.zouzhao.sys.org.mapper.SysMenuElementMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -48,6 +49,8 @@ public class SysMenuElementService extends BaseServiceImpl<SysMenuElementMapper,
         super.beforeSaveOrUpdate(entity, isAdd);
         //更新菜单权限中间表
         updateRoleRela(entity, isAdd);
+        //设置排序号
+        if(StringUtils.isEmpty(entity.getMenuElementOrder()))entity.setMenuElementOrder(999999999);
     }
 
     @Override
@@ -98,24 +101,23 @@ public class SysMenuElementService extends BaseServiceImpl<SysMenuElementMapper,
         return loadMenu(voListInRoles);
     }
 
-    @Override
-    public List<SysMenuElementVO> findAll(SysMenuElementVO vo) {
-        List<SysMenuElementVO> voListInRoles = getMapper().findVOList(voToEntity(vo));
+    public List<SysMenuElementVO> treeData(SysMenuElementVO vo) {
+        List<SysMenuElementVO> voList = getMapper().findVOList(voToEntity(vo));
         //菜单分级
-        return loadMenu(voListInRoles);
+        return loadMenu(voList);
     }
 
     private List<SysMenuElementVO> loadMenu(List<SysMenuElementVO> menus) {
         //遍历出目录
         List<SysMenuElementVO> root = menus.stream()
                 .filter(m -> "M".equals(m.getMenuElementType()))
-                .sorted(Comparator.comparing(SysMenuElementVO::getMenuElementOrder))
+                // .sorted(Comparator.comparing(SysMenuElementVO::getMenuElementOrder))
                 .collect(Collectors.toList());
         //遍历加上菜单
         root.forEach(r -> {
             List<SysMenuElementVO> children = menus.stream()
                     .filter(m -> Objects.equals(m.getMenuElementParentId(), r.getMenuElementId()) && "C".equals(m.getMenuElementType()))
-                    .sorted(Comparator.comparing(SysMenuElementVO::getMenuElementOrder))
+                    // .sorted(Comparator.comparing(SysMenuElementVO::getMenuElementOrder))
                     .collect(Collectors.toList());
             r.setMenuChildren(children);
         });
