@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.zouzhao.sys.org.mapper.SysOrgAccountMapper">
+<mapper namespace="com.zouzhao.sys.org.core.mapper.SysOrgAccountMapper">
 
     <resultMap type="SysOrgAccount" id="SysOrgAccountResult">
         <id property="orgAccountId" column="org_account_id"/>
@@ -11,9 +11,9 @@
         <result property="orgAccountLoginName" column="org_account_login_name"/>
         <result property="orgAccountPassword" column="org_account_password"/>
         <collection property="authorities" javaType="java.util.List"
-                    resultMap="com.zouzhao.sys.org.mapper.SysRightRoleMapper.SysRightRoleResult"/>
+                    resultMap="com.zouzhao.sys.org.core.mapper.SysRightRoleMapper.SysRightRoleResult"/>
         <collection property="sysRightGroups" javaType="List"
-                    resultMap="com.zouzhao.sys.org.mapper.SysRightGroupMapper.SysRightGroupResult"/>
+                    resultMap="com.zouzhao.sys.org.core.mapper.SysRightGroupMapper.SysRightGroupResult"/>
     </resultMap>
 
     <resultMap type="com.zouzhao.sys.org.dto.SysOrgAccountVO" id="SysOrgAccountVOResult">
@@ -25,9 +25,9 @@
         <result property="orgAccountLoginName" column="org_account_login_name"/>
         <result property="orgAccountPassword" column="org_account_password"/>
         <collection property="authorities" javaType="java.util.List"
-                    resultMap="com.zouzhao.sys.org.mapper.SysRightRoleMapper.SysRightRoleVOResult"/>
+                    resultMap="com.zouzhao.sys.org.core.mapper.SysRightRoleMapper.SysRightRoleVOResult"/>
         <collection property="sysRightGroups" javaType="List"
-                    resultMap="com.zouzhao.sys.org.mapper.SysRightGroupMapper.SysRightGroupVOResult"/>
+                    resultMap="com.zouzhao.sys.org.core.mapper.SysRightGroupMapper.SysRightGroupVOResult"/>
     </resultMap>
 
     <sql id="selectSysOrgAccountVO">

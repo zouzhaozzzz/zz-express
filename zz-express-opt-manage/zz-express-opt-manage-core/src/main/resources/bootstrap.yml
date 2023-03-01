@@ -1,9 +1,9 @@
 server:
-  port: 9001
+  port: 9002
 
 spring:
   application:
-    name: zz-sys-org
+    name: zz-opt-send
   # 允许bean重写
   main:
     allow-bean-definition-overriding: true
@@ -35,14 +35,9 @@ spring:
 
 
 mybatis-plus:
-  type-aliases-package: com.zouzhao.sys.org.core.entity
+  type-aliases-package: com.zouzhao.opt.send.core.entity
   mapper-locations:
     - classpath*:/mybatis/*.xml
 
-jwt:
-  secretString: "zouzhao+zouzhao/next+affffffqwafaaaqhjkfahfjk"
-  #单位秒,过期时间一小时3600,一天86400
-  expirationTime: 86400
-
 module:
-  moduleNameList: sys-org
+  moduleNameList: opt-send

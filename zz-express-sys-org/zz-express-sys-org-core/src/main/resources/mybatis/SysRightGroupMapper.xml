@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.zouzhao.sys.org.mapper.SysRightGroupMapper">
+<mapper namespace="com.zouzhao.sys.org.core.mapper.SysRightGroupMapper">
 
     <resultMap type="SysRightGroup" id="SysRightGroupResult">
         <id property="rightGroupId" column="right_group_id"/>
@@ -10,7 +10,7 @@
         <result property="rightGroupCreateTime" column="right_group_create_time"/>
         <result property="rightCategoryId" column="right_category_id"/>
         <collection property="sysRightRoles" javaType="java.util.List"
-                    resultMap="com.zouzhao.sys.org.mapper.SysRightRoleMapper.SysRightRoleResult"/>
+                    resultMap="com.zouzhao.sys.org.core.mapper.SysRightRoleMapper.SysRightRoleResult"/>
     </resultMap>
     <resultMap type="com.zouzhao.sys.org.dto.SysRightGroupVO" id="SysRightGroupVOResult">
         <id property="rightGroupId" column="right_group_id"/>
@@ -20,7 +20,7 @@
         <result property="rightGroupCreateTime" column="right_group_create_time"/>
         <result property="rightCategoryId" column="right_category_id"/>
         <collection property="sysRightRoles" javaType="java.util.List"
-                    resultMap="com.zouzhao.sys.org.mapper.SysRightRoleMapper.SysRightRoleVOResult"/>
+                    resultMap="com.zouzhao.sys.org.core.mapper.SysRightRoleMapper.SysRightRoleVOResult"/>
     </resultMap>
 
 
