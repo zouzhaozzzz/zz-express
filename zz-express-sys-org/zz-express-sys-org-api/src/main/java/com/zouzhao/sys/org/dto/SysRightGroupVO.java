@@ -30,7 +30,8 @@ public class SysRightGroupVO  {
     private String rightCategoryId;
     @ApiModelProperty("权限")
     private List<SysRightRoleVO> sysRightRoles;
-
+    @ApiModelProperty("用户ids")
+    private List<String> elementIds;
 
 
 }

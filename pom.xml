@@ -11,6 +11,7 @@
     <modules>
         <module>zz-express-common</module>
         <module>zz-express-sys-org</module>
+        <module>zz-express-gateway</module>
     </modules>
 
 

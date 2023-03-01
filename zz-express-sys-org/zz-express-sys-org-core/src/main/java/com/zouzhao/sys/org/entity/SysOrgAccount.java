@@ -55,7 +55,6 @@ public class SysOrgAccount extends BaseEntity implements UserDetails {
     private String orgAccountDefPersonId;
     @ApiModelProperty("加密方式")
     private String orgAccountEncryption;
-    private Boolean orgAccountStatus;
     @ManyToMany
     @JoinTable(
             name = "sys_right_go_rela",

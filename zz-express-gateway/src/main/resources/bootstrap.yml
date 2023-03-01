@@ -1,0 +1,17 @@
+server:
+  port: 9000
+  
+spring:
+  application:
+    name: gateway-server
+  cloud:
+    nacos:
+      discovery:
+        namespace: dev
+        server-addr: 192.168.247.128:8848
+    gateway:
+      routes:
+        - id: zz-sys-org
+          uri: lb://zz-sys-org
+          predicates:
+            - Path=/data/sys-org/**,/data/sys-right/**,/api/sys-org/**,/api/sys-right/**

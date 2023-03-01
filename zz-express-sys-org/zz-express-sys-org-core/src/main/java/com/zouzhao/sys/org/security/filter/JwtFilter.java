@@ -6,6 +6,7 @@ import com.zouzhao.sys.org.entity.SysRightRole;
 import com.zouzhao.sys.org.utils.JwtUtils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
-import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -44,7 +44,7 @@ public class JwtFilter extends OncePerRequestFilter { // 保证每一个请求�
         log.debug("接收到的jwtToken:{}", jwtToken);
         //如果是登陆请求不走filter
         if ((request.getRequestURI().matches("[a-z/]+[-][a-z/,A-Z/]+checkLogin$") && request.getMethod().equals("POST"))
-                || StringUtils.isEmpty(jwtToken)) {
+                || StringUtils.isBlank(jwtToken)) {
             filterChain.doFilter(request, response);
             return;
         }

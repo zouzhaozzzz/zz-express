@@ -1,7 +1,10 @@
 package com.zouzhao.sys.org.security.service;
 
+import com.zouzhao.common.dto.IdDTO;
+import com.zouzhao.sys.org.api.ISysOrgElementApi;
+import com.zouzhao.sys.org.dto.SysOrgElementVO;
 import com.zouzhao.sys.org.entity.SysOrgAccount;
-import com.zouzhao.sys.org.mapper.SysOrgAccountMapper;
+import com.zouzhao.sys.org.service.SysOrgAccountService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,7 +20,9 @@ import java.util.List;
 public class MyUserDetailsService implements UserDetailsService {
 
     @Autowired
-    private SysOrgAccountMapper sysOrgAccountDao;
+    private SysOrgAccountService sysOrgAccountService;
+    @Autowired
+    private ISysOrgElementApi sysOrgElementApi;
 
 
     @Override
@@ -28,8 +33,13 @@ public class MyUserDetailsService implements UserDetailsService {
         try {
             SysOrgAccount query = new SysOrgAccount();
             query.setOrgAccountLoginName(loginName);
-            List<SysOrgAccount> list = sysOrgAccountDao.findList(query);
-            if(!ObjectUtils.isEmpty(list))user=list.get(0);
+            List<SysOrgAccount> list = sysOrgAccountService.findList(query);
+            if(!ObjectUtils.isEmpty(list)) {
+                SysOrgAccount orgAccount = list.get(0);
+                SysOrgElementVO orgElementVO = sysOrgElementApi.findVOById(IdDTO.of(orgAccount.getOrgAccountDefPersonId()));
+                if(orgElementVO.getOrgElementStatus())user=orgAccount;
+                else throw new RuntimeException("用户未启用");
+            }
 
             // user.setMenus(Arrays.asList("类别信息管理", "电影基本信息管理"));
             // 从db中查询出用户信息，然后在业务逻辑中进行判断是否合法

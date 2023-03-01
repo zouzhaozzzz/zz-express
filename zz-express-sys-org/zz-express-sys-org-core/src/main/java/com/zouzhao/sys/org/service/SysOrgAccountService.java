@@ -5,7 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zouzhao.common.dto.IdDTO;
 import com.zouzhao.common.service.BaseServiceImpl;
 import com.zouzhao.sys.org.api.ISysOrgAccountApi;
+import com.zouzhao.sys.org.api.ISysOrgElementApi;
 import com.zouzhao.sys.org.dto.SysOrgAccountVO;
+import com.zouzhao.sys.org.dto.SysOrgElementVO;
 import com.zouzhao.sys.org.entity.SysOrgAccount;
 import com.zouzhao.sys.org.entity.SysRightRole;
 import com.zouzhao.sys.org.mapper.SysOrgAccountMapper;
@@ -23,6 +25,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -49,6 +52,9 @@ public class SysOrgAccountService extends BaseServiceImpl<SysOrgAccountMapper, S
     private RedisTemplate<String, Object> redisTemplate;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private ISysOrgElementApi sysOrgElementApi;
+
 
     @Override
     public String checkLogin(SysOrgAccountVO user) {
@@ -76,6 +82,24 @@ public class SysOrgAccountService extends BaseServiceImpl<SysOrgAccountMapper, S
         return "退出成功";
     }
 
+    @Override
+    public SysOrgAccountVO findVOByDefPersonId(IdDTO idDTO) {
+        return getMapper().findVOByDefPersonId(idDTO.getId());
+    }
+
+    @Override
+    public List<String> getIdsByDefPersonIds(List<String> elementIds) {
+        return getMapper().getIdsByDefPersonIds(elementIds);
+    }
+
+
+    @Override
+    @Transactional
+    public void changePasswordByDefPerson(String accountDefPersonId, String password) {
+        String ps = passwordEncoder.encode(password);
+        getMapper().changePasswordByDefPerson(accountDefPersonId,ps);
+    }
+
 
     public IdDTO add(SysOrgAccountVO vo) {
         String password = vo.getOrgAccountPassword();
@@ -93,6 +117,7 @@ public class SysOrgAccountService extends BaseServiceImpl<SysOrgAccountMapper, S
         try {
             // 切记不要暴露密码给客户端
             user.setOrgAccountPassword("******");
+
             String json = objectMapper.writeValueAsString(user);
             // 在容器中保留token
             // SecurityContextHolder.getContext().setAuthentication(authentication); // session.setAttribute(threadId, new UsernamePasswordToken());
@@ -107,7 +132,9 @@ public class SysOrgAccountService extends BaseServiceImpl<SysOrgAccountMapper, S
             redisTemplate.opsForValue().set("jwtToken:" + user.getOrgAccountLoginName(),
                     roles,
                     expirationTime, TimeUnit.SECONDS);
-            return token;
+            //把组织架构里用户真实名字一起传给前端
+            SysOrgElementVO orgElementVO = sysOrgElementApi.findVOById(IdDTO.of(user.getOrgAccountDefPersonId()));
+            return token+"username"+orgElementVO.getOrgElementName();
         } catch (JsonProcessingException e) {
             log.error("JSON解析出现异常", e);
             throw new RuntimeException(e);
@@ -122,6 +149,9 @@ public class SysOrgAccountService extends BaseServiceImpl<SysOrgAccountMapper, S
     }
 
 
+    public List<SysOrgAccount> findList(SysOrgAccount query) {
+       return getMapper().findList(query);
+    }
 }
 
 

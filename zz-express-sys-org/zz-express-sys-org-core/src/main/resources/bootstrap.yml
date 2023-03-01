@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: express-sys-org
+    name: zz-sys-org
   # 允许bean重写
   main:
     allow-bean-definition-overriding: true

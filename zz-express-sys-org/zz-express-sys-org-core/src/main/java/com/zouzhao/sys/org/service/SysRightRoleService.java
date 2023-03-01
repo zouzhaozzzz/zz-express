@@ -18,7 +18,7 @@ import java.util.List;
  */
 @Service
 @RestController
-@RequestMapping("/api/sys-org/sysRightRole")
+@RequestMapping("/api/sys-right/sysRightRole")
 public class SysRightRoleService extends BaseServiceImpl<SysRightRoleMapper, SysRightRole, SysRightRoleVO> implements ISysRightRoleApi {
 
 

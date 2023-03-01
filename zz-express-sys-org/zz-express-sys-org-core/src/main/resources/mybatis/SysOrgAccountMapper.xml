@@ -41,12 +41,15 @@
             LEFT JOIN sys_right_gr_rela gr ON gr.right_group_id = g.right_group_id
             LEFT JOIN sys_right_role r ON r.right_role_id = gr.right_role_id
     </sql>
+    <update id="changePasswordByDefPerson">
+        update sys_org_account set org_account_password = #{password} where org_account_def_person_id=#{accountDefPersonId}
+    </update>
 
     <select id="findList" parameterType="com.zouzhao.sys.org.dto.SysOrgAccountVO" resultMap="SysOrgAccountResult">
         <include refid="selectSysOrgAccountVO"/>
         <where>
             <if test="orgAccountDefPersonId != null  and orgAccountDefPersonId != ''"> and a.org_account_def_person_id = #{orgAccountDefPersonId}</if>
-            <if test="orgAccountLoginName != null  and orgAccountLoginName != ''"> and a.org_account_login_name like concat('%', #{orgAccountLoginName}, '%')</if>
+            <if test="orgAccountLoginName != null  and orgAccountLoginName != ''"> and a.org_account_login_name = #{orgAccountLoginName}</if>
             <if test="orgAccountPassword != null  and orgAccountPassword != ''"> and a.org_account_password = #{orgAccountPassword}</if>
         </where>
     </select>
@@ -55,7 +58,7 @@
         <include refid="selectSysOrgAccountVO"/>
         <where>
             <if test="orgAccountDefPersonId != null  and orgAccountDefPersonId != ''"> and a.org_account_def_person_id = #{orgAccountDefPersonId}</if>
-            <if test="orgAccountLoginName != null  and orgAccountLoginName != ''"> and a.org_account_login_name like concat('%', #{orgAccountLoginName}, '%')</if>
+            <if test="orgAccountLoginName != null  and orgAccountLoginName != ''"> and a.org_account_login_name = #{orgAccountLoginName}</if>
             <if test="orgAccountPassword != null  and orgAccountPassword != ''"> and a.org_account_password = #{orgAccountPassword}</if>
         </where>
     </select>
@@ -68,6 +71,14 @@
     <select id="findVOById" parameterType="String" resultMap="SysOrgAccountVOResult">
         <include refid="selectSysOrgAccountVO"/>
         where a.org_account_id = #{orgAccountId}
+    </select>
+
+    <select id="findVOByDefPersonId" resultType="com.zouzhao.sys.org.dto.SysOrgAccountVO">
+        select * from sys_org_account where org_account_def_person_id = #{id}
+    </select>
+    <select id="getIdsByDefPersonIds" resultType="java.lang.String">
+        select org_account_id   from sys_org_account where org_account_def_person_id in
+        <foreach collection="list" item="id" separator="," open="(" close=")">#{id}</foreach>
     </select>
 
 </mapper>

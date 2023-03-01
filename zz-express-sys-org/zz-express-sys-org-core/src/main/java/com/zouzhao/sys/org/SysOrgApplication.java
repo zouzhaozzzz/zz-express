@@ -4,7 +4,6 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
-import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.ComponentScan;
 
 /**
@@ -15,7 +14,7 @@ import org.springframework.context.annotation.ComponentScan;
 @SpringBootApplication
 @EnableDiscoveryClient
 @MapperScan("com.zouzhao.sys.org.mapper")
-@EnableFeignClients
+// @EnableFeignClients
 @ComponentScan("com.zouzhao")
 public class SysOrgApplication {
     public static void main(String[] args) {

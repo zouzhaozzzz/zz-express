@@ -37,6 +37,7 @@
         <result property="orgElementThisLeaderId" column="org_element_this_leader_id"/>
         <result property="orgElementType" column="org_element_type"/>
         <result property="orgElementOrgId" column="org_element_org_id"/>
+        <result property="orgElementPost" column="org_element_post"/>
         <result property="orgElementStatus" column="org_element_status"/>
         <result property="orgElementOrder" column="org_element_order"/>
     </resultMap>
@@ -56,10 +57,18 @@
                org_element_this_leader_id,
                org_element_type,
                org_element_org_id,
+               org_element_post,
                org_element_status,
                org_element_order
         from sys_org_element
     </sql>
+    <update id="batchUpdateStatus" parameterType="map">
+        update sys_org_element set org_element_status = #{status} where  org_element_id in
+        <foreach collection="ids" item="id" separator="," open="(" close=")">
+           #{id}
+        </foreach>
+    </update>
+
 
     <select id="findList" parameterType="SysOrgElement" resultMap="SysOrgElementResult">
         <include refid="selectSysOrgElementVo"/>
@@ -73,6 +82,9 @@
             </if>
             <if test="orgElementThisLeaderId != null  and orgElementThisLeaderId != ''">and org_element_this_leader_id =
                 #{orgElementThisLeaderId}
+            </if>
+            <if test="orgElementPost != null  and orgElementPost != ''">and org_element_post =
+                #{orgElementPost}
             </if>
             <if test="orgElementType != null ">and org_element_type = #{orgElementType}</if>
             <if test="orgElementOrgId != null  and orgElementOrgId != ''">and org_element_org_id = #{orgElementOrgId}
@@ -96,6 +108,9 @@
             </if>
             <if test="orgElementType != null ">and org_element_type = #{orgElementType}</if>
             <if test="orgElementOrgId != null  and orgElementOrgId != ''">and org_element_org_id = #{orgElementOrgId}
+            </if>
+            <if test="orgElementPost != null  and orgElementPost != ''">and org_element_post =
+                #{orgElementPost}
             </if>
             <if test="orgElementStatus != null ">and org_element_status = #{orgElementStatus}</if>
         </where>
@@ -128,6 +143,9 @@
                 <if test="v.orgElementType != null ">and org_element_type = #{v.orgElementType}</if>
                 <if test="v.orgElementOrgId != null  and v.orgElementOrgId != ''">and org_element_org_id =
                     #{v.orgElementOrgId}
+                </if>
+                <if test="v.orgElementPost != null  and v.orgElementPost != ''">and org_element_post =
+                    #{v.orgElementPost}
                 </if>
                 <if test="v.orgElementStatus != null ">and org_element_status = #{v.orgElementStatus}</if>
             </if>

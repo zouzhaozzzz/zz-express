@@ -2,7 +2,6 @@ package com.zouzhao.sys.org.mapper;
 
 import com.zouzhao.common.mapper.IPageMapper;
 import com.zouzhao.sys.org.dto.SysRightGroupVO;
-import com.zouzhao.sys.org.dto.SysRightRoleVO;
 import com.zouzhao.sys.org.entity.SysRightGroup;
 import org.apache.ibatis.annotations.Param;
 
@@ -14,11 +13,24 @@ import java.util.List;
  */
 public interface SysRightGroupMapper extends IPageMapper<SysRightGroup,SysRightGroupVO> {
 
-
-    void addRoleRela(@Param("list") List<SysRightRoleVO> list, @Param("id") String id);
+    //sys_right_gr_rela 角色-权限 start
+    void addRoleRela(@Param("list") List<String> list, @Param("id") String id);
 
     void removeRela(String id);
 
-
+    //删除sys_right_gr_rela中间表right_group_id in ids
     void removeRelaList(@Param("list")List<String> ids);
+    //sys_right_gr_rela 角色-权限 end
+
+
+    //sys_right_go_rela 角色-账号 start
+    List<String> listPersonIdByAccount(String id);
+
+    List<String> listAccountIdsByGroupId(String rightGroupId);
+
+    void insertAccountRela(@Param("id") String id,@Param("list") List<String> ids);
+
+    void deleteAccountRela(@Param("id") String id,@Param("list") List<String> ids);
+
+    //sys_right_go_rela 角色-账号 end
 }

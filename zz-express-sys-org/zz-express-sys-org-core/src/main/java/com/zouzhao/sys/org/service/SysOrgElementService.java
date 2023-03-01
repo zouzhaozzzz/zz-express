@@ -3,18 +3,20 @@ package com.zouzhao.sys.org.service;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zouzhao.common.dto.IdDTO;
+import com.zouzhao.common.dto.IdsDTO;
 import com.zouzhao.common.exception.MyException;
 import com.zouzhao.common.service.PageServiceImpl;
+import com.zouzhao.sys.org.api.ISysOrgAccountApi;
 import com.zouzhao.sys.org.api.ISysOrgElementApi;
 import com.zouzhao.sys.org.dto.SysOrgAccountVO;
 import com.zouzhao.sys.org.dto.SysOrgElementVO;
 import com.zouzhao.sys.org.entity.SysOrgElement;
 import com.zouzhao.sys.org.mapper.SysOrgElementMapper;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -33,7 +35,7 @@ import java.util.stream.Collectors;
 public class SysOrgElementService extends PageServiceImpl<SysOrgElementMapper, SysOrgElement, SysOrgElementVO> implements ISysOrgElementApi {
 
     @Autowired
-    private SysOrgAccountService sysOrgAccountService;
+    private ISysOrgAccountApi sysOrgAccountService;
 
     @Override
     protected SysOrgElement voToEntity(SysOrgElementVO vo) {
@@ -46,7 +48,7 @@ public class SysOrgElementService extends PageServiceImpl<SysOrgElementMapper, S
     protected void beforeSaveOrUpdate(SysOrgElement entity, boolean isAdd) {
         super.beforeSaveOrUpdate(entity, isAdd);
         //设置排序号
-        if(StringUtils.isEmpty(entity.getOrgElementOrder()))entity.setOrgElementOrder(999999999);
+        if(entity.getOrgElementOrder() == null)entity.setOrgElementOrder(999999999);
         //如果为更新
         if (!isAdd) {
             //判断上级，防止循环
@@ -57,13 +59,16 @@ public class SysOrgElementService extends PageServiceImpl<SysOrgElementMapper, S
     }
 
     private void judgeParent(String parentId, String id) {
-        if (!StringUtils.isEmpty(parentId) && !parentId.equals("0")) {
+        if (!StringUtils.isBlank(parentId) && !parentId.equals("0")) {
             if (parentId.equals(id)) throw new MyException("存在循环嵌套关系");
             judgeParent(getMapper().findById(parentId).getOrgElementParentId(),id);
         }
     }
 
-
+    @Override
+    protected void beforeDeleteAll(IdsDTO idsDTO) {
+        super.beforeDeleteAll(idsDTO);
+    }
 
     @Override
     @Transactional
@@ -74,6 +79,7 @@ public class SysOrgElementService extends PageServiceImpl<SysOrgElementMapper, S
             SysOrgAccountVO accountVO = new SysOrgAccountVO();
             accountVO.setOrgAccountLoginName(vo.getOrgElementLoginName());
             accountVO.setOrgAccountPassword(vo.getOrgElementPassword());
+            accountVO.setOrgAccountDefPersonId(result.getId());
             sysOrgAccountService.add(accountVO);
         }
         return result;
@@ -106,20 +112,28 @@ public class SysOrgElementService extends PageServiceImpl<SysOrgElementMapper, S
         return page;
     }
 
-
-
     @Override
     public List<SysOrgElementVO> treeData(SysOrgElementVO request) {
         List<SysOrgElementVO> voList = findAll(request);
         //顶级菜单
         List<SysOrgElementVO> root = voList.stream()
-                .filter(m -> StringUtils.isEmpty(m.getOrgElementParentId()) || "0".equals(m.getOrgElementParentId()))
+                .filter(m -> StringUtils.isBlank(m.getOrgElementParentId()) || "0".equals(m.getOrgElementParentId()))
                 // .sorted(Comparator.comparing(SysOrgElementVO::getOrgElementName))
                 .collect(Collectors.toList());
         //菜单分级
         loadMenu(root, voList);
         return root;
     }
+
+    @Override
+    @Transactional
+    public void disableAll(IdsDTO idsDTO) {
+        List<String> ids = idsDTO.getIds();
+        if(ids ==null || ids.size()<1)return;
+        //批量更新状态
+        getMapper().batchUpdateStatus(ids,false);
+    }
+
 
     private void loadMenu(List<SysOrgElementVO> root, List<SysOrgElementVO> menu) {
         //遍历加上菜单
