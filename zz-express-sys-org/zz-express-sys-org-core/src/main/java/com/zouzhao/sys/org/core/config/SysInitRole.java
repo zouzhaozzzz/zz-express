@@ -8,15 +8,20 @@ import org.springframework.stereotype.Component;
 /**
  * @author 姚超
  * @DATE: 2023-1-9
- * @DESCRIPTION: 学生管理权限类
+ * @DESCRIPTION: 系统
  */
 @Component
 @AuthRoles(
         roles = {
                 @AuthRole(
-                        name = "ROLE_DEFAULT",
-                        messageKey = "系统:系统默认权限",
-                        desc = "系统默认权限"
+                        name = "ROLE_SYS_DEFAULT",
+                        messageKey = "系统:系统默认访问权限",
+                        desc = "拥有该基本权限才可以访问系统管理"
+                ),
+                @AuthRole(
+                        name = "ROLE_SYS_INIT",
+                        messageKey = "系统:系统初始化",
+                        desc = "对系统机制进行初始化"
                 ),
                 @AuthRole(
                         name = "ROLE_PUBLISH",
@@ -45,16 +50,11 @@ import org.springframework.stereotype.Component;
                 )
         }
 )
-public class SysCommonRole {
+public class SysInitRole {
 
-    public static final String ROLE_DEFAULT = "ROLE_DEFAULT";
-    public static final String ROLE_PUBLISH = "ROLE_PUBLISH";
-    public static final String ROLE_MAINTAIN = "ROLE_MAINTAIN";
-    public static final String ROLE_DELETE = "ROLE_DELETE";
-    public static final String ROLE_READ = "ROLE_READ";
-    public static final String ROLE_ADMIN = "ROLE_ADMIN";
+    public static final String ROLE_SYS_INIT = "ROLE_SYS_INIT";
 
-    public SysCommonRole() {
+    public SysInitRole() {
     }
 
 }

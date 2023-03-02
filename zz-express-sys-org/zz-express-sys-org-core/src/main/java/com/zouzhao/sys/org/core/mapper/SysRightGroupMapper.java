@@ -32,5 +32,9 @@ public interface SysRightGroupMapper extends IPageMapper<SysRightGroup,SysRightG
 
     void deleteAccountRela(@Param("id") String id,@Param("list") List<String> ids);
 
+    void deleteAccountRelaById(String id);
+
+    void deleteAccountRelaByIds(@Param("list") List<String> ids);
+
     //sys_right_go_rela 角色-账号 end
 }

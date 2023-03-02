@@ -1,11 +1,14 @@
 package com.zouzhao.sys.org.core.controller;
 
 import com.zouzhao.common.controller.BaseController;
-import com.zouzhao.common.controller.CombineController;
+import com.zouzhao.common.controller.ListController;
 import com.zouzhao.sys.org.api.ISysRightRoleApi;
 import com.zouzhao.sys.org.dto.SysRightRoleVO;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,10 +23,17 @@ import java.util.List;
 @Api(
         tags = "权限"
 )
-public class SysRightRoleController extends BaseController<ISysRightRoleApi, SysRightRoleVO> implements CombineController<ISysRightRoleApi, SysRightRoleVO> {
+@PreAuthorize("hasAnyRole('SYS_RIGHT_ROLE_DEFAULT')")
+public class SysRightRoleController extends BaseController<ISysRightRoleApi, SysRightRoleVO> implements ListController<ISysRightRoleApi, SysRightRoleVO> {
 
     @PostMapping("/allModule")
     public List<String> allModule(){
         return getApi().allModule();
     }
+
+    @PostMapping({"/list"})
+    @ApiOperation("列表查询接口")
+    @PreAuthorize("hasAnyRole('SYS_RIGHT_ROLE_LIST')")
+    public List<SysRightRoleVO> list(@RequestBody SysRightRoleVO request) {
+        return this.getApi().findAll(request);    }
 }

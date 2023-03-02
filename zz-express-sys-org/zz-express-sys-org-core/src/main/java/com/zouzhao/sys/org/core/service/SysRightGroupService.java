@@ -73,12 +73,14 @@ public class SysRightGroupService extends PageServiceImpl<SysRightGroupMapper, S
     @Override
     public IdDTO delete(IdDTO vo) {
         getMapper().removeRela(vo.getId());
+        getMapper().deleteAccountRelaById(vo.getId());
         return super.delete(vo);
     }
 
     @Override
     public IdsDTO deleteAll(IdsDTO idsDTO) {
         getMapper().removeRelaList(idsDTO.getIds());
+        getMapper().deleteAccountRelaByIds(idsDTO.getIds());
         return super.deleteAll(idsDTO);
     }
 

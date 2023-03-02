@@ -31,7 +31,7 @@ import java.util.Date;
 public class SysRightRole extends BaseEntity implements GrantedAuthority {
     @Id
     @Column(
-            length = 36
+            length = 20
     )
     @TableId(
             type = IdType.ASSIGN_ID

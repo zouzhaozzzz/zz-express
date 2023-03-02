@@ -15,3 +15,7 @@ spring:
           uri: lb://zz-sys-org
           predicates:
             - Path=/data/sys-org/**,/data/sys-right/**,/api/sys-org/**,/api/sys-right/**
+        - id: zz-opt-manage
+          uri: lb://zz-opt-manage
+          predicates:
+            - Path=/data/opt-manage/**,/api/opt-manage/**

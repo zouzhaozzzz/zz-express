@@ -27,7 +27,7 @@ import java.util.List;
 public class SysRightGroup extends BaseEntity {
     @Id
     @Column(
-            length = 36
+            length = 20
     )
     @TableId(
             type = IdType.ASSIGN_ID

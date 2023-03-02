@@ -124,5 +124,12 @@
         delete from sys_right_go_rela where org_account_id in
         <foreach collection="list" item="id" open="(" separator="," close=")">#{id}</foreach>
     </delete>
+    <delete id="deleteAccountRelaById">
+        delete from sys_right_go_rela where right_group_id =#{id}
+    </delete>
+    <delete id="deleteAccountRelaByIds">
+        delete from sys_right_go_rela where right_group_id in
+        <foreach collection="list" item="id" open="(" separator="," close=")">#{id}</foreach>
+    </delete>
 
 </mapper>

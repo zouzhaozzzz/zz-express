@@ -1,7 +1,7 @@
 package com.zouzhao.sys.org.core.controller;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zouzhao.common.controller.BaseController;
-import com.zouzhao.common.controller.PageController;
 import com.zouzhao.common.dto.IdDTO;
 import com.zouzhao.common.dto.IdsDTO;
 import com.zouzhao.sys.org.api.ISysOrgAccountApi;
@@ -14,6 +14,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,7 +31,8 @@ import java.util.List;
 @Api(
         tags = "组织元素"
 )
-public class SysOrgElementController extends BaseController<ISysOrgElementApi, SysOrgElementVO> implements PageController<ISysOrgElementApi, SysOrgElementVO> {
+@PreAuthorize("hasAnyRole('SYS_ORG_ELEMENT_DEFAULT','SYS_ORG_ELEMENT_ADMIN')")
+public class SysOrgElementController extends BaseController<ISysOrgElementApi, SysOrgElementVO>  {
 
     @Autowired
     private ISysOrgAccountApi sysOrgAccountService;
@@ -43,8 +45,9 @@ public class SysOrgElementController extends BaseController<ISysOrgElementApi, S
 
     @PostMapping({"/get"})
     @ApiOperation("查看接口")
+    @PreAuthorize("hasAnyRole('SYS_ORG_ELEMENT_LIST','SYS_ORG_ELEMENT_ADMIN')")
     public SysOrgElementVO get(@RequestBody IdDTO vo) {
-        SysOrgElementVO sysOrgElementVO = PageController.super.get(vo);
+        SysOrgElementVO sysOrgElementVO = getApi().findVOById(vo);
         //如果为人员，查询账号信息
         if(sysOrgElementVO.getOrgElementType() == 1 && !StringUtils.isBlank(sysOrgElementVO.getOrgElementId()) ){
         SysOrgAccountVO sysOrgAccountVO=sysOrgAccountService.findVOByDefPersonId(IdDTO.of(sysOrgElementVO.getOrgElementId()));
@@ -54,8 +57,38 @@ public class SysOrgElementController extends BaseController<ISysOrgElementApi, S
 
     @PostMapping("/disableAll")
     @ApiOperation("批量停用")
+    @PreAuthorize("hasAnyRole('SYS_ORG_ELEMENT_UPDATE','SYS_ORG_ELEMENT_ADMIN')")
     public ResponseEntity<String> disableAll(@RequestBody IdsDTO idsDTO){
         getApi().disableAll(idsDTO);
         return new ResponseEntity<String>("停用成功", HttpStatus.OK);
+    }
+
+    @PostMapping({"/add"})
+    @ApiOperation("新增接口")
+    @PreAuthorize("hasAnyRole('SYS_ORG_ELEMENT_INSERT','SYS_ORG_ELEMENT_ADMIN')")
+    public IdDTO add(@RequestBody SysOrgElementVO vo) {
+        return getApi().add(vo);
+    }
+
+    @PostMapping({"/update"})
+    @ApiOperation("更新接口")
+    @PreAuthorize("hasAnyRole('SYS_ORG_ELEMENT_UPDATE','SYS_ORG_ELEMENT_ADMIN')")
+     public IdDTO update(@RequestBody SysOrgElementVO vo) {
+        return getApi().update(vo);
+    }
+
+
+    @PostMapping({"/list"})
+    @ApiOperation("列表查询接口")
+    @PreAuthorize("hasAnyRole('SYS_ORG_ELEMENT_LIST','SYS_ORG_ELEMENT_ADMIN')")
+    public List<SysOrgElementVO> list(@RequestBody SysOrgElementVO request) {
+        return getApi().findAll(request);
+    }
+
+    @PostMapping({"/page"})
+    @ApiOperation("分页")
+    @PreAuthorize("hasAnyRole('SYS_ORG_ELEMENT_LIST','SYS_ORG_ELEMENT_ADMIN')")
+    public Page<SysOrgElementVO> page(@RequestBody Page<SysOrgElementVO> page) {
+        return getApi().page(page);
     }
 }

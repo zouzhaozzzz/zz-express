@@ -9,6 +9,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,7 +43,8 @@ public class SysOrgAccountController extends BaseController<ISysOrgAccountApi, S
 
     @PostMapping("/update")
     @ApiOperation("修改密码")
-    public ResponseEntity<?> checkLogin(@RequestBody Map<String, String> info) {
+    @PreAuthorize("hasAnyRole('SYS_ORG_ACCOUNT_DEFAULT')")
+    public ResponseEntity<?> update(@RequestBody Map<String, String> info) {
         if (ObjectUtil.isEmpty(info)) throw new MyException("未传入信息");
         String accountDefPersonId = info.get("orgAccountDefPersonId");
         String accountPassword = info.get("orgAccountPassword");

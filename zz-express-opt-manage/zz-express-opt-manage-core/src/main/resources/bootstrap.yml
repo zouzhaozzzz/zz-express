@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: zz-opt-send
+    name: zz-opt-manage
   # 允许bean重写
   main:
     allow-bean-definition-overriding: true
@@ -40,4 +40,4 @@ mybatis-plus:
     - classpath*:/mybatis/*.xml
 
 module:
-  moduleNameList: opt-send
+  moduleNameList: opt-manage
