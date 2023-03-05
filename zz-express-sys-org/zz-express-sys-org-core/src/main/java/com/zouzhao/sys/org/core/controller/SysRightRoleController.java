@@ -1,7 +1,7 @@
 package com.zouzhao.sys.org.core.controller;
 
-import com.zouzhao.common.controller.BaseController;
-import com.zouzhao.common.controller.ListController;
+import com.zouzhao.common.core.controller.BaseController;
+import com.zouzhao.common.core.controller.ListController;
 import com.zouzhao.sys.org.api.ISysRightRoleApi;
 import com.zouzhao.sys.org.dto.SysRightRoleVO;
 import io.swagger.annotations.Api;

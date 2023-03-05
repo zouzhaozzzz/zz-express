@@ -4,6 +4,7 @@ import com.zouzhao.common.api.IApi;
 import com.zouzhao.common.dto.IdDTO;
 import com.zouzhao.sys.org.dto.SysOrgAccountVO;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
@@ -14,16 +15,17 @@ import java.util.List;
 public interface ISysOrgAccountApi extends IApi<SysOrgAccountVO> {
 
     @PostMapping("/checkLogin")
-    String checkLogin(SysOrgAccountVO user);
+    String checkLogin(@RequestBody SysOrgAccountVO user);
 
     @PostMapping("/layout")
-    String layout(SysOrgAccountVO user);
+    String layout(@RequestBody SysOrgAccountVO user);
 
+    @PostMapping("/findVOByDefPersonId")
+    SysOrgAccountVO findVOByDefPersonId(@RequestBody IdDTO of);
 
-    SysOrgAccountVO findVOByDefPersonId(IdDTO of);
+    @PostMapping("/getIdsByDefPersonIds")
+    List<String> getIdsByDefPersonIds(@RequestBody List<String> elementIds);
 
-    List<String> getIdsByDefPersonIds(List<String> elementIds);
-
-
-    void changePasswordByDefPerson(String accountDefPersonId, String password);
+    @PostMapping("/changePasswordByDefPerson")
+    void changePasswordByDefPerson(@RequestBody SysOrgAccountVO sysOrgAccountVO);
 }

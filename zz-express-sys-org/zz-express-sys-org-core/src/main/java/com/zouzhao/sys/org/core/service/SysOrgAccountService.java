@@ -3,15 +3,15 @@ package com.zouzhao.sys.org.core.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zouzhao.common.dto.IdDTO;
-import com.zouzhao.common.service.BaseServiceImpl;
+import com.zouzhao.common.core.service.BaseServiceImpl;
+import com.zouzhao.sys.org.core.security.utils.JwtUtils;
 import com.zouzhao.sys.org.api.ISysOrgAccountApi;
 import com.zouzhao.sys.org.api.ISysOrgElementApi;
+import com.zouzhao.sys.org.core.entity.SysOrgAccount;
+import com.zouzhao.sys.org.core.mapper.SysOrgAccountMapper;
 import com.zouzhao.sys.org.dto.SysOrgAccountVO;
 import com.zouzhao.sys.org.dto.SysOrgElementVO;
-import com.zouzhao.sys.org.core.entity.SysOrgAccount;
-import com.zouzhao.sys.org.core.entity.SysRightRole;
-import com.zouzhao.sys.org.core.mapper.SysOrgAccountMapper;
-import com.zouzhao.sys.org.core.utils.JwtUtils;
+import com.zouzhao.sys.org.dto.SysRightRoleVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -76,7 +76,7 @@ public class SysOrgAccountService extends BaseServiceImpl<SysOrgAccountMapper, S
     @Override
     public String layout(SysOrgAccountVO user) {
         //清空token和authentication.context
-        redisTemplate.delete("jwtToken:" + user.getOrgAccountLoginName());
+        redisTemplate.delete("token:" + user.getOrgAccountLoginName());
         SecurityContextHolder.getContext().setAuthentication(null);
         log.debug("用户{}退出成功", user.getOrgAccountLoginName());
         return "退出成功";
@@ -95,9 +95,9 @@ public class SysOrgAccountService extends BaseServiceImpl<SysOrgAccountMapper, S
 
     @Override
     @Transactional
-    public void changePasswordByDefPerson(String accountDefPersonId, String password) {
-        String ps = passwordEncoder.encode(password);
-        getMapper().changePasswordByDefPerson(accountDefPersonId,ps);
+    public void changePasswordByDefPerson(SysOrgAccountVO sysOrgAccountVO) {
+        String ps = passwordEncoder.encode(sysOrgAccountVO.getOrgAccountPassword());
+        getMapper().changePasswordByDefPerson(sysOrgAccountVO.getOrgAccountDefPersonId(),ps);
     }
 
 
@@ -109,8 +109,8 @@ public class SysOrgAccountService extends BaseServiceImpl<SysOrgAccountMapper, S
     }
 
     private String wrapAndStoreToken(Authentication authentication) {
-        SysOrgAccount user = (SysOrgAccount) authentication.getPrincipal();
-        List<SysRightRole> roles = user.getAuthorities();
+        SysOrgAccountVO user = (SysOrgAccountVO) authentication.getPrincipal();
+        List<SysRightRoleVO> roles = user.getAuthorities();
         //防止token过长
         user.setAuthorities(null);
         ObjectMapper objectMapper = new ObjectMapper();
@@ -126,10 +126,10 @@ public class SysOrgAccountService extends BaseServiceImpl<SysOrgAccountMapper, S
             if (ObjectUtils.isEmpty(roles)) {
                 //将权限放在redis中
                 roles = new ArrayList<>();
-                roles.add(new SysRightRole(null, null, null, "anonym", null, null, null));
+                roles.add(new SysRightRoleVO(null, null, null, "anonym", null, null, null));
             }
             //将权限放在redis中
-            redisTemplate.opsForValue().set("jwtToken:" + user.getOrgAccountLoginName(),
+            redisTemplate.opsForValue().set("token:" + user.getOrgAccountLoginName(),
                     roles,
                     expirationTime, TimeUnit.SECONDS);
             //把组织架构里用户真实名字一起传给前端
@@ -149,9 +149,6 @@ public class SysOrgAccountService extends BaseServiceImpl<SysOrgAccountMapper, S
     }
 
 
-    public List<SysOrgAccount> findList(SysOrgAccount query) {
-       return getMapper().findList(query);
-    }
 }
 
 

@@ -1,7 +1,7 @@
 package com.zouzhao.sys.org.core.config;
 
-import com.zouzhao.common.annotation.AuthRole;
-import com.zouzhao.common.annotation.AuthRoles;
+import com.zouzhao.sys.org.core.security.annotation.AuthRole;
+import com.zouzhao.sys.org.core.security.annotation.AuthRoles;
 import com.zouzhao.sys.org.core.entity.SysRightRole;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

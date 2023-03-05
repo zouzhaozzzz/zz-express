@@ -1,7 +1,7 @@
 package com.zouzhao.sys.org.core.security.config;
 
-import com.zouzhao.sys.org.core.security.filter.JwtFilter;
 import com.zouzhao.sys.org.core.security.service.MyUserDetailsService;
+import com.zouzhao.sys.org.core.security.filter.JwtFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

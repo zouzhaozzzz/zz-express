@@ -10,6 +10,8 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
  */
 @SpringBootApplication
 @EnableDiscoveryClient
+// @EnableFeignClients("com.zouzhao")
+// @ComponentScan("com.zouzhao")
 public class GatewayServerApplication {
     public static void main(String[] args) {
         SpringApplication.run(GatewayServerApplication.class,args);

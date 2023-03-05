@@ -1,12 +1,12 @@
 package com.zouzhao.sys.org.core.security.filter;
 
+import cn.hutool.core.util.StrUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zouzhao.sys.org.core.entity.SysOrgAccount;
-import com.zouzhao.sys.org.core.entity.SysRightRole;
-import com.zouzhao.sys.org.core.utils.JwtUtils;
+import com.zouzhao.sys.org.core.security.utils.JwtUtils;
+import com.zouzhao.sys.org.dto.SysOrgAccountVO;
+import com.zouzhao.sys.org.dto.SysRightRoleVO;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,14 +37,14 @@ public class JwtFilter extends OncePerRequestFilter { // 保证每一个请求�
     @Value("${jwt.expirationTime}")
     private Integer expirationTime;
 
-    @Override
+
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException, RuntimeException {
         // 首先从request中获取token信息
-        String jwtToken = request.getHeader("jwtToken");
-        log.debug("接收到的jwtToken:{}", jwtToken);
+        String jwtToken = request.getHeader("access_token");
+        log.debug("接收到的token:{}", jwtToken);
         //如果是登陆请求不走filter
         if ((request.getRequestURI().matches("[a-z/]+[-][a-z/,A-Z/]+checkLogin$") && request.getMethod().equals("POST"))
-                || StringUtils.isBlank(jwtToken)) {
+                || StrUtil.isBlank(jwtToken)) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -53,9 +53,9 @@ public class JwtFilter extends OncePerRequestFilter { // 保证每一个请求�
         Jws<Claims> claims = JwtUtils.getClaims(jwtToken);
         String subject = claims.getBody().getSubject();
         ObjectMapper mapper = new ObjectMapper();
-        SysOrgAccount user = mapper.readValue(subject, SysOrgAccount.class);
-        String redisKey = "jwtToken:" + user.getOrgAccountLoginName();
-        List<SysRightRole> roles =  (List<SysRightRole>)redisTemplate.opsForValue().get(redisKey);
+        SysOrgAccountVO user = mapper.readValue(subject, SysOrgAccountVO.class);
+        String redisKey = "token:" + user.getOrgAccountLoginName();
+        List<SysRightRoleVO> roles =  (List<SysRightRoleVO>)redisTemplate.opsForValue().get(redisKey);
         if (ObjectUtils.isEmpty(roles))
             throw new RuntimeException("该用户已经注销了");
         redisTemplate.opsForValue().set(redisKey, roles, expirationTime, TimeUnit.SECONDS);

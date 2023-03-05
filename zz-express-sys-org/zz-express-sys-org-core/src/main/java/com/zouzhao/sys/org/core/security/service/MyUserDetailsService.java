@@ -1,10 +1,10 @@
 package com.zouzhao.sys.org.core.security.service;
 
 import com.zouzhao.common.dto.IdDTO;
+import com.zouzhao.sys.org.api.ISysOrgAccountApi;
 import com.zouzhao.sys.org.api.ISysOrgElementApi;
+import com.zouzhao.sys.org.dto.SysOrgAccountVO;
 import com.zouzhao.sys.org.dto.SysOrgElementVO;
-import com.zouzhao.sys.org.core.entity.SysOrgAccount;
-import com.zouzhao.sys.org.core.service.SysOrgAccountService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,7 +20,7 @@ import java.util.List;
 public class MyUserDetailsService implements UserDetailsService {
 
     @Autowired
-    private SysOrgAccountService sysOrgAccountService;
+    private ISysOrgAccountApi sysOrgAccountApi;
     @Autowired
     private ISysOrgElementApi sysOrgElementApi;
 
@@ -28,14 +28,14 @@ public class MyUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String loginName) throws UsernameNotFoundException {
         log.debug("{} -> {}", "UserDetailsService", "loadUserByUsername");
-        SysOrgAccount user = null;
+        SysOrgAccountVO user = null;
 
         try {
-            SysOrgAccount query = new SysOrgAccount();
+            SysOrgAccountVO query = new SysOrgAccountVO();
             query.setOrgAccountLoginName(loginName);
-            List<SysOrgAccount> list = sysOrgAccountService.findList(query);
+            List<SysOrgAccountVO> list = sysOrgAccountApi.findAll(query);
             if(!ObjectUtils.isEmpty(list)) {
-                SysOrgAccount orgAccount = list.get(0);
+                SysOrgAccountVO orgAccount = list.get(0);
                 SysOrgElementVO orgElementVO = sysOrgElementApi.findVOById(IdDTO.of(orgAccount.getOrgAccountDefPersonId()));
                 if(orgElementVO.getOrgElementStatus())user=orgAccount;
                 else throw new RuntimeException("用户未启用");

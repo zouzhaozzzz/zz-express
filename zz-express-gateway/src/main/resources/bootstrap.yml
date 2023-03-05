@@ -4,11 +4,22 @@ server:
 spring:
   application:
     name: gateway-server
+  main:
+    allow-bean-definition-overriding: true
   cloud:
     nacos:
       discovery:
         namespace: dev
         server-addr: 192.168.247.128:8848
+      config:
+        server-addr: 192.168.247.128:8848
+        group: DEV_GROUP   # 指定分组名
+        file-extension: yaml
+        namespace: dev
+        extension-configs:
+          - express-dataSource.yaml
+          - express-redis.yaml
+          - express-jwt.yaml
     gateway:
       routes:
         - id: zz-sys-org
@@ -19,3 +30,4 @@ spring:
           uri: lb://zz-opt-manage
           predicates:
             - Path=/data/opt-manage/**,/api/opt-manage/**
+      

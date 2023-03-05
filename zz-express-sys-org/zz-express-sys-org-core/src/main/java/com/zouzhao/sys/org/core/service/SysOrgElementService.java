@@ -1,18 +1,18 @@
 package com.zouzhao.sys.org.core.service;
 
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zouzhao.common.dto.IdDTO;
 import com.zouzhao.common.dto.IdsDTO;
-import com.zouzhao.common.exception.MyException;
-import com.zouzhao.common.service.PageServiceImpl;
+import com.zouzhao.common.core.exception.MyException;
+import com.zouzhao.common.core.service.PageServiceImpl;
 import com.zouzhao.sys.org.api.ISysOrgAccountApi;
 import com.zouzhao.sys.org.api.ISysOrgElementApi;
-import com.zouzhao.sys.org.dto.SysOrgAccountVO;
-import com.zouzhao.sys.org.dto.SysOrgElementVO;
 import com.zouzhao.sys.org.core.entity.SysOrgElement;
 import com.zouzhao.sys.org.core.mapper.SysOrgElementMapper;
-import org.apache.commons.lang3.StringUtils;
+import com.zouzhao.sys.org.dto.SysOrgAccountVO;
+import com.zouzhao.sys.org.dto.SysOrgElementVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -59,7 +59,7 @@ public class SysOrgElementService extends PageServiceImpl<SysOrgElementMapper, S
     }
 
     private void judgeParent(String parentId, String id) {
-        if (!StringUtils.isBlank(parentId) && !parentId.equals("0")) {
+        if (StrUtil.isBlank(parentId) && !parentId.equals("0")) {
             if (parentId.equals(id)) throw new MyException("存在循环嵌套关系");
             judgeParent(getMapper().findById(parentId).getOrgElementParentId(),id);
         }
@@ -117,7 +117,7 @@ public class SysOrgElementService extends PageServiceImpl<SysOrgElementMapper, S
         List<SysOrgElementVO> voList = findAll(request);
         //顶级菜单
         List<SysOrgElementVO> root = voList.stream()
-                .filter(m -> StringUtils.isBlank(m.getOrgElementParentId()) || "0".equals(m.getOrgElementParentId()))
+                .filter(m -> StrUtil.isBlank(m.getOrgElementParentId()) || "0".equals(m.getOrgElementParentId()))
                 // .sorted(Comparator.comparing(SysOrgElementVO::getOrgElementName))
                 .collect(Collectors.toList());
         //菜单分级

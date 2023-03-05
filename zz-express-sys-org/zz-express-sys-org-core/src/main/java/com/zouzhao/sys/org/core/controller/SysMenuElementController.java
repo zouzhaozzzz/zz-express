@@ -1,7 +1,7 @@
 package com.zouzhao.sys.org.core.controller;
 
-import com.zouzhao.common.controller.BaseController;
-import com.zouzhao.common.controller.CombineController;
+import com.zouzhao.common.core.controller.BaseController;
+import com.zouzhao.common.core.controller.CombineController;
 import com.zouzhao.common.dto.IdDTO;
 import com.zouzhao.common.dto.IdsDTO;
 import com.zouzhao.sys.org.api.ISysMenuElementApi;

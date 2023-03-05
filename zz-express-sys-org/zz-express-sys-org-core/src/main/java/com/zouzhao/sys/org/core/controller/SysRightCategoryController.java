@@ -1,8 +1,8 @@
 package com.zouzhao.sys.org.core.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.zouzhao.common.controller.BaseController;
-import com.zouzhao.common.controller.PageController;
+import com.zouzhao.common.core.controller.BaseController;
+import com.zouzhao.common.core.controller.PageController;
 import com.zouzhao.common.dto.IdDTO;
 import com.zouzhao.common.dto.IdsDTO;
 import com.zouzhao.sys.org.api.ISysRightCategoryApi;

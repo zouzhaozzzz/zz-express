@@ -1,6 +1,6 @@
 package com.zouzhao.sys.org.core.mapper;
 
-import com.zouzhao.common.mapper.IPageMapper;
+import com.zouzhao.common.core.mapper.IPageMapper;
 import com.zouzhao.sys.org.dto.SysRightCategoryVO;
 import com.zouzhao.sys.org.core.entity.SysRightCategory;
 

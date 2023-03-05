@@ -1,6 +1,6 @@
 package com.zouzhao.sys.org.core.service;
 
-import com.zouzhao.common.service.PageServiceImpl;
+import com.zouzhao.common.core.service.PageServiceImpl;
 import com.zouzhao.sys.org.api.ISysRightCategoryApi;
 import com.zouzhao.sys.org.dto.SysRightCategoryVO;
 import com.zouzhao.sys.org.core.entity.SysRightCategory;

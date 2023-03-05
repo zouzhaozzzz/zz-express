@@ -1,8 +1,8 @@
 package com.zouzhao.sys.org.core.controller;
 
 import cn.hutool.core.util.ObjectUtil;
-import com.zouzhao.common.controller.BaseController;
-import com.zouzhao.common.exception.MyException;
+import com.zouzhao.common.core.controller.BaseController;
+import com.zouzhao.common.core.exception.MyException;
 import com.zouzhao.sys.org.api.ISysOrgAccountApi;
 import com.zouzhao.sys.org.dto.SysOrgAccountVO;
 import io.swagger.annotations.Api;
@@ -51,7 +51,10 @@ public class SysOrgAccountController extends BaseController<ISysOrgAccountApi, S
         if (ObjectUtil.isEmpty(accountDefPersonId) && ObjectUtil.isEmpty(accountPassword))
             throw new MyException("信息不全");
         //修改密码
-        super.getApi().changePasswordByDefPerson(accountDefPersonId, accountPassword);
+        SysOrgAccountVO vo = new SysOrgAccountVO();
+        vo.setOrgAccountDefPersonId(accountDefPersonId);
+        vo.setOrgAccountPassword(accountPassword);
+        super.getApi().changePasswordByDefPerson(vo);
         return new ResponseEntity<>("修改成功", HttpStatus.OK);
     }
 

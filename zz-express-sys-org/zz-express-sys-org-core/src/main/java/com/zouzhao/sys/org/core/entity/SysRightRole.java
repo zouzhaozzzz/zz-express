@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.zouzhao.common.entity.BaseEntity;
+import com.zouzhao.common.core.entity.BaseEntity;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -68,12 +68,4 @@ public class SysRightRole extends BaseEntity implements GrantedAuthority {
     }
 
 
-    public void setAuthority(String Authority) {
-        this.rightRoleCode=Authority;
-    }
-
-
-    public void setId(String id) {
-        this.rightRoleId = id;
-    }
 }

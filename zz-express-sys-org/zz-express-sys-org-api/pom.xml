@@ -19,8 +19,13 @@
     <dependencies>
         <dependency>
             <groupId>com.zouzhao</groupId>
-            <artifactId>zz-express-common</artifactId>
+            <artifactId>zz-express-common-api</artifactId>
             <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <!--security-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
     </dependencies>
 

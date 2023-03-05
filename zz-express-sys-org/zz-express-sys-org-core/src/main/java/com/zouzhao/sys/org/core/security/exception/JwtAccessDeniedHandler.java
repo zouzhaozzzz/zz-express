@@ -1,7 +1,7 @@
 package com.zouzhao.sys.org.core.security.exception;
 
 
-import com.zouzhao.common.utils.JsonUtils;
+import com.zouzhao.sys.org.core.security.utils.JsonUtils;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;

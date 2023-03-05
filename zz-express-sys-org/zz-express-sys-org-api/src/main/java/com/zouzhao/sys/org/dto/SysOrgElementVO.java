@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
 import java.util.Date;
 import java.util.List;
 
@@ -52,7 +51,6 @@ public class SysOrgElementVO {
     private String orgElementParentId;
     @ApiModelProperty("是否可用")
     private Boolean orgElementStatus;
-    @Column(length = 200)
     @ApiModelProperty("描述")
     private String orgElementDesc;
     @ApiModelProperty("领导")

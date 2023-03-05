@@ -1,6 +1,6 @@
 package com.zouzhao.sys.org.core.mapper;
 
-import com.zouzhao.common.mapper.IMapper;
+import com.zouzhao.common.core.mapper.IMapper;
 import com.zouzhao.sys.org.dto.SysOrgAccountVO;
 import com.zouzhao.sys.org.core.entity.SysOrgAccount;
 import org.apache.ibatis.annotations.Param;

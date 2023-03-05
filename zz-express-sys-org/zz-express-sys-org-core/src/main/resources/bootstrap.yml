@@ -4,7 +4,7 @@ server:
 spring:
   application:
     name: zz-sys-org
-  # 允许bean重写
+  #允许存在多个Feign调用相同Service的接口
   main:
     allow-bean-definition-overriding: true
   cloud:
@@ -20,6 +20,7 @@ spring:
         extension-configs:
           - express-dataSource.yaml
           - express-redis.yaml
+          - express-jwt.yaml
   #jpa配置
   jpa:
     hibernate:
@@ -32,17 +33,16 @@ spring:
       max-file-size: 10MB
       # 设置总上传的文件大小
       max-request-size: 20MB
-
+# 设置 ribbon
+ribbon:
+  ConnectTimeout: 5000 # 设置 ribbon 连接超时时间
+  ReadTimeout: 5000 # 设置 ribbon 连接读取时间
 
 mybatis-plus:
   type-aliases-package: com.zouzhao.sys.org.core.entity
   mapper-locations:
     - classpath*:/mybatis/*.xml
 
-jwt:
-  secretString: "zouzhao+zouzhao/next+affffffqwafaaaqhjkfahfjk"
-  #单位秒,过期时间一小时3600,一天86400
-  expirationTime: 86400
 
 module:
   moduleNameList: sys-org

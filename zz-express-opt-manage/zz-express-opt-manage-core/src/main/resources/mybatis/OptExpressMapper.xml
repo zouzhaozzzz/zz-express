@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zouzhao.opt.manage.core.mapper.OptExpressMapper">
+
+    <resultMap type="OptExpress" id="OptExpressResult">
+        <result property="expressId"    column="express_id"    />
+        <result property="bounceFlag"    column="bounce_flag"    />
+        <result property="cleanType"    column="clean_type"    />
+        <result property="consigneeAddr"    column="consignee_addr"    />
+        <result property="consigneeCity"    column="consignee_city"    />
+        <result property="consigneeCounty"    column="consignee_county"    />
+        <result property="consignee"    column="consignee"    />
+        <result property="consigneePhone"    column="consignee_phone"    />
+        <result property="consigneeProvince"    column="consignee_province"    />
+        <result property="consigneeTime"    column="consignee_time"    />
+        <result property="customerFreight"    column="customer_freight"    />
+        <result property="expressDataSource"    column="express_data_source"    />
+        <result property="expressDesc"    column="express_desc"    />
+        <result property="expressIdNo"    column="express_id_no"    />
+        <result property="expressNumber"    column="express_number"    />
+        <result property="expressStatus"    column="express_status"    />
+        <result property="faceCost"    column="face_cost"    />
+        <result property="faceFee"    column="face_fee"    />
+        <result property="faceType"    column="face_type"    />
+        <result property="finalWeight"    column="final_weight"    />
+        <result property="insuredAmount"    column="insured_amount"    />
+        <result property="objMode"    column="obj_mode"    />
+        <result property="otherCharges"    column="other_charges"    />
+        <result property="packMode"    column="pack_mode"    />
+        <result property="payType"    column="pay_type"    />
+        <result property="premium"    column="premium"    />
+        <result property="questionFlag"    column="question_flag"    />
+        <result property="sendArriveCost"    column="send_arrive_cost"    />
+        <result property="sendCity"    column="send_city"    />
+        <result property="sendCollectionFee"    column="send_collection_fee"    />
+        <result property="sendCompanyId"    column="send_company_id"    />
+        <result property="sendCounty"    column="send_county"    />
+        <result property="sendCustomerId"    column="send_customer_id"    />
+        <result property="sendCustomerType"    column="send_customer_type"    />
+        <result property="sendFine"    column="send_fine"    />
+        <result property="sendProvince"    column="send_province"    />
+        <result property="sendServiceType"    column="send_service_type"    />
+        <result property="sendTransitCost"    column="send_transit_cost"    />
+        <result property="shipTime"    column="ship_time"    />
+        <result property="shipper"    column="shipper"    />
+        <result property="shipperAddr"    column="shipper_addr"    />
+        <result property="shipperPhone"    column="shipper_phone"    />
+        <result property="totalCost"    column="total_cost"    />
+        <result property="volume"    column="volume"    />
+        <result property="volumeWeight"    column="volume_weight"    />
+        <result property="weight"    column="weight"    />
+    </resultMap>
+
+    <resultMap type="com.zouzhao.opt.manage.dto.OptExpressVO" id="OptExpressVOResult">
+        <result property="expressId"    column="express_id"    />
+        <result property="bounceFlag"    column="bounce_flag"    />
+        <result property="cleanType"    column="clean_type"    />
+        <result property="consigneeAddr"    column="consignee_addr"    />
+        <result property="consigneeCity"    column="consignee_city"    />
+        <result property="consigneeCounty"    column="consignee_county"    />
+        <result property="consignee"    column="consignee"    />
+        <result property="consigneePhone"    column="consignee_phone"    />
+        <result property="consigneeProvince"    column="consignee_province"    />
+        <result property="consigneeTime"    column="consignee_time"    />
+        <result property="customerFreight"    column="customer_freight"    />
+        <result property="expressDataSource"    column="express_data_source"    />
+        <result property="expressDesc"    column="express_desc"    />
+        <result property="expressIdNo"    column="express_id_no"    />
+        <result property="expressNumber"    column="express_number"    />
+        <result property="expressStatus"    column="express_status"    />
+        <result property="faceCost"    column="face_cost"    />
+        <result property="faceFee"    column="face_fee"    />
+        <result property="faceType"    column="face_type"    />
+        <result property="finalWeight"    column="final_weight"    />
+        <result property="insuredAmount"    column="insured_amount"    />
+        <result property="objMode"    column="obj_mode"    />
+        <result property="otherCharges"    column="other_charges"    />
+        <result property="packMode"    column="pack_mode"    />
+        <result property="payType"    column="pay_type"    />
+        <result property="premium"    column="premium"    />
+        <result property="questionFlag"    column="question_flag"    />
+        <result property="sendArriveCost"    column="send_arrive_cost"    />
+        <result property="sendCity"    column="send_city"    />
+        <result property="sendCollectionFee"    column="send_collection_fee"    />
+        <result property="sendCompanyId"    column="send_company_id"    />
+        <result property="sendCounty"    column="send_county"    />
+        <result property="sendCustomerId"    column="send_customer_id"    />
+        <result property="sendCustomerType"    column="send_customer_type"    />
+        <result property="sendFine"    column="send_fine"    />
+        <result property="sendProvince"    column="send_province"    />
+        <result property="sendServiceType"    column="send_service_type"    />
+        <result property="sendTransitCost"    column="send_transit_cost"    />
+        <result property="shipTime"    column="ship_time"    />
+        <result property="shipper"    column="shipper"    />
+        <result property="shipperAddr"    column="shipper_addr"    />
+        <result property="shipperPhone"    column="shipper_phone"    />
+        <result property="totalCost"    column="total_cost"    />
+        <result property="volume"    column="volume"    />
+        <result property="volumeWeight"    column="volume_weight"    />
+        <result property="weight"    column="weight"    />
+    </resultMap>
+
+    <sql id="selectOptExpressVo">
+        select express_id, bounce_flag, clean_type, consignee_addr, consignee_city, consignee_county, consignee, consignee_phone, consignee_province, consignee_time, customer_freight, express_data_source, express_desc, express_id_no, express_number, express_status, face_cost, face_fee, face_type, final_weight, insured_amount, obj_mode, other_charges, pack_mode, pay_type, premium, question_flag, send_arrive_cost, send_city, send_collection_fee, send_company_id, send_county, send_customer_id, send_customer_type, send_fine, send_province, send_service_type, send_transit_cost, ship_time, shipper, shipper_addr, shipper_phone, total_cost, volume, volume_weight, weight from opt_express
+    </sql>
+
+    <select id="findList" parameterType="OptExpress" resultMap="OptExpressResult">
+        <include refid="selectOptExpressVo"/>
+        <where>
+            <if test="bounceFlag != null "> and bounce_flag = #{bounceFlag}</if>
+            <if test="cleanType != null "> and clean_type = #{cleanType}</if>
+            <if test="consigneeAddr != null  and consigneeAddr != ''"> and consignee_addr = #{consigneeAddr}</if>
+            <if test="consigneeCity != null  and consigneeCity != ''"> and consignee_city = #{consigneeCity}</if>
+            <if test="consigneeCounty != null  and consigneeCounty != ''"> and consignee_county = #{consigneeCounty}</if>
+            <if test="consignee != null  and consignee != ''"> and consignee = #{consignee}</if>
+            <if test="consigneePhone != null  and consigneePhone != ''"> and consignee_phone = #{consigneePhone}</if>
+            <if test="consigneeProvince != null  and consigneeProvince != ''"> and consignee_province = #{consigneeProvince}</if>
+            <if test="consigneeTime != null "> and consignee_time = #{consigneeTime}</if>
+            <if test="customerFreight != null "> and customer_freight = #{customerFreight}</if>
+            <if test="expressDataSource != null  and expressDataSource != ''"> and express_data_source = #{expressDataSource}</if>
+            <if test="expressDesc != null  and expressDesc != ''"> and express_desc = #{expressDesc}</if>
+            <if test="expressIdNo != null  and expressIdNo != ''"> and express_id_no = #{expressIdNo}</if>
+            <if test="expressNumber != null  and expressNumber != ''"> and express_number = #{expressNumber}</if>
+            <if test="expressStatus != null "> and express_status = #{expressStatus}</if>
+            <if test="faceCost != null "> and face_cost = #{faceCost}</if>
+            <if test="faceFee != null "> and face_fee = #{faceFee}</if>
+            <if test="faceType != null "> and face_type = #{faceType}</if>
+            <if test="finalWeight != null "> and final_weight = #{finalWeight}</if>
+            <if test="insuredAmount != null "> and insured_amount = #{insuredAmount}</if>
+            <if test="objMode != null  and objMode != ''"> and obj_mode = #{objMode}</if>
+            <if test="otherCharges != null "> and other_charges = #{otherCharges}</if>
+            <if test="packMode != null "> and pack_mode = #{packMode}</if>
+            <if test="payType != null  and payType != ''"> and pay_type = #{payType}</if>
+            <if test="premium != null "> and premium = #{premium}</if>
+            <if test="questionFlag != null "> and question_flag = #{questionFlag}</if>
+            <if test="sendArriveCost != null "> and send_arrive_cost = #{sendArriveCost}</if>
+            <if test="sendCity != null  and sendCity != ''"> and send_city = #{sendCity}</if>
+            <if test="sendCollectionFee != null "> and send_collection_fee = #{sendCollectionFee}</if>
+            <if test="sendCompanyId != null  and sendCompanyId != ''"> and send_company_id = #{sendCompanyId}</if>
+            <if test="sendCounty != null  and sendCounty != ''"> and send_county = #{sendCounty}</if>
+            <if test="sendCustomerId != null  and sendCustomerId != ''"> and send_customer_id = #{sendCustomerId}</if>
+            <if test="sendCustomerType != null "> and send_customer_type = #{sendCustomerType}</if>
+            <if test="sendFine != null "> and send_fine = #{sendFine}</if>
+            <if test="sendProvince != null  and sendProvince != ''"> and send_province = #{sendProvince}</if>
+            <if test="sendServiceType != null "> and send_service_type = #{sendServiceType}</if>
+            <if test="sendTransitCost != null "> and send_transit_cost = #{sendTransitCost}</if>
+            <if test="shipTime != null "> and ship_time = #{shipTime}</if>
+            <if test="shipper != null  and shipper != ''"> and shipper = #{shipper}</if>
+            <if test="shipperAddr != null  and shipperAddr != ''"> and shipper_addr = #{shipperAddr}</if>
+            <if test="shipperPhone != null  and shipperPhone != ''"> and shipper_phone = #{shipperPhone}</if>
+            <if test="totalCost != null "> and total_cost = #{totalCost}</if>
+            <if test="volume != null "> and volume = #{volume}</if>
+            <if test="volumeWeight != null "> and volume_weight = #{volumeWeight}</if>
+            <if test="weight != null "> and weight = #{weight}</if>
+        </where>
+    </select>
+    <select id="findVOList" parameterType="OptExpress" resultMap="OptExpressVOResult">
+        <include refid="selectOptExpressVo"/>
+        <where>
+            <if test="bounceFlag != null "> and bounce_flag = #{bounceFlag}</if>
+            <if test="cleanType != null "> and clean_type = #{cleanType}</if>
+            <if test="consigneeAddr != null  and consigneeAddr != ''"> and consignee_addr = #{consigneeAddr}</if>
+            <if test="consigneeCity != null  and consigneeCity != ''"> and consignee_city = #{consigneeCity}</if>
+            <if test="consigneeCounty != null  and consigneeCounty != ''"> and consignee_county = #{consigneeCounty}</if>
+            <if test="consignee != null  and consignee != ''"> and consignee = #{consignee}</if>
+            <if test="consigneePhone != null  and consigneePhone != ''"> and consignee_phone = #{consigneePhone}</if>
+            <if test="consigneeProvince != null  and consigneeProvince != ''"> and consignee_province = #{consigneeProvince}</if>
+            <if test="consigneeTime != null "> and consignee_time = #{consigneeTime}</if>
+            <if test="customerFreight != null "> and customer_freight = #{customerFreight}</if>
+            <if test="expressDataSource != null  and expressDataSource != ''"> and express_data_source = #{expressDataSource}</if>
+            <if test="expressDesc != null  and expressDesc != ''"> and express_desc = #{expressDesc}</if>
+            <if test="expressIdNo != null  and expressIdNo != ''"> and express_id_no = #{expressIdNo}</if>
+            <if test="expressNumber != null  and expressNumber != ''"> and express_number = #{expressNumber}</if>
+            <if test="expressStatus != null "> and express_status = #{expressStatus}</if>
+            <if test="faceCost != null "> and face_cost = #{faceCost}</if>
+            <if test="faceFee != null "> and face_fee = #{faceFee}</if>
+            <if test="faceType != null "> and face_type = #{faceType}</if>
+            <if test="finalWeight != null "> and final_weight = #{finalWeight}</if>
+            <if test="insuredAmount != null "> and insured_amount = #{insuredAmount}</if>
+            <if test="objMode != null  and objMode != ''"> and obj_mode = #{objMode}</if>
+            <if test="otherCharges != null "> and other_charges = #{otherCharges}</if>
+            <if test="packMode != null "> and pack_mode = #{packMode}</if>
+            <if test="payType != null  and payType != ''"> and pay_type = #{payType}</if>
+            <if test="premium != null "> and premium = #{premium}</if>
+            <if test="questionFlag != null "> and question_flag = #{questionFlag}</if>
+            <if test="sendArriveCost != null "> and send_arrive_cost = #{sendArriveCost}</if>
+            <if test="sendCity != null  and sendCity != ''"> and send_city = #{sendCity}</if>
+            <if test="sendCollectionFee != null "> and send_collection_fee = #{sendCollectionFee}</if>
+            <if test="sendCompanyId != null  and sendCompanyId != ''"> and send_company_id = #{sendCompanyId}</if>
+            <if test="sendCounty != null  and sendCounty != ''"> and send_county = #{sendCounty}</if>
+            <if test="sendCustomerId != null  and sendCustomerId != ''"> and send_customer_id = #{sendCustomerId}</if>
+            <if test="sendCustomerType != null "> and send_customer_type = #{sendCustomerType}</if>
+            <if test="sendFine != null "> and send_fine = #{sendFine}</if>
+            <if test="sendProvince != null  and sendProvince != ''"> and send_province = #{sendProvince}</if>
+            <if test="sendServiceType != null "> and send_service_type = #{sendServiceType}</if>
+            <if test="sendTransitCost != null "> and send_transit_cost = #{sendTransitCost}</if>
+            <if test="shipTime != null "> and ship_time = #{shipTime}</if>
+            <if test="shipper != null  and shipper != ''"> and shipper = #{shipper}</if>
+            <if test="shipperAddr != null  and shipperAddr != ''"> and shipper_addr = #{shipperAddr}</if>
+            <if test="shipperPhone != null  and shipperPhone != ''"> and shipper_phone = #{shipperPhone}</if>
+            <if test="totalCost != null "> and total_cost = #{totalCost}</if>
+            <if test="volume != null "> and volume = #{volume}</if>
+            <if test="volumeWeight != null "> and volume_weight = #{volumeWeight}</if>
+            <if test="weight != null "> and weight = #{weight}</if>
+        </where>
+    </select>
+
+    <select id="page" parameterType="OptExpress" resultMap="OptExpressVOResult">
+        <include refid="selectOptExpressVo"/>
+        <where>
+            <if test="v.bounceFlag != null "> and bounce_flag = #{v.bounceFlag}</if>
+            <if test="v.cleanType != null "> and clean_type = #{v.cleanType}</if>
+            <if test="v.consigneeAddr != null  and v.consigneeAddr != ''"> and consignee_addr = #{v.consigneeAddr}</if>
+            <if test="v.consigneeCity != null  and v.consigneeCity != ''"> and consignee_city = #{v.consigneeCity}</if>
+            <if test="v.consigneeCounty != null  and v.consigneeCounty != ''"> and consignee_county = #{v.consigneeCounty}</if>
+            <if test="v.consignee != null  and v.consignee != ''"> and consignee = #{v.consignee}</if>
+            <if test="v.consigneePhone != null  and v.consigneePhone != ''"> and consignee_phone = #{v.consigneePhone}</if>
+            <if test="v.consigneeProvince != null  and v.consigneeProvince != ''"> and consignee_province = #{v.consigneeProvince}</if>
+            <if test="v.consigneeTime != null "> and consignee_time = #{v.consigneeTime}</if>
+            <if test="v.customerFreight != null "> and customer_freight = #{v.customerFreight}</if>
+            <if test="v.expressDataSource != null  and v.expressDataSource != ''"> and express_data_source = #{v.expressDataSource}</if>
+            <if test="v.expressIdNo != null  and v.expressIdNo != ''"> and express_id_no = #{v.expressIdNo}</if>
+            <if test="v.expressNumber != null  and v.expressNumber != ''"> and express_number = #{v.expressNumber}</if>
+            <if test="v.expressStatus != null "> and express_status = #{v.expressStatus}</if>
+            <if test="v.faceCost != null "> and face_cost = #{v.faceCost}</if>
+            <if test="v.faceFee != null "> and face_fee = #{v.faceFee}</if>
+            <if test="v.faceType != null "> and face_type = #{v.faceType}</if>
+            <if test="v.finalWeight != null "> and final_weight = #{v.finalWeight}</if>
+            <if test="v.insuredAmount != null "> and insured_amount = #{v.insuredAmount}</if>
+            <if test="v.objMode != null  and v.objMode != ''"> and obj_mode = #{v.objMode}</if>
+            <if test="v.otherCharges != null "> and other_charges = #{v.otherCharges}</if>
+            <if test="v.packMode != null "> and pack_mode = #{v.packMode}</if>
+            <if test="v.payType != null  and v.payType != ''"> and pay_type = #{v.payType}</if>
+            <if test="v.premium != null "> and premium = #{v.premium}</if>
+            <if test="v.questionFlag != null "> and question_flag = #{v.questionFlag}</if>
+            <if test="v.sendArriveCost != null "> and send_arrive_cost = #{v.sendArriveCost}</if>
+            <if test="v.sendCity != null  and v.sendCity != ''"> and send_city = #{v.sendCity}</if>
+            <if test="v.sendCollectionFee != null "> and send_collection_fee = #{v.sendCollectionFee}</if>
+            <if test="v.sendCompanyId != null  and v.sendCompanyId != ''"> and send_company_id = #{v.sendCompanyId}</if>
+            <if test="v.sendCounty != null  and v.sendCounty != ''"> and send_county = #{v.sendCounty}</if>
+            <if test="v.sendCustomerId != null  and v.sendCustomerId != ''"> and send_customer_id = #{v.sendCustomerId}</if>
+            <if test="v.sendCustomerType != null "> and send_customer_type = #{v.sendCustomerType}</if>
+            <if test="v.sendFine != null "> and send_fine = #{v.sendFine}</if>
+            <if test="v.sendProvince != null  and v.sendProvince != ''"> and send_province = #{v.sendProvince}</if>
+            <if test="v.sendServiceType != null "> and send_service_type = #{v.sendServiceType}</if>
+            <if test="v.sendTransitCost != null "> and send_transit_cost = #{v.sendTransitCost}</if>
+            <if test="v.shipTime != null "> and ship_time = #{v.shipTime}</if>
+            <if test="v.shipper != null  and v.shipper != ''"> and shipper = #{v.shipper}</if>
+            <if test="v.shipperAddr != null  and v.shipperAddr != ''"> and shipper_addr = #{v.shipperAddr}</if>
+            <if test="v.shipperPhone != null  and v.shipperPhone != ''"> and shipper_phone = #{v.shipperPhone}</if>
+            <if test="v.totalCost != null "> and total_cost = #{v.totalCost}</if>
+            <if test="v.volume != null "> and volume = #{v.volume}</if>
+            <if test="v.volumeWeight != null "> and volume_weight = #{v.volumeWeight}</if>
+            <if test="v.weight != null "> and weight = #{v.weight}</if>
+        </where>
+    </select>
+
+    <select id="findById" parameterType="String" resultMap="OptExpressResult">
+        <include refid="selectOptExpressVo"/>
+        where express_id = #{expressId}
+    </select>
+    <select id="findVOById" parameterType="String" resultMap="OptExpressVOResult">
+        <include refid="selectOptExpressVo"/>
+        where express_id = #{expressId}
+    </select>
+
+
+
+</mapper>

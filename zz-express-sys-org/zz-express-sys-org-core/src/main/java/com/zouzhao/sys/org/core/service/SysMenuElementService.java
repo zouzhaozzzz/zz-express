@@ -1,15 +1,15 @@
 package com.zouzhao.sys.org.core.service;
 
 import cn.hutool.core.util.ObjectUtil;
+import com.zouzhao.common.core.service.BaseServiceImpl;
+import com.zouzhao.common.core.utils.SelectionUtils;
 import com.zouzhao.common.dto.IdDTO;
-import com.zouzhao.common.service.BaseServiceImpl;
-import com.zouzhao.common.utils.SelectionUtils;
 import com.zouzhao.sys.org.api.ISysMenuElementApi;
-import com.zouzhao.sys.org.dto.SysMenuElementVO;
-import com.zouzhao.sys.org.dto.SysRightRoleVO;
 import com.zouzhao.sys.org.core.entity.SysMenuElement;
 import com.zouzhao.sys.org.core.entity.SysRightRole;
 import com.zouzhao.sys.org.core.mapper.SysMenuElementMapper;
+import com.zouzhao.sys.org.dto.SysMenuElementVO;
+import com.zouzhao.sys.org.dto.SysRightRoleVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -118,7 +118,7 @@ public class SysMenuElementService extends BaseServiceImpl<SysMenuElementMapper,
 
     @Override
     public List<SysMenuElementVO> listInRoles(SysMenuElementVO vo) {
-        List<SysRightRole> authorities = (List<SysRightRole>) SecurityContextHolder.getContext().getAuthentication().getAuthorities();
+        List<SysRightRoleVO> authorities = (List<SysRightRoleVO>) SecurityContextHolder.getContext().getAuthentication().getAuthorities();
         List<SysMenuElementVO> voListInRoles = getMapper().findVOListInRoles(authorities, vo);
         //菜单分级
         return loadMenu(voListInRoles);

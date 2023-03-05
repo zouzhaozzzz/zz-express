@@ -1,9 +1,9 @@
 package com.zouzhao.sys.org.core.mapper;
 
-import com.zouzhao.common.mapper.IMapper;
-import com.zouzhao.sys.org.dto.SysMenuElementVO;
+import com.zouzhao.common.core.mapper.IMapper;
 import com.zouzhao.sys.org.core.entity.SysMenuElement;
-import com.zouzhao.sys.org.core.entity.SysRightRole;
+import com.zouzhao.sys.org.dto.SysMenuElementVO;
+import com.zouzhao.sys.org.dto.SysRightRoleVO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -14,7 +14,7 @@ import java.util.List;
  */
 public interface SysMenuElementMapper extends IMapper<SysMenuElement, SysMenuElementVO> {
 
-    List<SysMenuElementVO> findVOListInRoles(@Param("list")List<SysRightRole> list,@Param("v")SysMenuElementVO vo);
+    List<SysMenuElementVO> findVOListInRoles(@Param("list")List<SysRightRoleVO> list, @Param("v")SysMenuElementVO vo);
 
     //菜单权限中间表start
     void insertRoleRela(@Param("id") String menuElementId, @Param("list") List<String> ids);

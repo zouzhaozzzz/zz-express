@@ -1,16 +1,16 @@
 package com.zouzhao.sys.org.core.service;
 
+import com.zouzhao.common.core.exception.MyException;
+import com.zouzhao.common.core.service.PageServiceImpl;
+import com.zouzhao.common.core.utils.SelectionUtils;
 import com.zouzhao.common.dto.IdDTO;
 import com.zouzhao.common.dto.IdsDTO;
-import com.zouzhao.common.exception.MyException;
-import com.zouzhao.common.service.PageServiceImpl;
-import com.zouzhao.common.utils.SelectionUtils;
 import com.zouzhao.sys.org.api.ISysOrgAccountApi;
 import com.zouzhao.sys.org.api.ISysRightGroupApi;
-import com.zouzhao.sys.org.dto.SysRightGroupVO;
-import com.zouzhao.sys.org.dto.SysRightRoleVO;
 import com.zouzhao.sys.org.core.entity.SysRightGroup;
 import com.zouzhao.sys.org.core.mapper.SysRightGroupMapper;
+import com.zouzhao.sys.org.dto.SysRightGroupVO;
+import com.zouzhao.sys.org.dto.SysRightRoleVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

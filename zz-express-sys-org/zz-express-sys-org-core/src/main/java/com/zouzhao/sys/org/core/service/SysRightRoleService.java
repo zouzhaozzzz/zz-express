@@ -1,6 +1,6 @@
 package com.zouzhao.sys.org.core.service;
 
-import com.zouzhao.common.service.BaseServiceImpl;
+import com.zouzhao.common.core.service.BaseServiceImpl;
 import com.zouzhao.sys.org.api.ISysRightRoleApi;
 import com.zouzhao.sys.org.dto.SysRightRoleVO;
 import com.zouzhao.sys.org.core.entity.SysRightRole;
