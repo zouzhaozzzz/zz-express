@@ -1,8 +1,9 @@
-package com.zouzhao.sys.org.core.config;
+package com.zouzhao.sys.org.core.security.config;
 
+
+import com.zouzhao.sys.org.core.entity.SysRightRole;
 import com.zouzhao.sys.org.core.security.annotation.AuthRole;
 import com.zouzhao.sys.org.core.security.annotation.AuthRoles;
-import com.zouzhao.sys.org.core.entity.SysRightRole;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;

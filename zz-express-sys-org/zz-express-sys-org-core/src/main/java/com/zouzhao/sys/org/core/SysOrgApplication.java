@@ -13,7 +13,7 @@ import org.springframework.context.annotation.ComponentScan;
  */
 @SpringBootApplication
 @EnableDiscoveryClient
-@EnableFeignClients
+@EnableFeignClients({"com.zouzhao"})
 @MapperScan("com.zouzhao.sys.org.core.mapper")
 @ComponentScan("com.zouzhao")
 public class SysOrgApplication {
