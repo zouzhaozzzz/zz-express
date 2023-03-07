@@ -1,5 +1,6 @@
 package com.zouzhao.opt.manage.dto;
 
+import com.alibaba.excel.annotation.ExcelProperty;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -21,6 +22,7 @@ public class OptExpressVO {
     private String expressId;
 
     @ApiModelProperty("运单号")
+    @ExcelProperty(index = 0)
     private String expressIdNo;
 
     @ApiModelProperty("运单状态")

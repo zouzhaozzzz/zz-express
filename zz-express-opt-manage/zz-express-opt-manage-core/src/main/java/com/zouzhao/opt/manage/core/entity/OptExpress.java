@@ -95,17 +95,15 @@ public class OptExpress extends BaseEntity {
     private String shipperAddr;
 
     @ApiModelProperty("收货人")
-    @Column(length = 20)
+    @Column(length = 20,nullable = false)
     private String consignee;
 
     @ApiModelProperty("收货时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", locale = "zh", timezone = "GMT+8")
-    @TableField(updateStrategy = FieldStrategy.NEVER)
-    @Column(insertable = false, updatable = false, columnDefinition = "DATETIME  DEFAULT CURRENT_TIMESTAMP")
     private Date consigneeTime;
 
     @ApiModelProperty("收货人手机号码")
-    @Column(length = 11)
+    @Column(length = 11,nullable = false)
     private String consigneePhone;
 
     @ApiModelProperty("收货省份")

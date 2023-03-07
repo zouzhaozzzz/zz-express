@@ -45,6 +45,10 @@
             <artifactId>hutool-all</artifactId>
             <version>${cn.hutool.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

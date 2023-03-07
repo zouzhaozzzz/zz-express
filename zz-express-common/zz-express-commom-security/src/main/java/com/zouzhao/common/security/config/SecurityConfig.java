@@ -81,6 +81,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         authorize -> authorize
                                 // 允许访问登录
                                 .antMatchers("/data/sys-org/SysAccount/checkLogin").permitAll()
+                                .antMatchers("/data/sys-org/SysAccount/layout").permitAll()
                                 .antMatchers("/data/*","/api/*").authenticated()
                                 // .anyRequest().authenticated()
                 )
