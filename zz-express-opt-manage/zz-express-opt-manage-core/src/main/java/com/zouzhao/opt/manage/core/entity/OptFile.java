@@ -11,50 +11,39 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.util.Date;
 
 /**
  * @author 姚超
- * @DATE: 2023-3-6
+ * @DATE: 2023-3-7
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "opt_export")
-public class OptExport extends BaseEntity {
-
+@Table(name = "opt_file")
+public class OptFile extends BaseEntity {
     @Id
-    @Column(
-            length = 20
-    )
     @TableId(
             type = IdType.ASSIGN_ID
     )
-    private String exportId;
+    @Column(nullable = false,length = 20)
+    private String fileId;
 
-    private String exportName;
+    private String filePath;
 
-    private String exportDesc;
-
-    private String exportFileId;
-
-    @ApiModelProperty("开始时间")
+    @ApiModelProperty("上传时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", locale = "zh", timezone = "GMT+8")
     @TableField(updateStrategy = FieldStrategy.NEVER)
     @Column(insertable = false, updatable = false, columnDefinition = "DATETIME  DEFAULT CURRENT_TIMESTAMP")
-    private Date exportStartTime;
-
-    @ApiModelProperty("完成时间")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", locale = "zh", timezone = "GMT+8")
-    // @TableField(updateStrategy = FieldStrategy.NEVER)
-    @Column(columnDefinition = "DATETIME")
-    private Date exportFinishTime;
+    private Date fileTime;
 
     @Override
     public String getId() {
-        return this.exportId;
+        return this.fileId;
     }
 }
-

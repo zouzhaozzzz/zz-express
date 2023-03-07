@@ -1,7 +1,6 @@
 package com.zouzhao.opt.manage.core.entity;
 
 import com.baomidou.mybatisplus.annotation.FieldStrategy;
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -28,18 +27,12 @@ import java.util.Date;
 @Entity
 @Table(name = "opt_express")
 public class OptExpress extends BaseEntity {
-    @Id
-    @Column(
-            length = 20
-    )
-    @TableId(
-            type = IdType.ASSIGN_ID
-    )
-    private String expressId;
 
+    @Id
     @ApiModelProperty("运单号")
+    @TableId
     @Column(nullable = false,length = 20)
-    private String expressIdNo;
+    private String expressId;
 
     @ApiModelProperty("运单状态")
     @Column(nullable = false,columnDefinition = "int(1)")
@@ -100,6 +93,7 @@ public class OptExpress extends BaseEntity {
 
     @ApiModelProperty("收货时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", locale = "zh", timezone = "GMT+8")
+    @Column(columnDefinition = "DATETIME")
     private Date consigneeTime;
 
     @ApiModelProperty("收货人手机号码")

@@ -85,35 +85,6 @@ public class SysMenuElementService extends BaseServiceImpl<SysMenuElementMapper,
                 (id,ids)->getMapper().insertRoleRela(id, ids),
                 (id,ids)->getMapper().deleteRoleRela(id, ids)
                 );
-        // //既没有更新又没有删除
-        // if (ObjectUtil.isEmpty(sysRightRoles) && ObjectUtil.isEmpty(oldRoles)) return;
-        // //只有新增
-        // if (ObjectUtil.isEmpty(oldRoles)) {
-        //     getMapper().insertRoleRela(entity.getMenuElementId(), sysRightRoles);
-        //     return;
-        // }
-        // //只有删除
-        // if (ObjectUtil.isEmpty(sysRightRoles)) {
-        //     getMapper().deleteRoleRela(entity.getMenuElementId(), new ArrayList<>(oldRoles.keySet()));
-        //     return;
-        // }
-        //
-        // //既有更新又有删除
-        // for (int i = 0; i < sysRightRoles.size(); i++) {
-        //     SysRightRole rightRole = sysRightRoles.get(i);
-        //     if (oldRoles.get(rightRole.getRightRoleId()) != null) {
-        //         oldRoles.remove(rightRole.getRightRoleId());
-        //         sysRightRoles.remove(i);
-        //         i--;
-        //     }
-        // }
-        // //添加需要新增的权限
-        // if (sysRightRoles.size() > 0)
-        //     getMapper().insertRoleRela(entity.getMenuElementId(), sysRightRoles);
-        //
-        // //删除多余的权限
-        // if (oldRoles.keySet().size() > 0)
-        //     getMapper().deleteRoleRela(entity.getMenuElementId(), new ArrayList<String>(oldRoles.keySet()));
     }
 
     @Override

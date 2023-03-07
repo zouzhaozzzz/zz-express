@@ -16,7 +16,6 @@
         <result property="customerFreight" column="customer_freight"/>
         <result property="expressDataSource" column="express_data_source"/>
         <result property="expressDesc" column="express_desc"/>
-        <result property="expressIdNo" column="express_id_no"/>
         <result property="expressNumber" column="express_number"/>
         <result property="expressStatus" column="express_status"/>
         <result property="faceCost" column="face_cost"/>
@@ -65,7 +64,6 @@
         <result property="customerFreight" column="customer_freight"/>
         <result property="expressDataSource" column="express_data_source"/>
         <result property="expressDesc" column="express_desc"/>
-        <result property="expressIdNo" column="express_id_no"/>
         <result property="expressNumber" column="express_number"/>
         <result property="expressStatus" column="express_status"/>
         <result property="faceCost" column="face_cost"/>
@@ -114,7 +112,6 @@
                customer_freight,
                express_data_source,
                express_desc,
-               express_id_no,
                express_number,
                express_status,
                face_cost,
@@ -169,7 +166,6 @@
                 #{expressDataSource}
             </if>
             <if test="expressDesc != null  and expressDesc != ''">and express_desc = #{expressDesc}</if>
-            <if test="expressIdNo != null  and expressIdNo != ''">and express_id_no = #{expressIdNo}</if>
             <if test="expressNumber != null  and expressNumber != ''">and express_number = #{expressNumber}</if>
             <if test="expressStatus != null ">and express_status = #{expressStatus}</if>
             <if test="faceCost != null ">and face_cost = #{faceCost}</if>
@@ -223,7 +219,6 @@
                 #{expressDataSource}
             </if>
             <if test="expressDesc != null  and expressDesc != ''">and express_desc = #{expressDesc}</if>
-            <if test="expressIdNo != null  and expressIdNo != ''">and express_id_no = #{expressIdNo}</if>
             <if test="expressNumber != null  and expressNumber != ''">and express_number = #{expressNumber}</if>
             <if test="expressStatus != null ">and express_status = #{expressStatus}</if>
             <if test="faceCost != null ">and face_cost = #{faceCost}</if>
@@ -259,35 +254,33 @@
         </where>
     </select>
 
-    <select id="page" parameterType="OptExpress" resultMap="OptExpressVOResult">
+    <select id="page" parameterType="com.zouzhao.opt.manage.dto.OptExpressVO" resultMap="OptExpressVOResult">
         <include refid="selectOptExpressVo"/>
         <where>
             <if test="v != null">
+                <if test="v.expressId != null ">and express_id = #{v.expressId}</if>
                 <if test="v.bounceFlag != null ">and bounce_flag = #{v.bounceFlag}</if>
                 <if test="v.cleanType != null ">and clean_type = #{v.cleanType}</if>
-                <if test="v.consigneeAddr != null  and v.consigneeAddr != ''">and consignee_addr = #{v.consigneeAddr}
-                </if>
-                <if test="v.consigneeCity != null  and v.consigneeCity != ''">and consignee_city = #{v.consigneeCity}
-                </if>
-                <if test="v.consigneeCounty != null  and v.consigneeCounty != ''">and consignee_county =
-                    #{v.consigneeCounty}
-                </if>
                 <if test="v.consignee != null  and v.consignee != ''">and consignee = #{v.consignee}</if>
                 <if test="v.consigneePhone != null  and v.consigneePhone != ''">and consignee_phone =
                     #{v.consigneePhone}
                 </if>
-                <if test="v.consigneeProvince != null  and v.consigneeProvince != ''">and consignee_province =
-                    #{v.consigneeProvince}
-                </if>
                 <if test="v.consigneeTime != null ">and consignee_time = #{v.consigneeTime}</if>
+                <if test="v.consigneeTimeList != null and v.consigneeTimeList.size >1 ">
+                and consignee_time >= #{v.consigneeTimeList[0]} consignee_time <![CDATA[<=]]> #{v.consigneeTimeList[1]}
+                </if>
                 <if test="v.customerFreight != null ">and customer_freight = #{v.customerFreight}</if>
                 <if test="v.expressDataSource != null  and v.expressDataSource != ''">and express_data_source =
                     #{v.expressDataSource}
                 </if>
-                <if test="v.expressIdNo != null  and v.expressIdNo != ''">and express_id_no = #{v.expressIdNo}</if>
                 <if test="v.expressNumber != null  and v.expressNumber != ''">and express_number = #{v.expressNumber}
                 </if>
                 <if test="v.expressStatus != null ">and express_status = #{v.expressStatus}</if>
+                <if test="v.expressStatusList != null and v.expressStatusList.size >0">and express_status in
+                    <foreach collection="v.expressStatusList" item="expressStatusItem" open="(" close=")" separator=",">
+                        #{expressStatusItem}
+                    </foreach>
+                </if>
                 <if test="v.faceCost != null ">and face_cost = #{v.faceCost}</if>
                 <if test="v.faceFee != null ">and face_fee = #{v.faceFee}</if>
                 <if test="v.faceType != null ">and face_type = #{v.faceType}</if>
@@ -300,22 +293,22 @@
                 <if test="v.premium != null ">and premium = #{v.premium}</if>
                 <if test="v.questionFlag != null ">and question_flag = #{v.questionFlag}</if>
                 <if test="v.sendArriveCost != null ">and send_arrive_cost = #{v.sendArriveCost}</if>
-                <if test="v.sendCity != null  and v.sendCity != ''">and send_city = #{v.sendCity}</if>
                 <if test="v.sendCollectionFee != null ">and send_collection_fee = #{v.sendCollectionFee}</if>
                 <if test="v.sendCompanyId != null  and v.sendCompanyId != ''">and send_company_id = #{v.sendCompanyId}
                 </if>
-                <if test="v.sendCounty != null  and v.sendCounty != ''">and send_county = #{v.sendCounty}</if>
                 <if test="v.sendCustomerId != null  and v.sendCustomerId != ''">and send_customer_id =
                     #{v.sendCustomerId}
                 </if>
                 <if test="v.sendCustomerType != null ">and send_customer_type = #{v.sendCustomerType}</if>
                 <if test="v.sendFine != null ">and send_fine = #{v.sendFine}</if>
-                <if test="v.sendProvince != null  and v.sendProvince != ''">and send_province = #{v.sendProvince}</if>
                 <if test="v.sendServiceType != null ">and send_service_type = #{v.sendServiceType}</if>
                 <if test="v.sendTransitCost != null ">and send_transit_cost = #{v.sendTransitCost}</if>
                 <if test="v.shipTime != null ">and ship_time = #{v.shipTime}</if>
-                <if test="v.shipper != null  and v.shipper != ''">and shipper = #{v.shipper}</if>
-                <if test="v.shipperAddr != null  and v.shipperAddr != ''">and shipper_addr = #{v.shipperAddr}</if>
+                <if test="v.shipTimeList != null and v.shipTimeList.size>1 ">
+                and ship_time >= #{v.shipTimeList[0]} and ship_time <![CDATA[<=]]> #{v.shipTimeList[1]}
+                </if>
+
+            <if test="v.shipper != null  and v.shipper != ''">and shipper = #{v.shipper}</if>
                 <if test="v.shipperPhone != null  and v.shipperPhone != ''">and shipper_phone = #{v.shipperPhone}</if>
                 <if test="v.totalCost != null ">and total_cost = #{v.totalCost}</if>
                 <if test="v.volume != null ">and volume = #{v.volume}</if>

@@ -1,5 +1,6 @@
 package com.zouzhao.opt.manage.core.controller;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zouzhao.common.core.controller.BaseController;
 import com.zouzhao.common.core.controller.PageController;
@@ -7,11 +8,16 @@ import com.zouzhao.common.dto.IdDTO;
 import com.zouzhao.common.dto.IdsDTO;
 import com.zouzhao.opt.manage.api.IOptExpressApi;
 import com.zouzhao.opt.manage.dto.OptExpressVO;
+import com.zouzhao.sys.org.client.SysOrgElementClient;
+import com.zouzhao.sys.org.dto.SysOrgElementVO;
 import io.swagger.annotations.Api;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -26,38 +32,61 @@ import java.util.List;
 @PreAuthorize("hasAnyRole('OPT_MANAGE_EXPRESS_DEFAULT','OPT_MANAGE_EXPRESS_ADMIN')")
 public class OptExpressController extends BaseController<IOptExpressApi, OptExpressVO> implements PageController<IOptExpressApi, OptExpressVO> {
 
+    @Autowired
+    private SysOrgElementClient sysOrgElementClient;
+
     @PreAuthorize("hasAnyRole('OPT_MANAGE_EXPRESS_INSERT','OPT_MANAGE_EXPRESS_ADMIN')")
-    public IdDTO add(OptExpressVO vo) {
+    public IdDTO add(@RequestBody OptExpressVO vo) {
         return PageController.super.add(vo);
     }
 
     @PreAuthorize("hasAnyRole('OPT_MANAGE_EXPRESS_LIST','OPT_MANAGE_EXPRESS_ADMIN')")
-    public OptExpressVO get(IdDTO vo) {
+    public OptExpressVO get(@RequestBody IdDTO vo) {
         return PageController.super.get(vo);
     }
 
     @PreAuthorize("hasAnyRole('OPT_MANAGE_EXPRESS_UPDATE','OPT_MANAGE_EXPRESS_ADMIN')")
-    public IdDTO update(OptExpressVO vo) {
+    public IdDTO update(@RequestBody OptExpressVO vo) {
         return PageController.super.update(vo);
     }
 
     @PreAuthorize("hasAnyRole('OPT_MANAGE_EXPRESS_DELETE','OPT_MANAGE_EXPRESS_ADMIN')")
-    public IdDTO delete(IdDTO vo) {
+    public IdDTO delete(@RequestBody IdDTO vo) {
         return PageController.super.delete(vo);
     }
 
     @PreAuthorize("hasAnyRole('OPT_MANAGE_EXPRESS_DELETE','OPT_MANAGE_EXPRESS_ADMIN')")
-    public IdsDTO deleteAll(IdsDTO ids) {
+    public IdsDTO deleteAll(@RequestBody IdsDTO ids) {
         return PageController.super.deleteAll(ids);
     }
 
     @PreAuthorize("hasAnyRole('OPT_MANAGE_EXPRESS_LIST','OPT_MANAGE_EXPRESS_ADMIN')")
-    public List<OptExpressVO> list(OptExpressVO request) {
+    public List<OptExpressVO> list(@RequestBody OptExpressVO request) {
         return PageController.super.list(request);
     }
 
     @PreAuthorize("hasAnyRole('OPT_MANAGE_EXPRESS_LIST','OPT_MANAGE_EXPRESS_ADMIN')")
-    public Page<OptExpressVO> page(Page<OptExpressVO> page) {
-        return PageController.super.page(page);
+    public Page<OptExpressVO> page(@RequestBody Page<OptExpressVO> page) {
+        List<OptExpressVO> list = PageController.super.page(page).getRecords();
+        //填充寄件客户，寄件公司
+        //填充
+        if (list != null && list.size() > 0) list.forEach(
+                expressVO -> {
+                    List<String> ids = new ArrayList<>();
+                    //寄件客户
+                    String sendCustomerId = expressVO.getSendCustomerId();
+                    if (ObjectUtil.isNotEmpty(sendCustomerId)) {
+                        SysOrgElementVO result = sysOrgElementClient.findVOById(IdDTO.of(sendCustomerId));
+                        if (ObjectUtil.isNotEmpty(result)) expressVO.setSendCustomer(result);
+                    }
+                    //所属公司
+                    String sendCompanyId=expressVO.getSendCompanyId();
+                    if (ObjectUtil.isNotEmpty(sendCompanyId)) {
+                        SysOrgElementVO result = sysOrgElementClient.findVOById(IdDTO.of(sendCompanyId));
+                        if (ObjectUtil.isNotEmpty(result)) expressVO.setSendCompany(result);
+                    }
+                }
+        );
+        return page;
     }
 }

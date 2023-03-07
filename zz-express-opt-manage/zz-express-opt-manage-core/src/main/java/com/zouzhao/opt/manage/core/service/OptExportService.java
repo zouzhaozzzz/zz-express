@@ -5,12 +5,17 @@ import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.ExcelWriter;
 import com.alibaba.excel.read.listener.PageReadListener;
 import com.alibaba.excel.write.metadata.WriteSheet;
+import com.zouzhao.common.core.service.PageServiceImpl;
 import com.zouzhao.opt.manage.api.IOptExportApi;
 import com.zouzhao.opt.manage.api.IOptExpressApi;
+import com.zouzhao.opt.manage.core.entity.OptExport;
+import com.zouzhao.opt.manage.core.mapper.OptExportMapper;
+import com.zouzhao.opt.manage.dto.OptExportVO;
 import com.zouzhao.opt.manage.dto.OptExpressVO;
 import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -32,7 +37,7 @@ import java.util.List;
 @Data
 @ConfigurationProperties(prefix = "export")
 @RestController("/api/opt-manage/optExport")
-public class OptExportService implements IOptExportApi {
+public class OptExportService extends PageServiceImpl<OptExportMapper, OptExport, OptExportVO> implements IOptExportApi  {
 
     private static final Logger log = LoggerFactory.getLogger(OptExportService.class);
     private String filepath;
@@ -171,5 +176,12 @@ public class OptExportService implements IOptExportApi {
             // 避免了由于业务异常造成的消息“丢失“
             e.printStackTrace();
         }
+    }
+
+    @Override
+    protected OptExport voToEntity(OptExportVO vo) {
+        OptExport export = new OptExport();
+        BeanUtils.copyProperties(vo,export);
+        return export;
     }
 }
