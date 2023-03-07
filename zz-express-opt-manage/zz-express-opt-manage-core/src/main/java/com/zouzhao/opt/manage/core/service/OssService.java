@@ -116,7 +116,7 @@ public class OssService {
     }
 
     /**
-     * 上传文件
+     * 阿里云oss上传文件
      *
      * @return
      */
@@ -149,7 +149,7 @@ public class OssService {
     }
 
     /**
-     * 下载文件
+     * 阿里云oss下载文件
      *
      * @param filename
      * @param response
@@ -161,8 +161,9 @@ public class OssService {
             OSSObject ossObject = ossClient.getObject(bucketName, filename);
             // 调用ossObject.getObjectContent获取文件输入流，可读取此输入流获取其内容。
             InputStream content = ossObject.getObjectContent();
+            String[] split = filename.split("/");
             if (content != null) {
-                response.setHeader("content-disposition", "attachment;filename=" + URLEncoder.encode(filename, "UTF-8"));
+                response.setHeader("content-disposition", "attachment;filename=" + URLEncoder.encode(split[1],"UTF-8"));
                 ServletOutputStream out = response.getOutputStream();
                 FileCopyUtils.copy(content, out);
                 content.close();
@@ -190,5 +191,10 @@ public class OssService {
         }
     }
 
+    public static void main(String[] args) throws UnsupportedEncodingException {
+        String encode = URLEncoder.encode("快递导出模版", "utf-8");
+        String encode2 = URLEncoder.encode("快递导出模版", "GBK");
+        System.out.println(encode+"------"+encode2);
+    }
 
 }
