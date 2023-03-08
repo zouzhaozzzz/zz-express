@@ -146,6 +146,9 @@
                weight
         from opt_express
     </sql>
+    <insert id="batchSaveOrUpdate">
+
+    </insert>
 
     <select id="findList" parameterType="OptExpress" resultMap="OptExpressResult">
         <include refid="selectOptExpressVo"/>
@@ -330,6 +333,9 @@
     <select id="findVOById" parameterType="String" resultMap="OptExpressVOResult">
         <include refid="selectOptExpressVo"/>
         where express_id = #{expressId}
+    </select>
+    <select id="isExistById" resultType="java.lang.Integer">
+        select count(1) from opt_express where express_id = #{id};
     </select>
 
 

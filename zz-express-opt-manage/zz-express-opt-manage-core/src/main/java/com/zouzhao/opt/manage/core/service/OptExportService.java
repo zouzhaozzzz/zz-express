@@ -94,7 +94,6 @@ public class OptExportService extends PageServiceImpl<OptExportMapper, OptExport
             //读excel
             EasyExcel.read(inputStream, OptExpressVO.class, new PageReadListener<OptExpressVO>(dataList -> {
                 for (OptExpressVO express : dataList) {
-                    log.info("读取到一条数据{}", express);
                     data.add(express);
                     if (data.size() == batchSize) {
                         String jsonStr = JSONUtil.toJsonStr(data);

@@ -3,6 +3,7 @@ package com.zouzhao.opt.manage.api;
 import com.zouzhao.common.api.IPageApi;
 import com.zouzhao.opt.manage.dto.OptExpressVO;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
@@ -13,5 +14,6 @@ import java.util.List;
 public interface IOptExpressApi extends IPageApi<OptExpressVO> {
 
     @PostMapping("/batchSave")
-    void batchSave(List<OptExpressVO> list);
+    //如果存在相同运单号不新增
+    void batchSave(@RequestBody List<OptExpressVO> list);
 }

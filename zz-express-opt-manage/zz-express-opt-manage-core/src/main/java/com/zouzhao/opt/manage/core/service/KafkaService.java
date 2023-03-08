@@ -37,8 +37,7 @@ public class KafkaService {
             topics = {"sendExport"},
             groupId = "consumer-group-sendExport",
             containerFactory = "batchKafkaListenerContainerFactory",
-            concurrency = "3",
-            errorHandler = "batchErrorBus" // 进行offset（偏移量的修复）
+            concurrency = "3"
     )
     @Transactional
     public void batchHandleExport(List<String> data, Acknowledgment ack) {
@@ -72,6 +71,7 @@ public class KafkaService {
             // 因此kafka会一直把这个消息保留(hold)在队列中
             // 客户端的下一次拉取仍然是拉取的上一次没有应答的消息
             // 避免了由于业务异常造成的消息“丢失“
+            ack.acknowledge();
             e.printStackTrace();
         }
     }
@@ -81,8 +81,7 @@ public class KafkaService {
             topics = {"sendImport"},
             groupId = "consumer-group-sendImport",
             containerFactory = "batchKafkaListenerContainerFactory",
-            concurrency = "3",
-            errorHandler = "batchErrorBus" // 进行offset（偏移量的修复）
+            concurrency = "3"
     )
     @Transactional
     public void batchHandleImport(List<String> data, Acknowledgment ack) {
@@ -109,6 +108,7 @@ public class KafkaService {
             // 因此kafka会一直把这个消息保留(hold)在队列中
             // 客户端的下一次拉取仍然是拉取的上一次没有应答的消息
             // 避免了由于业务异常造成的消息“丢失“
+            ack.acknowledge();
             e.printStackTrace();
         }
     }
