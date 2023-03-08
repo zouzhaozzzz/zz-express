@@ -36,6 +36,10 @@ public class OptExport extends BaseEntity {
 
     private String exportName;
 
+    @Column(columnDefinition = " int(1) ")
+    private Integer exportType;
+
+
     private String exportDesc;
 
     private String exportFileId;

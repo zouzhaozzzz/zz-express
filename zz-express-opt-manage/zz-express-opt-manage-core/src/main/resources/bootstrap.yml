@@ -56,8 +56,7 @@ module:
   moduleNameList: opt-manage
   
 export:
-  filepath: D:\java111\123\zz-express\file\
-  batchSize: 5000
+  batchSize: 1000
 
 #阿里云oss
 oss:

@@ -58,8 +58,7 @@ public class OssService {
     private String dir;
 
 
-
-    // //清除冗余附件
+    //清除冗余附件
     // @DeleteMapping("/deletePic")
     // public String deletePic() {
     //     List<Movie> movieList = movieService.findAll();
@@ -85,7 +84,7 @@ public class OssService {
         OSS ossClient = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
         try {
             ObjectListing objectListing = ossClient.listObjects(bucketName);
-            List<String> keyList=new ArrayList<>();
+            List<String> keyList = new ArrayList<>();
             // Map<String,Movie> movieMap = movieService.findAllPathMap();
             // for (OSSObjectSummary objectSummary : objectListing.getObjectSummaries()) {
             //     String key = objectSummary.getKey();
@@ -125,7 +124,7 @@ public class OssService {
         try {
             String filename = dir + new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date()) + new Random().nextInt(10) + file.getOriginalFilename();
             ossClient.putObject(bucketName, filename, file.getInputStream());
-            return "https://" + bucketName + "." + endpoint.split("http://")[1] + "/" + filename;
+            return filename;
         } catch (OSSException oe) {
             System.out.println("Caught an OSSException, which means your request made it to OSS, "
                     + "but was rejected with an error response for some reason.");
@@ -151,23 +150,23 @@ public class OssService {
     /**
      * 阿里云oss下载文件
      *
-     * @param filename
+     * @param filepath
      * @param response
      */
-    public void download(String filename, HttpServletResponse response) {
+    public void download(String filepath, HttpServletResponse response) {
         OSS ossClient = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
         try {
             // 调用ossClient.getObject返回一个OSSObject实例，该实例包含文件内容及文件元信息。
-            OSSObject ossObject = ossClient.getObject(bucketName, filename);
+            OSSObject ossObject = ossClient.getObject(bucketName, filepath);
             // 调用ossObject.getObjectContent获取文件输入流，可读取此输入流获取其内容。
             InputStream content = ossObject.getObjectContent();
-            String[] split = filename.split("/");
+            String[] split = filepath.split("/");
             if (content != null) {
-                response.setHeader("content-disposition", "attachment;filename=" + URLEncoder.encode(split[1],"UTF-8"));
+                response.setHeader("content-disposition", "attachment;filename=" + URLEncoder.encode(split[1], "UTF-8"));
                 ServletOutputStream out = response.getOutputStream();
                 FileCopyUtils.copy(content, out);
                 content.close();
-            }else throw new MyException("文件不存在");
+            } else throw new MyException("文件不存在");
         } catch (OSSException oe) {
             System.out.println("Caught an OSSException, which means your request made it to OSS, "
                     + "but was rejected with an error response for some reason.");
@@ -191,10 +190,37 @@ public class OssService {
         }
     }
 
-    public static void main(String[] args) throws UnsupportedEncodingException {
-        String encode = URLEncoder.encode("快递导出模版", "utf-8");
-        String encode2 = URLEncoder.encode("快递导出模版", "GBK");
-        System.out.println(encode+"------"+encode2);
+    /**
+     * 阿里云oss下载文件(传出流)
+     *
+     * @param filepath
+     */
+    public List<Object> downloadStream(String filepath) {
+        OSS ossClient = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
+        try {
+            // 调用ossClient.getObject返回一个OSSObject实例，该实例包含文件内容及文件元信息。
+            OSSObject ossObject = ossClient.getObject(bucketName, filepath);
+            // 调用ossObject.getObjectContent获取文件输入流，可读取此输入流获取其内容。
+            InputStream content = ossObject.getObjectContent();
+            if (content != null) {
+                List<Object> result=new ArrayList<>();
+                result.add(content);
+                result.add(ossClient);
+                return result;
+            } else throw new MyException("文件不存在");
+        } catch (OSSException oe) {
+            System.out.println("Caught an OSSException, which means your request made it to OSS, "
+                    + "but was rejected with an error response for some reason.");
+            System.out.println("Error Message:" + oe.getErrorMessage());
+            System.out.println("Error Code:" + oe.getErrorCode());
+            System.out.println("Request ID:" + oe.getRequestId());
+            System.out.println("Host ID:" + oe.getHostId());
+        } catch (ClientException ce) {
+            System.out.println("Caught an ClientException, which means the client encountered "
+                    + "a serious internal problem while trying to communicate with OSS, "
+                    + "such as not being able to access the network.");
+            System.out.println("Error Message:" + ce.getMessage());
+        }
+        throw new MyException("文件不存在");
     }
-
 }

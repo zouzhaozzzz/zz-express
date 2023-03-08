@@ -23,6 +23,8 @@ public class OptExportVO {
 
     private String exportName;
 
+    private Integer exportType;
+
     private String exportDesc;
 
     private String exportFileId;

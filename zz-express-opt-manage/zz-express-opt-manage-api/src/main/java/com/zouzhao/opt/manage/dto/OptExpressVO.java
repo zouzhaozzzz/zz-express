@@ -122,7 +122,7 @@ public class OptExpressVO {
 
     @ExcelProperty(index = 22)
     @ApiModelProperty("件数")
-    private String expressNumber;
+    private Integer expressNumber;
 
     @ExcelProperty(index = 23)
     @ApiModelProperty("网点重量：必填项，数字，小数点后保留2位小数")
@@ -141,7 +141,7 @@ public class OptExpressVO {
     private BigDecimal finalWeight;
 
     @ExcelProperty(index = 27)
-    @ApiModelProperty("包装类型：必选项，下拉选择货物的包装类型")
+    @ApiModelProperty("包装类型：下拉选择货物的包装类型")
     private Integer packMode;
 
     @ExcelProperty(index = 28)
@@ -185,7 +185,7 @@ public class OptExpressVO {
     private Integer cleanType;
 
     @ExcelProperty(index = 38)
-    @ApiModelProperty("客户运费")
+    @ApiModelProperty("运费")
     private BigDecimal customerFreight;
 
     @ExcelProperty(index = 39)

@@ -2,38 +2,48 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zouzhao.opt.manage.core.mapper.OptExportMapper">
     <resultMap type="OptExport" id="OptExportResult">
-        <result property="exportId"    column="export_id"    />
-        <result property="exportDesc"    column="export_desc"    />
-        <result property="exportFileId"    column="export_file_id"    />
-        <result property="exportFinishTime"    column="export_finish_time"    />
-        <result property="exportName"    column="export_name"    />
-        <result property="exportStartTime"    column="export_start_time"    />
+        <result property="exportId" column="export_id"/>
+        <result property="exportDesc" column="export_desc"/>
+        <result property="exportFileId" column="export_file_id"/>
+        <result property="exportFinishTime" column="export_finish_time"/>
+        <result property="exportName" column="export_name"/>
+        <result property="exportType" column="export_type"/>
+        <result property="exportStartTime" column="export_start_time"/>
     </resultMap>
     <resultMap type="com.zouzhao.opt.manage.dto.OptExportVO" id="OptExportVOResult">
-        <result property="exportId"    column="export_id"    />
-        <result property="exportDesc"    column="export_desc"    />
-        <result property="exportFileId"    column="export_file_id"    />
-        <result property="exportFinishTime"    column="export_finish_time"    />
-        <result property="exportName"    column="export_name"    />
-        <result property="exportStartTime"    column="export_start_time"    />
+        <result property="exportId" column="export_id"/>
+        <result property="exportDesc" column="export_desc"/>
+        <result property="exportFileId" column="export_file_id"/>
+        <result property="exportFinishTime" column="export_finish_time"/>
+        <result property="exportName" column="export_name"/>
+        <result property="exportType" column="export_type"/>
+        <result property="exportStartTime" column="export_start_time"/>
     </resultMap>
 
     <sql id="selectOptExportVo">
-        select export_id, export_desc, export_file_id, export_finish_time, export_name, export_start_time from opt_export
+        select export_id, export_desc, export_file_id, export_finish_time, export_name, export_type, export_start_time
+        from opt_export
     </sql>
+    <update id="updateFinishTimeById" parameterType="map">
+        update opt_export set export_finish_time = #{finishTime} where export_id =#{id}
+    </update>
 
     <select id="findList" parameterType="OptExport" resultMap="OptExportResult">
         <include refid="selectOptExportVo"/>
         <where>
-            <if test="exportFileId != null  and exportFileId != ''"> and export_file_id = #{exportFileId}</if>
-            <if test="exportName != null  and exportName != ''"> and export_name like concat('%', #{exportName}, '%')</if>
+            <if test="exportFileId != null  and exportFileId != ''">and export_file_id = #{exportFileId}</if>
+            <if test="exportType != null">and export_type = #{exportType}</if>
+            <if test="exportName != null  and exportName != ''">and export_name like concat('%', #{exportName}, '%')
+            </if>
         </where>
     </select>
     <select id="findVOList" parameterType="OptExport" resultMap="OptExportVOResult">
         <include refid="selectOptExportVo"/>
         <where>
-            <if test="exportFileId != null  and exportFileId != ''"> and export_file_id = #{exportFileId}</if>
-            <if test="exportName != null  and exportName != ''"> and export_name like concat('%', #{exportName}, '%')</if>
+            <if test="exportFileId != null  and exportFileId != ''">and export_file_id = #{exportFileId}</if>
+            <if test="exportType != null">and export_type = #{exportType}</if>
+            <if test="exportName != null  and exportName != ''">and export_name like concat('%', #{exportName}, '%')
+            </if>
         </where>
     </select>
 
@@ -49,8 +59,11 @@
     <select id="page" parameterType="com.zouzhao.opt.manage.dto.OptExportVO" resultMap="OptExportVOResult">
         <include refid="selectOptExportVo"/>
         <where>
-            <if test="v.exportFileId != null  and v.exportFileId != ''"> and export_file_id = #{v.exportFileId}</if>
-            <if test="v.exportName != null  and v.exportName != ''"> and export_name like concat('%', #{v.exportName}, '%')</if>
+            <if test="exportType != null">and export_type = #{exportType}</if>
+            <if test="v.exportFileId != null  and v.exportFileId != ''">and export_file_id = #{v.exportFileId}</if>
+            <if test="v.exportName != null  and v.exportName != ''">and export_name like concat('%', #{v.exportName},
+                '%')
+            </if>
         </where>
     </select>
 </mapper>
