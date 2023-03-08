@@ -65,8 +65,8 @@ public class OptExpress extends BaseEntity {
     private Date shipTime;
 
     @ApiModelProperty("付款方式:寄付 到付")
-    @Column(length = 20,nullable = false)
-    private String payType;
+    @Column(columnDefinition = "int(1)",nullable = false)
+    private Integer payType;
 
     @ApiModelProperty("发货人手机号码")
     @Column(length = 11,nullable = false)

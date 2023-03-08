@@ -52,7 +52,7 @@ public class OptExpressVO {
 
     @ExcelProperty(index = 6)
     @ApiModelProperty("付款方式:寄付 到付")
-    private String payType;
+    private Integer payType;
 
     @ExcelProperty(index = 7)
     @ApiModelProperty("发货人")
