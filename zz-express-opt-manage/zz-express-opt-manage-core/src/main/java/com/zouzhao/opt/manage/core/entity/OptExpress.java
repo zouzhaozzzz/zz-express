@@ -43,7 +43,7 @@ public class OptExpress extends BaseEntity {
     private Short sendCustomerType;
 
     @ApiModelProperty("寄件服务方式:“派送”、“自提")
-    @Column(columnDefinition="int(1)")
+    @Column(nullable = false,columnDefinition="int(1)")
     private Integer sendServiceType;
 
     @ApiModelProperty("寄件客户")
@@ -54,6 +54,10 @@ public class OptExpress extends BaseEntity {
     @Column(length = 20)
     private String sendCompanyId;
 
+    @ApiModelProperty("付款方式:寄付 到付")
+    @Column(columnDefinition = "int(1)",nullable = false)
+    private Integer payType;
+
     @ApiModelProperty("发货人")
     @Column(length = 20,nullable = false)
     private String shipper;
@@ -63,10 +67,6 @@ public class OptExpress extends BaseEntity {
     @TableField(updateStrategy = FieldStrategy.NEVER)
     @Column(insertable = false, updatable = false, columnDefinition = "DATETIME  DEFAULT CURRENT_TIMESTAMP")
     private Date shipTime;
-
-    @ApiModelProperty("付款方式:寄付 到付")
-    @Column(columnDefinition = "int(1)",nullable = false)
-    private Integer payType;
 
     @ApiModelProperty("发货人手机号码")
     @Column(length = 11,nullable = false)
@@ -117,10 +117,11 @@ public class OptExpress extends BaseEntity {
 
 
     @ApiModelProperty("物品类型")
-    @Column(length = 20)
+    @Column(length = 20,nullable = false)
     private String objMode;
 
     @ApiModelProperty("件数")
+    @Column(nullable = false)
     private Integer expressNumber;
 
     @ApiModelProperty("网点重量：必填项，数字，小数点后保留2位小数")
@@ -147,7 +148,7 @@ public class OptExpress extends BaseEntity {
     private String expressDesc;
 
     @ApiModelProperty("面单类型:电子面单<默认>、普通面单、星联面单、时效面单")
-    @Column(columnDefinition = "decimal(20,2)")
+    @Column(columnDefinition = "int(1)",nullable = false)
     private Integer faceType;
 
     @ApiModelProperty("面单费")

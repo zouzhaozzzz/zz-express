@@ -3,7 +3,7 @@ package com.zouzhao.opt.manage.core.service;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.read.listener.PageReadListener;
-import com.aliyun.oss.model.OSSObject;
+import com.aliyun.oss.OSSClient;
 import com.zouzhao.common.core.service.PageServiceImpl;
 import com.zouzhao.opt.manage.api.IOptExportApi;
 import com.zouzhao.opt.manage.api.IOptExpressApi;
@@ -86,9 +86,9 @@ public class OptExportService extends PageServiceImpl<OptExportMapper, OptExport
     public void importSends(String filepath,String exportId) {
         //根据路径去阿里云拿到文件流和客户端连接
         List<Object> oss = ossService.downloadStream(filepath);
+        OSSClient ossClient = (OSSClient) oss.get(1);
         try (
                 InputStream inputStream = (InputStream) oss.get(0);
-                OSSObject ossObject = (OSSObject) oss.get(1);
         ) {
             List<OptExpressVO> data = new ArrayList<>();
             //读excel
@@ -114,6 +114,10 @@ public class OptExportService extends PageServiceImpl<OptExportMapper, OptExport
             kafkaTemplate.send("sendImport", "test", "end"+exportId);
         } catch (IOException e) {
             e.printStackTrace();
+        }finally {
+            if (ossClient != null) {
+                ossClient.shutdown();
+            }
         }
     }
 

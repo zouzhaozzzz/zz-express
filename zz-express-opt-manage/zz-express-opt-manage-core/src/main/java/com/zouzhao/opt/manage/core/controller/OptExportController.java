@@ -32,7 +32,7 @@ import java.util.Date;
 @Api(
        tags = "导入导出服务"
 )
-@PreAuthorize("hasAnyRole('OPT_MANAGE_EXPORR_DEFAULT','OPT_MANAGE_EXPORT_ADMIN')")
+@PreAuthorize("hasAnyRole('OPT_MANAGE_EXPORT_DEFAULT','OPT_MANAGE_EXPORT_ADMIN')")
 public class OptExportController extends BaseController<IOptExportApi, OptExportVO> implements PageController<IOptExportApi, OptExportVO> {
 
     @Autowired
@@ -43,14 +43,14 @@ public class OptExportController extends BaseController<IOptExportApi, OptExport
 
     @PostMapping("/exportSends")
     @ApiOperation("导出快递")
-    @PreAuthorize("hasAnyRole('OPT_MANAGE_EXPORR_EXPORT','OPT_MANAGE_EXPORR_ADMIN')")
+    @PreAuthorize("hasAnyRole('OPT_MANAGE_EXPORT_EXPORT','OPT_MANAGE_EXPORT_ADMIN')")
     public void exportSends(@RequestBody OptExportConditionVO vo){
         optExportApi.exportSends();
     }
 
     @PostMapping("/importSends")
     @ApiOperation("导入快递")
-    @PreAuthorize("hasAnyRole('OPT_MANAGE_EXPORR_IMPORT','OPT_MANAGE_EXPORR_ADMIN')")
+    @PreAuthorize("hasAnyRole('OPT_MANAGE_EXPORT_IMPORT','OPT_MANAGE_EXPORT_ADMIN')")
     public ResponseEntity<String> importSends(@RequestBody OptExportVO vo){
         String fileId = vo.getExportFileId();
         //检查文件
