@@ -262,6 +262,11 @@
         <where>
             <if test="v != null">
                 <if test="v.expressId != null and v.expressId != ''">and express_id = #{v.expressId}</if>
+                <if test="v.expressIdList != null and v.expressIdList.size > 0 ">and express_id in
+                    <foreach collection="v.expressIdList" item="expressIdListId" open="(" close=")" separator=",">
+                        #{expressIdListId}
+                    </foreach>
+                </if>
                 <if test="v.bounceFlag != null ">and bounce_flag = #{v.bounceFlag}</if>
                 <if test="v.cleanType != null ">and clean_type = #{v.cleanType}</if>
                 <if test="v.consignee != null  and v.consignee != ''">and consignee concat('%',
@@ -335,7 +340,9 @@
         where express_id = #{expressId}
     </select>
     <select id="isExistById" resultType="java.lang.Integer">
-        select count(1) from opt_express where express_id = #{id};
+        select count(1)
+        from opt_express
+        where express_id = #{id};
     </select>
 
 

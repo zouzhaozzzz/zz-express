@@ -1,6 +1,5 @@
 package com.zouzhao.opt.manage.core.config;
 
-import com.zouzhao.opt.manage.api.IOffsetApi;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRebalanceListener;
@@ -17,7 +16,10 @@ import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.listener.ConsumerAwareListenerErrorHandler;
 import org.springframework.kafka.listener.ConsumerAwareRebalanceListener;
+import org.springframework.kafka.listener.ConsumerRecordRecoverer;
+import org.springframework.kafka.listener.RetryingBatchErrorHandler;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.util.backoff.FixedBackOff;
 
 import javax.annotation.Resource;
 import java.util.Collection;
@@ -31,8 +33,8 @@ public class KafkaConfig {
     @Resource
     private KafkaProperties properties;
 
-    @Resource
-    private IOffsetApi offsetService;
+    // @Resource
+    // private IOffsetApi offsetService;
 
     private final ConsumerRebalanceListener consumerRebalanceListener = new ConsumerAwareRebalanceListener() {
         @Override
@@ -63,7 +65,7 @@ public class KafkaConfig {
     @Bean
     public ConsumerAwareListenerErrorHandler errorBus() {
         return (message, exception, consumer) -> {
-            offsetService.resetOffset(consumer, message, exception);
+            // offsetService.resetOffset(consumer, message, exception);
             return null;
         };
     }
@@ -76,7 +78,7 @@ public class KafkaConfig {
     @Bean
     public ConsumerAwareListenerErrorHandler batchErrorBus() {
         return (message, exception, consumer) -> {
-            offsetService.batchResetOffset(consumer, message, exception);
+            // offsetService.batchResetOffset(consumer, message, exception);
             return null;
         };
     }
@@ -97,7 +99,21 @@ public class KafkaConfig {
         configurer.configure(factory, kafkaConsumerFactory
                 .getIfAvailable(() -> new DefaultKafkaConsumerFactory<>(this.properties.buildConsumerProperties())));
         factory.getContainerProperties().setConsumerRebalanceListener(consumerRebalanceListener);
+        //最大重试15次
+        RetryingBatchErrorHandler retryingBatchErrorHandler = new RetryingBatchErrorHandler(new FixedBackOff(500L, 10L),
+                createConsumerRecordRecoverer());
+        factory.setBatchErrorHandler(retryingBatchErrorHandler);
+
         return factory;
+    }
+
+    /**
+     * 最终消费失败打印日志即可
+     */
+    private ConsumerRecordRecoverer createConsumerRecordRecoverer() {
+        return (consumerRecord, exception) -> {
+            log.error("consumer, exception:{}", exception.toString());
+        };
     }
 
 }

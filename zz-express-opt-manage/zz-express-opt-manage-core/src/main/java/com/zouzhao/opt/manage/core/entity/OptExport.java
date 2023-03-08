@@ -44,6 +44,8 @@ public class OptExport extends BaseEntity {
 
     private String exportFileId;
 
+    private String exportMsg;
+
     @ApiModelProperty("开始时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", locale = "zh", timezone = "GMT+8")
     @TableField(updateStrategy = FieldStrategy.NEVER)

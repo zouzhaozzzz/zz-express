@@ -38,6 +38,7 @@ public class KafkaService {
             groupId = "consumer-group-sendExport",
             containerFactory = "batchKafkaListenerContainerFactory",
             concurrency = "3"
+            // errorHandler = "batchErrorBus" // 进行offset（偏移量的修复）
     )
     @Transactional
     public void batchHandleExport(List<String> data, Acknowledgment ack) {
@@ -50,8 +51,8 @@ public class KafkaService {
                 ExcelWriter excelWriter = threadLocal.get();
                 if (ObjectUtils.isEmpty(excelWriter)) {
                     //模版
-                    String templateFilename =  "快递导出模版.xlsx";
-                    String filename =  "test.xlsx";
+                    String templateFilename = "快递导出模版.xlsx";
+                    String filename = "test.xlsx";
                     excelWriter = EasyExcel.write(filename, OptExpressVO.class).withTemplate(templateFilename).build();
                     threadLocal.set(excelWriter);
                 }
@@ -82,6 +83,7 @@ public class KafkaService {
             groupId = "consumer-group-sendImport",
             containerFactory = "batchKafkaListenerContainerFactory",
             concurrency = "3"
+            // errorHandler = "batchErrorBus" // 进行offset（偏移量的修复）
     )
     @Transactional
     public void batchHandleImport(List<String> data, Acknowledgment ack) {
@@ -90,17 +92,22 @@ public class KafkaService {
             for (int i = 0; i < data.size(); i++) {
                 String dataEntry = data.get(i);
                 //判断文件是否全部导入完
-                if(dataEntry.startsWith("end")){
+                if (dataEntry.startsWith("end")) {
                     String[] split = dataEntry.split("end");
-                    String exportId=split[1];
-                    //更新导入记录 完成时间
-                    optExportApi.updateFinishTimeById(exportId);
+                    String exportId = split[1];
+                    //更新导入记录 完成时间 根据redis记录增加导入信息
+                    optExportApi.updateJustFinish(exportId);
                     continue;
                 }
-                List<OptExpressVO> list = JSONUtil.toList(dataEntry, OptExpressVO.class);
-                //存储数据
-                log.debug("kafka接收到导入数据的长度:{}", list.size());
-                optExpressApi.batchSave(list);
+                String[] split = dataEntry.split("-fen-");
+                //第一位为导入ExportId，第二位为数据
+                if (split.length == 2) {
+                    List<OptExpressVO> list = JSONUtil.toList(split[1], OptExpressVO.class);
+                    //存储数据
+                    log.debug("kafka接收到导入数据的长度:{}", list.size());
+                    optExpressApi.batchSave(split[0],list);
+                }
+
             }
             ack.acknowledge(); // 已经消费完毕
         } catch (Exception e) {

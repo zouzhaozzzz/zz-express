@@ -29,6 +29,8 @@ public class OptExportVO {
 
     private String exportFileId;
 
+    private String exportMsg;
+
     @ApiModelProperty("开始时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", locale = "zh", timezone = "GMT+8")
     private Date exportStartTime;

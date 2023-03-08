@@ -9,6 +9,7 @@
         <result property="exportName" column="export_name"/>
         <result property="exportType" column="export_type"/>
         <result property="exportStartTime" column="export_start_time"/>
+        <result property="exportMsg" column="export_msg"/>
     </resultMap>
     <resultMap type="com.zouzhao.opt.manage.dto.OptExportVO" id="OptExportVOResult">
         <result property="exportId" column="export_id"/>
@@ -18,14 +19,25 @@
         <result property="exportName" column="export_name"/>
         <result property="exportType" column="export_type"/>
         <result property="exportStartTime" column="export_start_time"/>
+        <result property="exportMsg" column="export_msg"/>
     </resultMap>
 
     <sql id="selectOptExportVo">
-        select export_id, export_desc, export_file_id, export_finish_time, export_name, export_type, export_start_time
+        select export_id,
+               export_desc,
+               export_file_id,
+               export_finish_time,
+               export_name,
+               export_type,
+               export_start_time,
+               export_msg
         from opt_export
     </sql>
-    <update id="updateFinishTimeById" parameterType="map">
-        update opt_export set export_finish_time = #{finishTime} where export_id =#{id}
+    <update id="updateJustFinish" parameterType="map">
+        update opt_export
+        set export_finish_time = #{finishTime},
+            export_msg=#{msg}
+        where export_id = #{id}
     </update>
 
     <select id="findList" parameterType="OptExport" resultMap="OptExportResult">

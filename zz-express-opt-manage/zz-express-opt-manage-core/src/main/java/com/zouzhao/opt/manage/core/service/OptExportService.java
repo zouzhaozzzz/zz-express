@@ -5,6 +5,7 @@ import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.read.listener.PageReadListener;
 import com.aliyun.oss.OSSClient;
 import com.zouzhao.common.core.service.PageServiceImpl;
+import com.zouzhao.common.security.utils.RedisManager;
 import com.zouzhao.opt.manage.api.IOptExportApi;
 import com.zouzhao.opt.manage.api.IOptExpressApi;
 import com.zouzhao.opt.manage.core.entity.OptExport;
@@ -49,6 +50,8 @@ public class OptExportService extends PageServiceImpl<OptExportMapper, OptExport
     private IOptExpressApi optExpressApi;
     @Autowired
     private OssService ossService;
+    @Autowired
+    private RedisManager redisManager;
 
     @Override
     public void exportSends() {
@@ -106,7 +109,7 @@ public class OptExportService extends PageServiceImpl<OptExportMapper, OptExport
             //最后一波数据可能小于batch_size
             if (data.size() > 0) {
                 String jsonStr = JSONUtil.toJsonStr(data);
-                kafkaTemplate.send("sendImport", "test", jsonStr);
+                kafkaTemplate.send("sendImport", "test",exportId+"-fen-"+jsonStr);
                 log.debug("发送成功");
                 data.clear();
             }
@@ -122,8 +125,27 @@ public class OptExportService extends PageServiceImpl<OptExportMapper, OptExport
 
     @Override
     @Transactional
-    public void updateFinishTimeById(String exportId) {
-        getMapper().updateFinishTimeById(exportId,new Date());
+    public void updateJustFinish(String exportId) {
+        //更新导入记录 完成时间 根据redis记录增加导入信息
+        String err = redisManager.getValue("import-err:" + exportId);
+        if(err != null){
+            getMapper().updateJustFinish(exportId,new Date(),err);
+        }else {
+            StringBuilder builder = new StringBuilder("msg:");
+            String redisKey="import-all:" + exportId;
+            String all = redisManager.getValue(redisKey);
+            if(all !=null) {
+                builder.append("总共导入").append(all).append("条数据 ");
+                redisManager.deleteKey(redisKey);
+            }
+            redisKey="import-repeat:" + exportId;
+            String repeat = redisManager.getValue(redisKey);
+            if(repeat !=null) {
+                builder.append("重复数据").append(repeat).append("条 ");
+                redisManager.deleteKey(redisKey);
+            }
+            getMapper().updateJustFinish(exportId,new Date(),builder.toString());
+        }
     }
 
 

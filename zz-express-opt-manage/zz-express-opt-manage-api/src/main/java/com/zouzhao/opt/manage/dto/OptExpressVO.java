@@ -24,6 +24,7 @@ public class OptExpressVO {
     @ExcelProperty(index = 0)
     @ApiModelProperty("运单号")
     private String expressId;
+    private List<String> expressIdList;
 
     @ExcelProperty(index = 1)
     @ApiModelProperty("运单状态")

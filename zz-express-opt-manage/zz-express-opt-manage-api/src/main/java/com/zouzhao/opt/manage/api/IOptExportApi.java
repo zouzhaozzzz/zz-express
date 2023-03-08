@@ -17,5 +17,5 @@ public interface IOptExportApi extends IPageApi<OptExportVO> {
     void importSends(String path,String exportId);
 
     @PostMapping("/updateFinishTimeById")
-    void updateFinishTimeById(String exportId);
+    void updateJustFinish(String exportId);
 }
