@@ -261,13 +261,16 @@
                 <if test="v.expressId != null and v.expressId != ''">and express_id = #{v.expressId}</if>
                 <if test="v.bounceFlag != null ">and bounce_flag = #{v.bounceFlag}</if>
                 <if test="v.cleanType != null ">and clean_type = #{v.cleanType}</if>
-                <if test="v.consignee != null  and v.consignee != ''">and consignee = #{v.consignee}</if>
+                <if test="v.consignee != null  and v.consignee != ''">and consignee concat('%',
+                    #{v.consignee}, '%')
+                </if>
                 <if test="v.consigneePhone != null  and v.consigneePhone != ''">and consignee_phone =
                     #{v.consigneePhone}
                 </if>
                 <if test="v.consigneeTime != null ">and consignee_time = #{v.consigneeTime}</if>
                 <if test="v.consigneeTimeList != null and v.consigneeTimeList.size >1 ">
-                and consignee_time >= #{v.consigneeTimeList[0]} consignee_time <![CDATA[<=]]> #{v.consigneeTimeList[1]}
+                    and consignee_time >= #{v.consigneeTimeList[0]} consignee_time <![CDATA[<=]]>
+                    #{v.consigneeTimeList[1]}
                 </if>
                 <if test="v.customerFreight != null ">and customer_freight = #{v.customerFreight}</if>
                 <if test="v.expressDataSource != null  and v.expressDataSource != ''">and express_data_source =
@@ -305,10 +308,12 @@
                 <if test="v.sendTransitCost != null ">and send_transit_cost = #{v.sendTransitCost}</if>
                 <if test="v.shipTime != null ">and ship_time = #{v.shipTime}</if>
                 <if test="v.shipTimeList != null and v.shipTimeList.size>1 ">
-                and ship_time >= #{v.shipTimeList[0]} and ship_time <![CDATA[<=]]> #{v.shipTimeList[1]}
+                    and ship_time >= #{v.shipTimeList[0]} and ship_time <![CDATA[<=]]> #{v.shipTimeList[1]}
                 </if>
 
-            <if test="v.shipper != null  and v.shipper != ''">and shipper = #{v.shipper}</if>
+                <if test="v.shipper != null  and v.shipper != ''">and shipper like concat('%',
+                    #{v.shipper}, '%')
+                </if>
                 <if test="v.shipperPhone != null  and v.shipperPhone != ''">and shipper_phone = #{v.shipperPhone}</if>
                 <if test="v.totalCost != null ">and total_cost = #{v.totalCost}</if>
                 <if test="v.volume != null ">and volume = #{v.volume}</if>

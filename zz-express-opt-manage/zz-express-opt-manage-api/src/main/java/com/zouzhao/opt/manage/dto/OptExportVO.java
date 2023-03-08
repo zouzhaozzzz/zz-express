@@ -1,6 +1,7 @@
 package com.zouzhao.opt.manage.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,6 +13,7 @@ import java.util.Date;
  * @author 姚超
  * @DATE: 2023-3-6
  */
+@ApiModel("导入导出记录")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
