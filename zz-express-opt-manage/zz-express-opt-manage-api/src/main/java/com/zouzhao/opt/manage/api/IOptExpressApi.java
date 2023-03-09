@@ -18,4 +18,7 @@ public interface IOptExpressApi extends IPageApi<OptExpressVO> {
 
     @PostMapping("/updateStatusBatch")
     void updateStatusBatch(List<String> ids,Integer status);
+
+    @PostMapping("/countByStatus")
+    int countByStatus(Integer status);
 }

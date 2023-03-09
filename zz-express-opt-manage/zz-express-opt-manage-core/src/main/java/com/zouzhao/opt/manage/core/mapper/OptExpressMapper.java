@@ -17,4 +17,6 @@ public interface OptExpressMapper extends IPageMapper<OptExpress, OptExpressVO> 
     Integer isExistById(@Param("id") String expressId);
 
     void updateStatusBatch(@Param("list")List<String> ids, @Param("status") Integer status);
+
+    int countByStatus(@Param("status")Integer status);
 }

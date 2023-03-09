@@ -83,6 +83,11 @@ public class OptExpressService extends PageServiceImpl<OptExpressMapper, OptExpr
 
     }
 
+    @Override
+    public int countByStatus(Integer status) {
+        return getMapper().countByStatus(status);
+    }
+
     private void incrementNum(String redisKey, Integer size) {
         String num = redisManager.getValue(redisKey);
         if (StrUtil.isBlank(num)) {

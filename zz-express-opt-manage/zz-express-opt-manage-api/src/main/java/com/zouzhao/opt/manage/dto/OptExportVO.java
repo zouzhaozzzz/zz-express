@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author 姚超
@@ -24,6 +25,7 @@ public class OptExportVO {
     private String exportName;
 
     private Integer exportType;
+    private List<Integer> exportTypeList;
 
     private String exportDesc;
 

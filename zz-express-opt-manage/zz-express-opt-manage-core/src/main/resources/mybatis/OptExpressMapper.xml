@@ -350,6 +350,9 @@
         from opt_express
         where express_id = #{id};
     </select>
+    <select id="countByStatus" resultType="java.lang.Integer">
+        select  count(1) from opt_express where express_status = #{status}
+    </select>
 
 
 </mapper>

@@ -12,6 +12,7 @@ import com.zouzhao.opt.manage.dto.OptExpressVO;
 import com.zouzhao.sys.org.client.SysOrgElementClient;
 import com.zouzhao.sys.org.dto.SysOrgElementVO;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -59,8 +60,8 @@ public class OptExpressController extends BaseController<IOptExpressApi, OptExpr
     public ResponseEntity<String> updateStatusBatch(@RequestBody OptExpressVO vo) {
         List<String> idList = vo.getExpressIdList();
         Integer status = vo.getExpressStatus();
-        if(ObjectUtil.isEmpty(idList) || status == null)throw new MyException("未传入ids或状态");
-        getApi().updateStatusBatch(idList,status);
+        if (ObjectUtil.isEmpty(idList) || status == null) throw new MyException("未传入ids或状态");
+        getApi().updateStatusBatch(idList, status);
         return new ResponseEntity("修改成功", HttpStatus.OK);
     }
 
@@ -94,7 +95,7 @@ public class OptExpressController extends BaseController<IOptExpressApi, OptExpr
                         if (ObjectUtil.isNotEmpty(result)) expressVO.setSendCustomer(result);
                     }
                     //所属公司
-                    String sendCompanyId=expressVO.getSendCompanyId();
+                    String sendCompanyId = expressVO.getSendCompanyId();
                     if (ObjectUtil.isNotEmpty(sendCompanyId)) {
                         SysOrgElementVO result = sysOrgElementClient.findVOById(IdDTO.of(sendCompanyId));
                         if (ObjectUtil.isNotEmpty(result)) expressVO.setSendCompany(result);
@@ -102,5 +103,22 @@ public class OptExpressController extends BaseController<IOptExpressApi, OptExpr
                 }
         );
         return page;
+    }
+
+    @PreAuthorize("hasAnyRole('OPT_MANAGE_EXPRESS_LIST','OPT_MANAGE_EXPRESS_ADMIN')")
+    @ApiOperation("统计快递状态")
+    @PostMapping("/countStatus")
+    public List<Integer> countStatus() {
+        ArrayList<Integer> list = new ArrayList<>();
+        //统计待取货，运输中，派件中，已签收
+        int n1 = getApi().countByStatus(0);
+        int n2 = getApi().countByStatus(1);
+        int n3 = getApi().countByStatus(2);
+        int n4 = getApi().countByStatus(3);
+        list.add(n1);
+        list.add(n2);
+        list.add(n3);
+        list.add(n4);
+        return list;
     }
 }
