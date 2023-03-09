@@ -1,10 +1,6 @@
 package com.zouzhao.opt.manage.core.config;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.consumer.Consumer;
-import org.apache.kafka.clients.consumer.ConsumerRebalanceListener;
-import org.apache.kafka.clients.consumer.OffsetAndMetadata;
-import org.apache.kafka.common.TopicPartition;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.kafka.ConcurrentKafkaListenerContainerFactoryConfigurer;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
@@ -14,15 +10,12 @@ import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
-import org.springframework.kafka.listener.ConsumerAwareListenerErrorHandler;
-import org.springframework.kafka.listener.ConsumerAwareRebalanceListener;
 import org.springframework.kafka.listener.ConsumerRecordRecoverer;
 import org.springframework.kafka.listener.RetryingBatchErrorHandler;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.util.backoff.FixedBackOff;
 
 import javax.annotation.Resource;
-import java.util.Collection;
 
 @Configuration
 @EnableKafka
@@ -32,56 +25,6 @@ public class KafkaConfig {
 
     @Resource
     private KafkaProperties properties;
-
-    // @Resource
-    // private IOffsetApi offsetService;
-
-    private final ConsumerRebalanceListener consumerRebalanceListener = new ConsumerAwareRebalanceListener() {
-        @Override
-        public void onPartitionsRevokedBeforeCommit(Consumer<?, ?> consumer, Collection<TopicPartition> partitions) {
-            System.out.println("...onPartitionsRevokedBeforeCommit");
-            consumer.commitSync();
-        }
-
-        @Override
-        public void onPartitionsAssigned(Consumer<?, ?> consumer, Collection<TopicPartition> partitions) {
-            System.out.println("...onPartitionsAssigned");
-            for (TopicPartition topicPartition : partitions) {
-                // Get the last committed offset for the given partition
-                OffsetAndMetadata offsetAndMetadata = consumer.committed(topicPartition);
-                if (offsetAndMetadata != null)
-                    consumer.seek(topicPartition, offsetAndMetadata.offset());
-                else
-                    consumer.seek(topicPartition, 0);
-            }
-        }
-    };
-
-    /**
-     * <p>消息发送异常处理总线</p>
-     *
-     * @return 错误处理机制
-     */
-    @Bean
-    public ConsumerAwareListenerErrorHandler errorBus() {
-        return (message, exception, consumer) -> {
-            // offsetService.resetOffset(consumer, message, exception);
-            return null;
-        };
-    }
-
-    /**
-     * <p>消息批处理发送 - 异常处理总线</p>
-     *
-     * @return 错误处理机制
-     */
-    @Bean
-    public ConsumerAwareListenerErrorHandler batchErrorBus() {
-        return (message, exception, consumer) -> {
-            // offsetService.batchResetOffset(consumer, message, exception);
-            return null;
-        };
-    }
 
     /**
      * Kafka批处理监听容器工厂Bean
@@ -98,7 +41,6 @@ public class KafkaConfig {
         factory.setBatchListener(true); // 开启批处理
         configurer.configure(factory, kafkaConsumerFactory
                 .getIfAvailable(() -> new DefaultKafkaConsumerFactory<>(this.properties.buildConsumerProperties())));
-        factory.getContainerProperties().setConsumerRebalanceListener(consumerRebalanceListener);
         //最大重试15次
         RetryingBatchErrorHandler retryingBatchErrorHandler = new RetryingBatchErrorHandler(new FixedBackOff(500L, 10L),
                 createConsumerRecordRecoverer());

@@ -4,6 +4,7 @@ import cn.hutool.json.JSONUtil;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.ExcelWriter;
 import com.alibaba.excel.write.metadata.WriteSheet;
+import com.zouzhao.common.security.utils.RedisManager;
 import com.zouzhao.opt.manage.api.IOptExportApi;
 import com.zouzhao.opt.manage.api.IOptExpressApi;
 import com.zouzhao.opt.manage.dto.OptExpressVO;
@@ -12,6 +13,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
+import org.springframework.kafka.support.KafkaHeaders;
+import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
@@ -32,6 +35,8 @@ public class KafkaService {
     private IOptExpressApi optExpressApi;
     @Autowired
     private IOptExportApi optExportApi;
+    @Autowired
+    private RedisManager redisManager;
 
     @KafkaListener(
             topics = {"sendExport"},
@@ -86,28 +91,20 @@ public class KafkaService {
             // errorHandler = "batchErrorBus" // 进行offset（偏移量的修复）
     )
     @Transactional
-    public void batchHandleImport(List<String> data, Acknowledgment ack) {
+    public void batchHandleImport(List<String> data, Acknowledgment ack, @Header(KafkaHeaders.RECEIVED_MESSAGE_KEY) String key) {
         try {
-            System.out.println(Thread.currentThread().getId() + ":" + Thread.currentThread().getName() + ">>>" + data.size());
             for (int i = 0; i < data.size(); i++) {
                 String dataEntry = data.get(i);
                 //判断文件是否全部导入完
-                if (dataEntry.startsWith("end")) {
-                    String[] split = dataEntry.split("end");
-                    String exportId = split[1];
+                if (key.equals("end")) {
                     //更新导入记录 完成时间 根据redis记录增加导入信息
-                    optExportApi.updateJustFinish(exportId);
+                    optExportApi.updateJustFinish(dataEntry);
                     continue;
                 }
-                String[] split = dataEntry.split("-fen-");
-                //第一位为导入ExportId，第二位为数据
-                if (split.length == 2) {
-                    List<OptExpressVO> list = JSONUtil.toList(split[1], OptExpressVO.class);
-                    //存储数据
-                    log.debug("kafka接收到导入数据的长度:{}", list.size());
-                    optExpressApi.batchSave(split[0],list);
-                }
-
+                List<OptExpressVO> list = JSONUtil.toList(dataEntry, OptExpressVO.class);
+                //存储数据
+                log.debug("kafka接收到导入数据的长度:{}", list.size());
+                optExpressApi.batchSave(key, list);
             }
             ack.acknowledge(); // 已经消费完毕
         } catch (Exception e) {
@@ -115,6 +112,7 @@ public class KafkaService {
             // 因此kafka会一直把这个消息保留(hold)在队列中
             // 客户端的下一次拉取仍然是拉取的上一次没有应答的消息
             // 避免了由于业务异常造成的消息“丢失“
+            redisManager.appendValue("import-err:" + key,e.getMessage());
             ack.acknowledge();
             e.printStackTrace();
         }

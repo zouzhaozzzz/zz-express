@@ -23,7 +23,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
@@ -100,7 +99,7 @@ public class OptExportService extends PageServiceImpl<OptExportMapper, OptExport
                     data.add(express);
                     if (data.size() == batchSize) {
                         String jsonStr = JSONUtil.toJsonStr(data);
-                        kafkaTemplate.send("sendImport", "test", jsonStr);
+                        kafkaTemplate.send("sendImport", exportId, jsonStr);
                         log.debug("发送成功");
                         data.clear();
                     }
@@ -109,11 +108,11 @@ public class OptExportService extends PageServiceImpl<OptExportMapper, OptExport
             //最后一波数据可能小于batch_size
             if (data.size() > 0) {
                 String jsonStr = JSONUtil.toJsonStr(data);
-                kafkaTemplate.send("sendImport", exportId,exportId+"-fen-"+jsonStr);
+                kafkaTemplate.send("sendImport", exportId,jsonStr);
                 log.debug("发送成功");
                 data.clear();
             }
-            kafkaTemplate.send("sendImport", exportId, "end"+exportId);
+            kafkaTemplate.send("sendImport", "end", exportId);
         } catch (Exception e) {
             redisManager.appendValue("import-err:" + exportId,e.getMessage());
             e.printStackTrace();
