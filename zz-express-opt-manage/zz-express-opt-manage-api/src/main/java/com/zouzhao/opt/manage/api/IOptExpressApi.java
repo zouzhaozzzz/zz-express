@@ -15,4 +15,7 @@ public interface IOptExpressApi extends IPageApi<OptExpressVO> {
     @PostMapping("/batchSave")
     //如果存在相同运单号不新增
     void batchSave(String exportId, List<OptExpressVO> list);
+
+    @PostMapping("/updateStatusBatch")
+    void updateStatusBatch(List<String> ids,Integer status);
 }

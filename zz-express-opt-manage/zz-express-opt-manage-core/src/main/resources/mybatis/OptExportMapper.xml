@@ -71,11 +71,12 @@
     <select id="page" parameterType="com.zouzhao.opt.manage.dto.OptExportVO" resultMap="OptExportVOResult">
         <include refid="selectOptExportVo"/>
         <where>
-            <if test="exportType != null">and export_type = #{exportType}</if>
+            <if test="v.exportType != null">and export_type = #{v.exportType}</if>
             <if test="v.exportFileId != null  and v.exportFileId != ''">and export_file_id = #{v.exportFileId}</if>
             <if test="v.exportName != null  and v.exportName != ''">and export_name like concat('%', #{v.exportName},
                 '%')
             </if>
         </where>
+        order by export_start_time desc
     </select>
 </mapper>

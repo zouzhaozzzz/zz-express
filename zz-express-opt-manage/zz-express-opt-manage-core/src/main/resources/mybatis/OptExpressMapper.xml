@@ -149,6 +149,12 @@
     <insert id="batchSaveOrUpdate">
 
     </insert>
+    <update id="updateStatusBatch" parameterType="map">
+        update opt_express set express_status = #{status} where express_id in
+        <foreach collection="list" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </update>
 
     <select id="findList" parameterType="OptExpress" resultMap="OptExpressResult">
         <include refid="selectOptExpressVo"/>

@@ -4,6 +4,7 @@ import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zouzhao.common.core.controller.BaseController;
 import com.zouzhao.common.core.controller.PageController;
+import com.zouzhao.common.core.exception.MyException;
 import com.zouzhao.common.dto.IdDTO;
 import com.zouzhao.common.dto.IdsDTO;
 import com.zouzhao.opt.manage.api.IOptExpressApi;
@@ -12,7 +13,10 @@ import com.zouzhao.sys.org.client.SysOrgElementClient;
 import com.zouzhao.sys.org.dto.SysOrgElementVO;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -48,6 +52,16 @@ public class OptExpressController extends BaseController<IOptExpressApi, OptExpr
     @PreAuthorize("hasAnyRole('OPT_MANAGE_EXPRESS_UPDATE','OPT_MANAGE_EXPRESS_ADMIN')")
     public IdDTO update(@RequestBody OptExpressVO vo) {
         return PageController.super.update(vo);
+    }
+
+    @PreAuthorize("hasAnyRole('OPT_MANAGE_EXPRESS_UPDATE','OPT_MANAGE_EXPRESS_ADMIN')")
+    @PostMapping("/updateStatusBatch")
+    public ResponseEntity<String> updateStatusBatch(@RequestBody OptExpressVO vo) {
+        List<String> idList = vo.getExpressIdList();
+        Integer status = vo.getExpressStatus();
+        if(ObjectUtil.isEmpty(idList) || status == null)throw new MyException("未传入ids或状态");
+        getApi().updateStatusBatch(idList,status);
+        return new ResponseEntity("修改成功", HttpStatus.OK);
     }
 
     @PreAuthorize("hasAnyRole('OPT_MANAGE_EXPRESS_DELETE','OPT_MANAGE_EXPRESS_ADMIN')")

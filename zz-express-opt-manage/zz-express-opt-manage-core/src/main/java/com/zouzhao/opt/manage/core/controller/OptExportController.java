@@ -1,6 +1,7 @@
 package com.zouzhao.opt.manage.core.controller;
 
 import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zouzhao.common.core.controller.BaseController;
 import com.zouzhao.common.core.controller.PageController;
 import com.zouzhao.common.core.exception.MyException;
@@ -64,5 +65,10 @@ public class OptExportController extends BaseController<IOptExportApi, OptExport
         IdDTO dto = getApi().add(vo);
         optExportApi.importSends(path,dto.getId());
         return new ResponseEntity<>("导入已开始",HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasAnyRole('OPT_MANAGE_EXPORT_LIST','OPT_MANAGE_EXPORT_ADMIN')")
+    public Page<OptExportVO> page(Page<OptExportVO> page) {
+        return PageController.super.page(page);
     }
 }

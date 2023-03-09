@@ -27,23 +27,18 @@ import org.springframework.stereotype.Component;
                 @AuthRole(
                         name = "ROLE_OPT_MANAGE_EXPORT_LIST",
                         messageKey = "运单管理:导入导出-阅读所有",
-                        desc = "允许阅读所有寄派件"
+                        desc = "允许阅读所有导入导出"
                 ),
                 @AuthRole(
                         name = "ROLE_OPT_MANAGE_EXPORT_EXPORT",
                         messageKey = "运单管理:导入导出-导入",
-                        desc = "允许新增寄派件"
+                        desc = "允许新增导入导出"
                 ),
                 @AuthRole(
                         name = "ROLE_OPT_MANAGE_EXPORT_IMPORT",
                         messageKey = "运单管理:导入导出-导出",
-                        desc = "允许更新寄派件"
+                        desc = "允许更新导入导出"
                 ),
-                @AuthRole(
-                        name = "ROLE_OPT_MANAGE_EXPORT_DELETE",
-                        messageKey = "运单管理:导入导出-删除",
-                        desc = "允许删除寄派件"
-                )
         }
 )
 public class OptExportRole {

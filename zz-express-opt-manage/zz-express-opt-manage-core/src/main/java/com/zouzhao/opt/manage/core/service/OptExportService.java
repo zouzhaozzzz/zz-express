@@ -109,12 +109,13 @@ public class OptExportService extends PageServiceImpl<OptExportMapper, OptExport
             //最后一波数据可能小于batch_size
             if (data.size() > 0) {
                 String jsonStr = JSONUtil.toJsonStr(data);
-                kafkaTemplate.send("sendImport", "test",exportId+"-fen-"+jsonStr);
+                kafkaTemplate.send("sendImport", exportId,exportId+"-fen-"+jsonStr);
                 log.debug("发送成功");
                 data.clear();
             }
-            kafkaTemplate.send("sendImport", "test", "end"+exportId);
-        } catch (IOException e) {
+            kafkaTemplate.send("sendImport", exportId, "end"+exportId);
+        } catch (Exception e) {
+            redisManager.appendValue("import-err:" + exportId,e.getMessage());
             e.printStackTrace();
         }finally {
             if (ossClient != null) {
