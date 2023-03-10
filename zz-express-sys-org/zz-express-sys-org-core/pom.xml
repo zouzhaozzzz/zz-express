@@ -23,6 +23,11 @@
             <artifactId>zz-express-opt-manage-client</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>com.zouzhao</groupId>
+            <artifactId>zz-express-opt-file-client</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
         <!--client e-->
         <dependency>
             <groupId>com.zouzhao</groupId>

@@ -30,4 +30,8 @@ spring:
           uri: lb://zz-opt-manage
           predicates:
             - Path=/data/opt-manage/**,/api/opt-manage/**
+        - id: zz-opt-file
+          uri: lb://zz-opt-file
+          predicates:
+            - Path=/data/opt-file/**,/api/opt-file/**
       

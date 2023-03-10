@@ -1,9 +1,9 @@
 server:
-  port: 9002
+  port: 9003
 
 spring:
   application:
-    name: zz-opt-manage
+    name: zz-opt-file
   #允许存在多个Feign调用相同Service的接口
   main:
     allow-bean-definition-overriding: true
@@ -48,12 +48,12 @@ spring:
       - 192.168.247.128:9092
 
 mybatis-plus:
-  type-aliases-package: com.zouzhao.opt.manage.core.entity
+  type-aliases-package: com.zouzhao.opt.file.core.entity
   mapper-locations:
     - classpath*:/mybatis/*.xml
 
 module:
-  moduleNameList: opt-manage
+  moduleNameList: opt-file
   
 export:
   batchSize: 1000

@@ -20,7 +20,7 @@ public class RedisManager {
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
 
-    public  <T> T getValue(String key, Function<Integer, T> mapper) {
+    public <T> T getValue(String key, Function<Integer, T> mapper) {
         Object o = redisTemplate.opsForValue().get(key);
         if (ObjectUtils.isEmpty(o)) {
             String[] split = key.split(":");
@@ -31,27 +31,28 @@ public class RedisManager {
         return (T) o;
     }
 
-    public  String getValue(String key) {
+    public String getValue(String key) {
         Object o = redisTemplate.opsForValue().get(key);
         if (ObjectUtils.isEmpty(o)) return null;
         return (String) o;
     }
 
 
-    public  void setValue(String key, Object value) {
+    public void setValue(String key, Object value) {
         redisTemplate.opsForValue().set(key, value, 1, TimeUnit.DAYS);
     }
 
-    public  void appendValue(String key, Object value) {
+    public void appendStrValue(String key, String value) {
         String result = getValue(key);
-        if(result ==null) {
-            redisTemplate.opsForValue().set(key, value, 1, TimeUnit.DAYS);
-        }else{
-            redisTemplate.opsForValue().set(key,result+ value, 1, TimeUnit.DAYS);
+        String appendValue = value + result;
+        if (appendValue.length() > 250) {
+            redisTemplate.opsForValue().set(key, (value + result).substring(0, 250), 1, TimeUnit.DAYS);
+        } else {
+            redisTemplate.opsForValue().set(key, appendValue, 1, TimeUnit.DAYS);
         }
     }
 
-    public  <T> T getHashValue(String key, String hashKey, Function<Integer, T> mapper) {
+    public <T> T getHashValue(String key, String hashKey, Function<Integer, T> mapper) {
         Object o = redisTemplate.opsForHash().get(key, hashKey);
         if (ObjectUtils.isEmpty(o)) {
             T t = mapper.apply(Integer.valueOf(hashKey));
@@ -61,15 +62,15 @@ public class RedisManager {
         return (T) o;
     }
 
-    public  void setHashValue(String key, String hashKey, Object value) {
+    public void setHashValue(String key, String hashKey, Object value) {
         redisTemplate.opsForHash().put(key, hashKey, value);
     }
 
-    public  void addSetValue(String key, Object value) {
+    public void addSetValue(String key, Object value) {
         redisTemplate.opsForSet().add(key, value);
     }
 
-    public  Object getSetMembers(String key) {
+    public Object getSetMembers(String key) {
         return redisTemplate.opsForSet().members(key);
     }
 
