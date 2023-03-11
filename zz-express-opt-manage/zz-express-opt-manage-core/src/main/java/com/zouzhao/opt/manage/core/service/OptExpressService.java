@@ -6,6 +6,9 @@ import com.zouzhao.common.security.utils.RedisManager;
 import com.zouzhao.opt.manage.api.IOptExpressApi;
 import com.zouzhao.opt.manage.core.entity.OptExpress;
 import com.zouzhao.opt.manage.core.mapper.OptExpressMapper;
+import com.zouzhao.opt.manage.dto.OptExpressMonthFeeVO;
+import com.zouzhao.opt.manage.dto.OptExpressMonthNumVO;
+import com.zouzhao.opt.manage.dto.OptExpressProvinceVO;
 import com.zouzhao.opt.manage.dto.OptExpressVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,6 +95,46 @@ public class OptExpressService extends PageServiceImpl<OptExpressMapper, OptExpr
     @Override
     public int countByStatus(Integer status) {
         return getMapper().countByStatus(status);
+    }
+
+    @Override
+    public List<OptExpressProvinceVO> countConsignByProvinces() {
+        return getMapper().countConsignByProvinces();
+    }
+
+    @Override
+    public List<OptExpressProvinceVO> countSendByProvinces() {
+        return getMapper().countSendByProvinces();
+    }
+
+    @Override
+    public List<OptExpressMonthNumVO> countBounceByMonth() {
+        return getMapper().countByBounce();
+    }
+
+    @Override
+    public List<OptExpressMonthNumVO> countQuestionByMonth() {
+        return getMapper().countByQuestion();
+    }
+
+    @Override
+    public List<OptExpressMonthFeeVO> countTotalCostByMonth() {
+        return getMapper().countTotalCostByMonth();
+    }
+
+    @Override
+    public List<OptExpressMonthFeeVO> countSendFineByMonth() {
+        return getMapper().countSendFineByMonth();
+    }
+
+    @Override
+    public List<OptExpressMonthFeeVO> countFreightByMonth() {
+        return getMapper().countFreightByMonth();
+    }
+
+    @Override
+    public List<OptExpressMonthFeeVO> countPremiumByMonth() {
+        return getMapper().countPremiumByMonth();
     }
 
     private void incrementNum(String redisKey, Integer size) {

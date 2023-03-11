@@ -351,6 +351,50 @@
     <select id="countByStatus" resultType="java.lang.Integer">
         select  count(1) from opt_express where express_status = #{status}
     </select>
+    <select id="countConsignByProvinces" resultType="com.zouzhao.opt.manage.dto.OptExpressProvinceVO" >
+        select consignee_province as province,count(1) as count from  opt_express where consignee_province is not null group by consignee_province limit 10
+    </select>
 
+    <select id="countSendByProvinces" resultType="com.zouzhao.opt.manage.dto.OptExpressProvinceVO" >
+        select send_province as province,count(1) as count from  opt_express where send_province is not null group by send_province limit 10
+    </select>
+    <select id="countByBounce" resultType="com.zouzhao.opt.manage.dto.OptExpressMonthNumVO">
+        SELECT DATE_FORMAT(ship_time, '%m') as month, COUNT(1) as count
+        FROM opt_express
+        where question_flag =1
+        GROUP BY DATE_FORMAT(ship_time, '%m')
+        ORDER BY ship_time
+    </select>
+    <select id="countByQuestion" resultType="com.zouzhao.opt.manage.dto.OptExpressMonthNumVO">
+        SELECT DATE_FORMAT(ship_time, '%m') as month, COUNT(1) as count
+        FROM opt_express
+        where bounce_flag =1
+        GROUP BY DATE_FORMAT(ship_time, '%m')
+        ORDER BY ship_time
+    </select>
+    <select id="countTotalCostByMonth" resultType="com.zouzhao.opt.manage.dto.OptExpressMonthFeeVO">
+        SELECT DATE_FORMAT(ship_time, '%m') as month, SUM(total_cost) as fee
+        FROM opt_express
+        GROUP BY DATE_FORMAT(ship_time, '%m')
+        ORDER BY ship_time
+    </select>
+    <select id="countSendFineByMonth" resultType="com.zouzhao.opt.manage.dto.OptExpressMonthFeeVO">
+        SELECT DATE_FORMAT(ship_time, '%m') as month, SUM(send_fine) as fee
+        FROM opt_express
+        GROUP BY DATE_FORMAT(ship_time, '%m')
+        ORDER BY ship_time
+    </select>
+    <select id="countFreightByMonth" resultType="com.zouzhao.opt.manage.dto.OptExpressMonthFeeVO">
+        SELECT DATE_FORMAT(ship_time, '%m') as month, SUM(customer_freight) as fee
+        FROM opt_express
+        GROUP BY DATE_FORMAT(ship_time, '%m')
+        ORDER BY ship_time
+    </select>
+    <select id="countPremiumByMonth" resultType="com.zouzhao.opt.manage.dto.OptExpressMonthFeeVO">
+        SELECT DATE_FORMAT(ship_time, '%m') as month, SUM(premium) as fee
+        FROM opt_express
+        GROUP BY DATE_FORMAT(ship_time, '%m')
+        ORDER BY ship_time
+    </select>
 
 </mapper>

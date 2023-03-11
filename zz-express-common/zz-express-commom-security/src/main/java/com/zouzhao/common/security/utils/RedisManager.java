@@ -66,6 +66,9 @@ public class RedisManager {
         redisTemplate.opsForHash().put(key, hashKey, value);
     }
 
+    public Object getHashValue(String key, String hashKey) {
+        return redisTemplate.opsForHash().get(key, hashKey);
+    }
     public void addSetValue(String key, Object value) {
         redisTemplate.opsForSet().add(key, value);
     }

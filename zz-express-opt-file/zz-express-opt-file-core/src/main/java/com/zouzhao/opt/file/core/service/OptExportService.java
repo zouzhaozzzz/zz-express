@@ -117,6 +117,7 @@ public class OptExportService extends PageServiceImpl<OptExportMapper, OptExport
             kafkaTemplate.send("sendImport", exportId,"end");
         } catch (Exception e) {
             redisManager.appendStrValue("import-err:" + exportId,e.getMessage());
+            updateJustFinish(exportId);
             e.printStackTrace();
         }finally {
             if (ossClient != null) {

@@ -2,6 +2,9 @@ package com.zouzhao.opt.manage.core.mapper;
 
 import com.zouzhao.common.core.mapper.IPageMapper;
 import com.zouzhao.opt.manage.core.entity.OptExpress;
+import com.zouzhao.opt.manage.dto.OptExpressMonthFeeVO;
+import com.zouzhao.opt.manage.dto.OptExpressMonthNumVO;
+import com.zouzhao.opt.manage.dto.OptExpressProvinceVO;
 import com.zouzhao.opt.manage.dto.OptExpressVO;
 import org.apache.ibatis.annotations.Param;
 
@@ -19,4 +22,20 @@ public interface OptExpressMapper extends IPageMapper<OptExpress, OptExpressVO> 
     void updateStatusBatch(@Param("list")List<String> ids, @Param("status") Integer status);
 
     int countByStatus(@Param("status")Integer status);
+
+    List<OptExpressProvinceVO> countConsignByProvinces();
+
+    List<OptExpressProvinceVO> countSendByProvinces();
+
+    List<OptExpressMonthNumVO> countByBounce();
+
+    List<OptExpressMonthNumVO> countByQuestion();
+
+    List<OptExpressMonthFeeVO> countTotalCostByMonth();
+
+    List<OptExpressMonthFeeVO> countSendFineByMonth();
+
+    List<OptExpressMonthFeeVO> countFreightByMonth();
+
+    List<OptExpressMonthFeeVO> countPremiumByMonth();
 }
