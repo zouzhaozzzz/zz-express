@@ -31,10 +31,10 @@ public class RedisManager {
         return (T) o;
     }
 
-    public String getValue(String key) {
+    public Object getValue(String key) {
         Object o = redisTemplate.opsForValue().get(key);
         if (ObjectUtils.isEmpty(o)) return null;
-        return (String) o;
+        return o;
     }
 
 
@@ -43,8 +43,11 @@ public class RedisManager {
     }
 
     public void appendStrValue(String key, String value) {
-        String result = getValue(key);
-        String appendValue = value + result;
+        Object result = getValue(key);
+        String appendValue = value;
+        if (result != null)
+            appendValue = value + result;
+
         if (appendValue.length() > 250) {
             redisTemplate.opsForValue().set(key, (value + result).substring(0, 250), 1, TimeUnit.DAYS);
         } else {
@@ -69,6 +72,7 @@ public class RedisManager {
     public Object getHashValue(String key, String hashKey) {
         return redisTemplate.opsForHash().get(key, hashKey);
     }
+
     public void addSetValue(String key, Object value) {
         redisTemplate.opsForSet().add(key, value);
     }

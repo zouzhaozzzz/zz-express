@@ -1,5 +1,6 @@
 package com.zouzhao.opt.manage.core.service;
 
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.zouzhao.common.core.service.PageServiceImpl;
 import com.zouzhao.common.security.utils.RedisManager;
@@ -79,10 +80,8 @@ public class OptExpressService extends PageServiceImpl<OptExpressMapper, OptExpr
             e.printStackTrace();
         }
         //在redis中放入总新增数，成功数
-        String redisKey = "import-all:" + exportId;
-        String redisKey2 = "import-success:" + exportId;
-        if (list.size() > 0) incrementNum(redisKey, list.size());
-        if (count.get() > 0) incrementNum(redisKey2, count.get());
+        String redisKey = "import-success:" + exportId;
+        if (count.get() > 0) incrementNum(redisKey, count.get());
     }
 
     @Override
@@ -138,12 +137,12 @@ public class OptExpressService extends PageServiceImpl<OptExpressMapper, OptExpr
     }
 
     private void incrementNum(String redisKey, Integer size) {
-        String num = redisManager.getValue(redisKey);
-        if (StrUtil.isBlank(num)) {
-            redisManager.setValue(redisKey, size.toString());
+        Object num = redisManager.getValue(redisKey);
+        if (ObjectUtil.isEmpty(num)) {
+            redisManager.setValue(redisKey, size);
         } else {
-            int newNum = Integer.parseInt(num) + size;
-            redisManager.setValue(redisKey, String.valueOf(newNum));
+            int newNum = (int)num + size;
+            redisManager.setValue(redisKey,newNum);
         }
     }
 }

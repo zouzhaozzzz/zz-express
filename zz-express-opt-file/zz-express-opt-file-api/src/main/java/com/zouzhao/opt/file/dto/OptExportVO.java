@@ -8,7 +8,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
-import java.util.List;
 
 /**
  * @author 姚超
@@ -24,15 +23,17 @@ public class OptExportVO {
 
     private String exportName;
 
-    @ApiModelProperty("导入1导入中23")
+    @ApiModelProperty("导入0导出1")
     private Integer exportType;
-    private List<Integer> exportTypeList;
 
     private String exportDesc;
 
     private String exportFileId;
 
     private String exportMsg;
+
+    @ApiModelProperty("进度条")
+    private double exportSchedule;
 
     @ApiModelProperty("开始时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", locale = "zh", timezone = "GMT+8")

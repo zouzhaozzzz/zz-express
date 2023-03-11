@@ -58,4 +58,6 @@ public class OptFileController {
         //传文件
         ossService.download(path,response);
     }
+
+
 }

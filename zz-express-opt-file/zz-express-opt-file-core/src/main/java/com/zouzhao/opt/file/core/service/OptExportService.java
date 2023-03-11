@@ -28,6 +28,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author 姚超
@@ -95,11 +96,14 @@ public class OptExportService extends PageServiceImpl<OptExportMapper, OptExport
                 InputStream inputStream = (InputStream) oss.get(0);
         ) {
             List<OptExpressVO> data = new ArrayList<>();
+            //统计总数放入redis中
+            AtomicInteger count = new AtomicInteger();
             //读excel
             EasyExcel.read(inputStream, OptExpressVO.class, new PageReadListener<OptExpressVO>(dataList -> {
                 for (OptExpressVO express : dataList) {
                     data.add(express);
                     if (data.size() == batchSize) {
+                        count.addAndGet(batchSize);
                         String jsonStr = JSONUtil.toJsonStr(data);
                         kafkaTemplate.send("sendImport", exportId, jsonStr);
                         log.debug("发送成功");
@@ -109,11 +113,13 @@ public class OptExportService extends PageServiceImpl<OptExportMapper, OptExport
             })).sheet().doRead();
             //最后一波数据可能小于batch_size
             if (data.size() > 0) {
+                count.addAndGet(data.size());
                 String jsonStr = JSONUtil.toJsonStr(data);
                 kafkaTemplate.send("sendImport", exportId,jsonStr);
                 log.debug("发送成功");
                 data.clear();
             }
+            redisManager.setValue("import-all:"+exportId,count.get());
             kafkaTemplate.send("sendImport", exportId,"end");
         } catch (Exception e) {
             redisManager.appendStrValue("import-err:" + exportId,e.getMessage());
@@ -130,21 +136,21 @@ public class OptExportService extends PageServiceImpl<OptExportMapper, OptExport
     @Transactional
     public void updateJustFinish(String exportId) {
         //更新导入记录 完成时间 根据redis记录增加导入信息
-        String err = redisManager.getValue("import-err:" + exportId);
+        Object err = redisManager.getValue("import-err:" + exportId);
         if(err != null){
-            getMapper().updateJustFinish(exportId,new Date(),err);
+            getMapper().updateJustFinish(exportId,new Date(),(String) err);
         }else {
             StringBuilder builder = new StringBuilder("msg:");
             String redisKey="import-all:" + exportId;
-            String all = redisManager.getValue(redisKey);
+            Object all = redisManager.getValue(redisKey);
             if(all !=null) {
-                builder.append("Excel中扫描到").append(all).append("条数据 ");
+                builder.append("Excel中扫描到").append((int)all).append("条数据 ");
                 redisManager.deleteKey(redisKey);
             }
             redisKey="import-success:" + exportId;
-            String repeat = redisManager.getValue(redisKey);
-            if(repeat !=null) {
-                builder.append("成功导入").append(repeat).append("条数据 ");
+            Object success = redisManager.getValue(redisKey);
+            if(success !=null) {
+                builder.append("成功导入").append((int)success).append("条数据 ");
                 redisManager.deleteKey(redisKey);
             }
             getMapper().updateJustFinish(exportId,new Date(),builder.toString());
