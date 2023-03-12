@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author 姚超
@@ -112,6 +113,19 @@ public class OptExpressController extends BaseController<IOptExpressApi, OptExpr
         return page;
     }
 
+    @PostMapping("/countExpressNum")
+    @ApiOperation("统计符合条件的快递数量")
+    @PreAuthorize("hasAnyRole('OPT_MANAGE_EXPRESS_LIST','OPT_MANAGE_EXPRESS_ADMIN')")
+    public int countExpressNum(@RequestBody OptExpressVO vo) {
+        return getApi().countExpressNum(vo);
+    }
+
+    @PreAuthorize("hasAnyRole('OPT_MANAGE_REPORT_LIST')")
+    @ApiOperation("从redis中拿统计数据")
+    @PostMapping("/export")
+    public List<Map<String, Object>> export() {
+        return null;
+    }
 
     @PreAuthorize("hasAnyRole('OPT_MANAGE_REPORT_REFRESH')")
     @ApiOperation("统计快递状态" +
@@ -149,16 +163,17 @@ public class OptExpressController extends BaseController<IOptExpressApi, OptExpr
             BigDecimal freightFee = freight.get(i).getFee();
             BigDecimal sendFineFee = sendFine.get(i).getFee();
             //如果为空设为0
-            if(costVO.getFee() == null)costVO.setFee(new BigDecimal("0"));
-            if(premiumFee == null)premiumFee=new BigDecimal("0");
-            if(freightFee == null)freightFee=new BigDecimal("0");
-            if(sendFineFee == null)sendFineFee=new BigDecimal("0");
+            if (costVO.getFee() == null) costVO.setFee(new BigDecimal("0"));
+            if (premiumFee == null) premiumFee = new BigDecimal("0");
+            if (freightFee == null) freightFee = new BigDecimal("0");
+            if (sendFineFee == null) sendFineFee = new BigDecimal("0");
             //每月收入
             BigDecimal incomeFee = premiumFee.add(freightFee).add(sendFineFee).subtract(costVO.getFee());
             costVO.setFee(incomeFee);
             income.add(costVO);
         }
-        redisManager.setHashValue("report-express", "income", income);    }
+        redisManager.setHashValue("report-express", "income", income);
+    }
 
 
     //统计每月的罚款
@@ -225,6 +240,5 @@ public class OptExpressController extends BaseController<IOptExpressApi, OptExpr
         redisManager.setHashValue("report-express", "consignProvince", consign);
         redisManager.setHashValue("report-express", "sendProvince", send);
     }
-
 
 }

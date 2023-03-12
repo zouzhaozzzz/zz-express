@@ -4,6 +4,7 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.zouzhao.common.core.service.PageServiceImpl;
 import com.zouzhao.common.security.utils.RedisManager;
+import com.zouzhao.opt.file.dto.OptExportConditionVO;
 import com.zouzhao.opt.manage.api.IOptExpressApi;
 import com.zouzhao.opt.manage.core.entity.OptExpress;
 import com.zouzhao.opt.manage.core.mapper.OptExpressMapper;
@@ -11,6 +12,7 @@ import com.zouzhao.opt.manage.dto.OptExpressMonthFeeVO;
 import com.zouzhao.opt.manage.dto.OptExpressMonthNumVO;
 import com.zouzhao.opt.manage.dto.OptExpressProvinceVO;
 import com.zouzhao.opt.manage.dto.OptExpressVO;
+import org.apache.ibatis.session.ResultHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -21,10 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -79,10 +78,16 @@ public class OptExpressService extends PageServiceImpl<OptExpressMapper, OptExpr
             redisManager.appendStrValue("import-err:" + exportId, e.getMessage());
             e.printStackTrace();
         }
-        //在redis中放入总新增数，成功数
+        //在redis中放入成功数
         String redisKey = "import-success:" + exportId;
         if (count.get() > 0) incrementNum(redisKey, count.get());
     }
+
+    @Override
+    public void pageQueryByCondition(OptExportConditionVO vo, ResultHandler<OptExpressVO> resultHandler) {
+        getMapper().pageQueryByCondition(vo,resultHandler);
+    }
+
 
     @Override
     @Transactional
@@ -134,6 +139,11 @@ public class OptExpressService extends PageServiceImpl<OptExpressMapper, OptExpr
     @Override
     public List<OptExpressMonthFeeVO> countPremiumByMonth() {
         return getMapper().countPremiumByMonth();
+    }
+
+    @Override
+    public int countExpressNum(OptExpressVO vo) {
+        return getMapper().countExpressNum(vo);
     }
 
     private void incrementNum(String redisKey, Integer size) {

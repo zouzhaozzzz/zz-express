@@ -5,12 +5,14 @@ import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.read.listener.PageReadListener;
 import com.aliyun.oss.OSSClient;
 import com.zouzhao.common.core.service.PageServiceImpl;
+import com.zouzhao.common.dto.IdDTO;
 import com.zouzhao.common.security.utils.RedisManager;
 import com.zouzhao.opt.file.api.IOptExportApi;
+import com.zouzhao.opt.file.api.IOptFileApi;
 import com.zouzhao.opt.file.core.entity.OptExport;
 import com.zouzhao.opt.file.core.mapper.OptExportMapper;
 import com.zouzhao.opt.file.dto.OptExportVO;
-import com.zouzhao.opt.manage.client.OptExpressClient;
+import com.zouzhao.opt.file.dto.OptFileVO;
 import com.zouzhao.opt.manage.dto.OptExpressVO;
 import lombok.Data;
 import org.slf4j.Logger;
@@ -49,46 +51,16 @@ public class OptExportService extends PageServiceImpl<OptExportMapper, OptExport
     @Autowired
     private KafkaTemplate<String, String> kafkaTemplate;
     @Autowired
-    private OptExpressClient optExpressClient;
-    @Autowired
     private OssService ossService;
     @Autowired
     private RedisManager redisManager;
+    @Autowired
+    private IOptFileApi optFileApi;
 
-    @Override
-    public void exportSends() {
-        //查询总数
-        // List<OptExpressVO> data = optExpressClient.findAll(new OptExpressVO());
-
-        // List<SendDto> data = new ArrayList<>();
-        //
-        //
-        //
-        // sendMapper.pageQueryByScanTime(start, end, resultContext -> {
-        //             SendDto SendDto = resultContext.getResultObject();
-        //             data.add(SendDto);
-        //             // log.debug("sendDto:{}",SendDto);
-        //             if (data.size() == BATCH_SIZE) {
-        //                 String jsonStr = JSONUtil.toJsonStr(data);
-        //                 watch.start("kafka发送消息");
-        //                 kafkaTemplate.send("sendExportX", "test", jsonStr);
-        //                 watch.stop();
-        //                 log.debug("发送成功");
-        //                 data.clear();
-        //             }
-        //         }
-        // );
-        // if (data.size() > 0) {
-        //     String jsonStr = JSONUtil.toJsonStr(data);
-        //     kafkaTemplate.send("sendExport", "test", jsonStr);
-        //     data.clear();
-        // }
-        // kafkaTemplate.send("sendExport", "test", "endExport");
-    }
 
     @Override
     @Transactional
-    public void importSends(String filepath,String exportId) {
+    public void importSends(String filepath, String exportId) {
         //根据路径去阿里云拿到文件流和客户端连接
         List<Object> oss = ossService.downloadStream(filepath);
         OSSClient ossClient = (OSSClient) oss.get(1);
@@ -115,17 +87,17 @@ public class OptExportService extends PageServiceImpl<OptExportMapper, OptExport
             if (data.size() > 0) {
                 count.addAndGet(data.size());
                 String jsonStr = JSONUtil.toJsonStr(data);
-                kafkaTemplate.send("sendImport", exportId,jsonStr);
+                kafkaTemplate.send("sendImport", exportId, jsonStr);
                 log.debug("发送成功");
                 data.clear();
             }
-            redisManager.setValue("import-all:"+exportId,count.get());
-            kafkaTemplate.send("sendImport", exportId,"end");
+            redisManager.setValue("import-all:" + exportId, count.get());
+            kafkaTemplate.send("sendImport", exportId, "end");
         } catch (Exception e) {
-            redisManager.appendStrValue("import-err:" + exportId,e.getMessage());
+            redisManager.appendStrValue("import-err:" + exportId, e.getMessage());
             updateJustFinish(exportId);
             e.printStackTrace();
-        }finally {
+        } finally {
             if (ossClient != null) {
                 ossClient.shutdown();
             }
@@ -137,23 +109,53 @@ public class OptExportService extends PageServiceImpl<OptExportMapper, OptExport
     public void updateJustFinish(String exportId) {
         //更新导入记录 完成时间 根据redis记录增加导入信息
         Object err = redisManager.getValue("import-err:" + exportId);
-        if(err != null){
-            getMapper().updateJustFinish(exportId,new Date(),(String) err);
-        }else {
+        if (err != null) {
+            getMapper().updateJustFinish(exportId, new Date(), (String) err);
+        } else {
             StringBuilder builder = new StringBuilder("msg:");
-            String redisKey="import-all:" + exportId;
+            String redisKey = "import-all:" + exportId;
             Object all = redisManager.getValue(redisKey);
-            if(all !=null) {
-                builder.append("Excel中扫描到").append((int)all).append("条数据 ");
+            if (all != null) {
+                builder.append("Excel中扫描到").append((int) all).append("条数据 ");
                 redisManager.deleteKey(redisKey);
             }
-            redisKey="import-success:" + exportId;
+            redisKey = "import-success:" + exportId;
             Object success = redisManager.getValue(redisKey);
-            if(success !=null) {
-                builder.append("成功导入").append((int)success).append("条数据 ");
+            if (success != null) {
+                builder.append("成功导入").append((int) success).append("条数据 ");
                 redisManager.deleteKey(redisKey);
             }
-            getMapper().updateJustFinish(exportId,new Date(),builder.toString());
+            getMapper().updateJustFinish(exportId, new Date(), builder.toString());
+        }
+    }
+
+    @Override
+    @Transactional
+    public void updateExportJustFinish(String exportId) {
+        //更新导入记录 完成时间 文件路径 根据redis记录增加导入信息
+        Object err = redisManager.getValue("export-err:" + exportId);
+        if (err != null) {
+            getMapper().updateExportJustFinish(exportId, new Date(), (String) err,null);
+        } else {
+            StringBuilder builder = new StringBuilder("msg:");
+            String redisKey = "export-all:" + exportId;
+            Object all = redisManager.getValue(redisKey);
+            if (all != null) {
+                builder.append("符合条件的数据总共有").append((int) all).append("条 ");
+                redisManager.deleteKey(redisKey);
+            }
+            redisKey = "export-success:" + exportId;
+            Object success = redisManager.getValue(redisKey);
+            if (success != null) {
+                builder.append("成功导出").append((int) success).append("条数据为Excel ");
+                redisManager.deleteKey(redisKey);
+            }
+            //增加附件
+            String filePath=redisManager.getValue("export-filename:")+exportId;
+            OptFileVO optFileVO=new OptFileVO();
+            optFileVO.setFilePath(filePath);
+            IdDTO idDTO = optFileApi.add(optFileVO);
+            getMapper().updateExportJustFinish(exportId, new Date(), builder.toString(),idDTO.getId());
         }
     }
 

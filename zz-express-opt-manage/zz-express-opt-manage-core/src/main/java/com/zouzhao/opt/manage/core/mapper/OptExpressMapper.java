@@ -1,12 +1,14 @@
 package com.zouzhao.opt.manage.core.mapper;
 
 import com.zouzhao.common.core.mapper.IPageMapper;
+import com.zouzhao.opt.file.dto.OptExportConditionVO;
 import com.zouzhao.opt.manage.core.entity.OptExpress;
 import com.zouzhao.opt.manage.dto.OptExpressMonthFeeVO;
 import com.zouzhao.opt.manage.dto.OptExpressMonthNumVO;
 import com.zouzhao.opt.manage.dto.OptExpressProvinceVO;
 import com.zouzhao.opt.manage.dto.OptExpressVO;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.session.ResultHandler;
 
 import java.util.List;
 
@@ -38,4 +40,9 @@ public interface OptExpressMapper extends IPageMapper<OptExpress, OptExpressVO> 
     List<OptExpressMonthFeeVO> countFreightByMonth();
 
     List<OptExpressMonthFeeVO> countPremiumByMonth();
+
+    int countExpressNum(@Param("v") OptExpressVO vo);
+
+    //导出数据流
+    void pageQueryByCondition(@Param("v") OptExportConditionVO vo, ResultHandler<OptExpressVO> handler);
 }

@@ -11,12 +11,15 @@ import org.springframework.web.bind.annotation.RequestBody;
  */
 public interface IOptExportApi extends IPageApi<OptExportVO> {
 
-    @PostMapping("/exportSends")
-    void exportSends();
 
     @PostMapping("/importSends")
     void importSends(String path,String exportId);
 
+    //更新导入
     @PostMapping("/updateJustFinish")
     void updateJustFinish(@RequestBody String exportId);
+
+    //更新导出
+    @PostMapping("/updateExportJustFinish")
+    void updateExportJustFinish(@RequestBody String exportId);
 }

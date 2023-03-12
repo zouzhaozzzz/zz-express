@@ -122,7 +122,7 @@ public class OssService {
     public String upload(MultipartFile file) {
         OSS ossClient = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
         try {
-            String filename = dir + new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date()) + new Random().nextInt(10) + file.getOriginalFilename();
+            String filename = dir + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + new Random().nextInt(10) + file.getOriginalFilename();
             ossClient.putObject(bucketName, filename, file.getInputStream());
             return filename;
         } catch (OSSException oe) {
@@ -222,5 +222,9 @@ public class OssService {
             System.out.println("Error Message:" + ce.getMessage());
         }
         throw new MyException("文件不存在");
+    }
+
+    public OSS getOssClient() {
+        return new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
     }
 }

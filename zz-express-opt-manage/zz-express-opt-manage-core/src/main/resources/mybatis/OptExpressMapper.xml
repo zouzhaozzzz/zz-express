@@ -322,7 +322,6 @@
                 <if test="v.shipTimeList != null and v.shipTimeList.size>1 ">
                     and ship_time >= #{v.shipTimeList[0]} and ship_time <![CDATA[<=]]> #{v.shipTimeList[1]}
                 </if>
-
                 <if test="v.shipper != null  and v.shipper != ''">and shipper like concat('%',
                     #{v.shipper}, '%')
                 </if>
@@ -349,26 +348,36 @@
         where express_id = #{id};
     </select>
     <select id="countByStatus" resultType="java.lang.Integer">
-        select  count(1) from opt_express where express_status = #{status}
+        select count(1)
+        from opt_express
+        where express_status = #{status}
     </select>
-    <select id="countConsignByProvinces" resultType="com.zouzhao.opt.manage.dto.OptExpressProvinceVO" >
-        select consignee_province as province,count(1) as count from  opt_express where consignee_province is not null group by consignee_province limit 10
+    <select id="countConsignByProvinces" resultType="com.zouzhao.opt.manage.dto.OptExpressProvinceVO">
+        select consignee_province as province, count(1) as count
+        from opt_express
+        where consignee_province is not null
+        group by consignee_province
+        limit 10
     </select>
 
-    <select id="countSendByProvinces" resultType="com.zouzhao.opt.manage.dto.OptExpressProvinceVO" >
-        select send_province as province,count(1) as count from  opt_express where send_province is not null group by send_province limit 10
+    <select id="countSendByProvinces" resultType="com.zouzhao.opt.manage.dto.OptExpressProvinceVO">
+        select send_province as province, count(1) as count
+        from opt_express
+        where send_province is not null
+        group by send_province
+        limit 10
     </select>
     <select id="countByBounce" resultType="com.zouzhao.opt.manage.dto.OptExpressMonthNumVO">
         SELECT DATE_FORMAT(ship_time, '%m') as month, COUNT(1) as count
         FROM opt_express
-        where question_flag =1
+        where question_flag = 1
         GROUP BY DATE_FORMAT(ship_time, '%m')
         ORDER BY ship_time
     </select>
     <select id="countByQuestion" resultType="com.zouzhao.opt.manage.dto.OptExpressMonthNumVO">
         SELECT DATE_FORMAT(ship_time, '%m') as month, COUNT(1) as count
         FROM opt_express
-        where bounce_flag =1
+        where bounce_flag = 1
         GROUP BY DATE_FORMAT(ship_time, '%m')
         ORDER BY ship_time
     </select>
@@ -395,6 +404,72 @@
         FROM opt_express
         GROUP BY DATE_FORMAT(ship_time, '%m')
         ORDER BY ship_time
+    </select>
+    <select id="countExpressNum" resultType="java.lang.Integer">
+        select count(1) from opt_express
+        <where>
+            <if test="v != null">
+                <if test="v.expressIdList != null and v.expressIdList.size > 0 ">and express_id in
+                    <foreach collection="v.expressIdList" item="expressIdListId" open="(" close=")" separator=",">
+                        #{expressIdListId}
+                    </foreach>
+                </if>
+                <if test="v.bounceFlag != null ">and bounce_flag = #{v.bounceFlag}</if>
+                <if test="v.consignee != null  and v.consignee != ''">and consignee = #{v.consignee}
+                </if>
+                <if test="v.shipTimeList != null and v.shipTimeList.size>1 ">
+                    and ship_time >= #{v.shipTimeList[0]} and ship_time <![CDATA[<=]]> #{v.shipTimeList[1]}
+                </if>
+                <if test="v.expressStatusList != null and v.expressStatusList.size >0">and express_status in
+                    <foreach collection="v.expressStatusList" item="expressStatusItem" open="(" close=")" separator=",">
+                        #{expressStatusItem}
+                    </foreach>
+                </if>
+                <if test="v.questionFlag != null ">and question_flag = #{v.questionFlag}</if>
+                <if test="v.sendCompanyId != null  and v.sendCompanyId != ''">and send_company_id = #{v.sendCompanyId}
+                </if>
+                <if test="v.sendCustomerId != null  and v.sendCustomerId != ''">and send_customer_id =
+                    #{v.sendCustomerId}
+                </if>
+                <if test="v.shipper != null  and v.shipper != ''">and shipper like concat('%',
+                    #{v.shipper}, '%')
+                </if>
+            </if>
+        </where>
+    </select>
+    <select id="pageQueryByCondition" resultSetType="FORWARD_ONLY" fetchSize="-2147483648"
+            resultMap="OptExpressVOResult">
+        select *
+        from opt_express
+        <where>
+            <if test="v != null">
+                <if test="v.expressIdList != null and v.expressIdList.size > 0 ">and express_id in
+                    <foreach collection="v.expressIdList" item="expressIdListId" open="(" close=")" separator=",">
+                        #{expressIdListId}
+                    </foreach>
+                </if>
+                <if test="v.bounceFlag != null ">and bounce_flag = #{v.bounceFlag}</if>
+                <if test="v.consignee != null  and v.consignee != ''">and consignee = #{v.consignee}
+                </if>
+                <if test="v.shipTimeList != null and v.shipTimeList.size>1 ">
+                    and ship_time >= #{v.shipTimeList[0]} and ship_time <![CDATA[<=]]> #{v.shipTimeList[1]}
+                </if>
+                <if test="v.expressStatusList != null and v.expressStatusList.size >0">and express_status in
+                    <foreach collection="v.expressStatusList" item="expressStatusItem" open="(" close=")" separator=",">
+                        #{expressStatusItem}
+                    </foreach>
+                </if>
+                <if test="v.questionFlag != null ">and question_flag = #{v.questionFlag}</if>
+                <if test="v.sendCompanyId != null  and v.sendCompanyId != ''">and send_company_id = #{v.sendCompanyId}
+                </if>
+                <if test="v.sendCustomerId != null  and v.sendCustomerId != ''">and send_customer_id =
+                    #{v.sendCustomerId}
+                </if>
+                <if test="v.shipper != null  and v.shipper != ''">and shipper like concat('%',
+                    #{v.shipper}, '%')
+                </if>
+            </if>
+        </where>
     </select>
 
 </mapper>

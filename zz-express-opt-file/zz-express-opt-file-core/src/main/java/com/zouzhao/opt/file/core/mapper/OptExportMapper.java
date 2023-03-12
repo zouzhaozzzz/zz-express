@@ -14,4 +14,6 @@ import java.util.Date;
 public interface OptExportMapper extends IPageMapper<OptExport, OptExportVO> {
 
     void updateJustFinish(@Param("id") String exportId, @Param("finishTime") Date date,@Param("msg") String msg);
+
+    void updateExportJustFinish(@Param("id")String exportId,  @Param("finishTime")Date date, @Param("msg")String msg, @Param("fileId")String exportFileId);
 }

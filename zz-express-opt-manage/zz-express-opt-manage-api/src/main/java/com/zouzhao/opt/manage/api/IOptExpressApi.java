@@ -1,10 +1,9 @@
 package com.zouzhao.opt.manage.api;
 
 import com.zouzhao.common.api.IPageApi;
-import com.zouzhao.opt.manage.dto.OptExpressMonthFeeVO;
-import com.zouzhao.opt.manage.dto.OptExpressMonthNumVO;
-import com.zouzhao.opt.manage.dto.OptExpressProvinceVO;
-import com.zouzhao.opt.manage.dto.OptExpressVO;
+import com.zouzhao.opt.file.dto.OptExportConditionVO;
+import com.zouzhao.opt.manage.dto.*;
+import org.apache.ibatis.session.ResultHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.List;
@@ -18,6 +17,9 @@ public interface IOptExpressApi extends IPageApi<OptExpressVO> {
     @PostMapping("/batchSave")
     //如果存在相同运单号不新增
     void batchSave(String exportId, List<OptExpressVO> list);
+
+    @PostMapping("/pageQueryByCondition")
+    void pageQueryByCondition(OptExportConditionVO vo, ResultHandler<OptExpressVO> resultHandler);
 
     @PostMapping("/updateStatusBatch")
     void updateStatusBatch(List<String> ids,Integer status);
@@ -48,4 +50,7 @@ public interface IOptExpressApi extends IPageApi<OptExpressVO> {
 
     @PostMapping("/countPremiumByMonth")
     List<OptExpressMonthFeeVO> countPremiumByMonth();
+
+    @PostMapping("/countExpressNum")
+    int countExpressNum(OptExpressVO vo);
 }

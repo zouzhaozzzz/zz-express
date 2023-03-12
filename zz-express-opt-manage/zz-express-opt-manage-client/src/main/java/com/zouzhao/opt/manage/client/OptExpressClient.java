@@ -1,7 +1,6 @@
 package com.zouzhao.opt.manage.client;
 
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.PostMapping;
 
 /**
  * @author 姚超
@@ -9,5 +8,6 @@ import org.springframework.web.bind.annotation.PostMapping;
  */
 @FeignClient(name = "zz-opt-manage", path="/api/opt-manage/optExpress")
 public interface OptExpressClient {
+
 
 }

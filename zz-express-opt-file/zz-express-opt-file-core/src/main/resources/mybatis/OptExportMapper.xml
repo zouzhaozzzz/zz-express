@@ -39,6 +39,13 @@
             export_msg=#{msg}
         where export_id = #{id}
     </update>
+    <update id="updateExportJustFinish">
+        update opt_export
+        set export_finish_time = #{finishTime},
+            export_msg=#{msg}
+        <if test="fileId != null and fileId != ''">,export_file_id=#{fileId}</if>
+        where export_id = #{id}
+    </update>
 
     <select id="findList" parameterType="OptExport" resultMap="OptExportResult">
         <include refid="selectOptExportVo"/>

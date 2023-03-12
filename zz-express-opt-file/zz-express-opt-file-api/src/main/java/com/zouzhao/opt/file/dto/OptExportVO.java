@@ -32,6 +32,12 @@ public class OptExportVO {
 
     private String exportMsg;
 
+    @ApiModelProperty("导出条件")
+    private OptExportConditionVO condition;
+
+    @ApiModelProperty("总数")
+    private int exportCount;
+
     @ApiModelProperty("进度条")
     private double exportSchedule;
 

@@ -37,6 +37,11 @@ public class RedisManager {
         return o;
     }
 
+    public Long incrementAndGet(String key) {
+        return redisTemplate.opsForValue().increment(key);
+    }
+
+
 
     public void setValue(String key, Object value) {
         redisTemplate.opsForValue().set(key, value, 1, TimeUnit.DAYS);
