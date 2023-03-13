@@ -27,11 +27,8 @@ public interface IOptExpressApi extends IPageApi<OptExpressVO> {
     @PostMapping("/countByStatus")
     int countByStatus(Integer status);
 
-    @PostMapping("/countConsignByProvinces")
-    List<OptExpressProvinceVO> countConsignByProvinces();
-
-    @PostMapping("/countSendByProvinces")
-    List<OptExpressProvinceVO> countSendByProvinces();
+    @PostMapping("/countByProvinces")
+    List<OptExpressProvinceVO> countByProvinces();
 
     @PostMapping("/countBounceByMonth")
     List<OptExpressMonthNumVO> countBounceByMonth();

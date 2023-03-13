@@ -8,10 +8,7 @@ import com.zouzhao.opt.file.dto.OptExportConditionVO;
 import com.zouzhao.opt.manage.api.IOptExpressApi;
 import com.zouzhao.opt.manage.core.entity.OptExpress;
 import com.zouzhao.opt.manage.core.mapper.OptExpressMapper;
-import com.zouzhao.opt.manage.dto.OptExpressMonthFeeVO;
-import com.zouzhao.opt.manage.dto.OptExpressMonthNumVO;
-import com.zouzhao.opt.manage.dto.OptExpressProvinceVO;
-import com.zouzhao.opt.manage.dto.OptExpressVO;
+import com.zouzhao.opt.manage.dto.*;
 import org.apache.ibatis.session.ResultHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 /**
  * @author 姚超
@@ -102,13 +100,59 @@ public class OptExpressService extends PageServiceImpl<OptExpressMapper, OptExpr
     }
 
     @Override
-    public List<OptExpressProvinceVO> countConsignByProvinces() {
-        return getMapper().countConsignByProvinces();
-    }
-
-    @Override
-    public List<OptExpressProvinceVO> countSendByProvinces() {
-        return getMapper().countSendByProvinces();
+    public List<OptExpressProvinceVO> countByProvinces() {
+        List<OptExpressProvinceVO> result=new ArrayList<>();
+        List<OptExpressNumVO> consigneeProvinces = getMapper().countByConsigneeProvinces();
+        List<OptExpressNumVO> sendProvinces = getMapper().countBySendProvinces();
+        if(ObjectUtil.isEmpty(consigneeProvinces)){
+            sendProvinces.forEach(e->{
+                String name = e.getName();
+                int count = e.getCount();
+                List<OptExpressNumVO> list = new ArrayList<>();
+                list.add(new OptExpressNumVO("寄件",count));
+                list.add(new OptExpressNumVO("派件",0));
+                result.add(new OptExpressProvinceVO(name,list));
+            });
+            return result;
+        }
+        if(ObjectUtil.isEmpty(sendProvinces)){
+            consigneeProvinces.forEach(e->{
+                String name = e.getName();
+                int count = e.getCount();
+                List<OptExpressNumVO> list = new ArrayList<>();
+                list.add(new OptExpressNumVO("寄件",0));
+                list.add(new OptExpressNumVO("派件",count));
+                result.add(new OptExpressProvinceVO(name,list));
+            });
+            return result;
+        }
+        Map<String, OptExpressNumVO> map = consigneeProvinces.stream().collect(Collectors.toMap(OptExpressNumVO::getName, item -> item));
+        sendProvinces.forEach(e->{
+            String name = e.getName();
+            int count = e.getCount();
+            List<OptExpressNumVO> list = new ArrayList<>();
+            list.add(new OptExpressNumVO("寄件",count));
+            OptExpressNumVO consignee = map.get(name);
+            if(consignee !=null){
+                list.add(new OptExpressNumVO("派件",consignee.getCount()));
+                map.remove(name);
+            }else{
+                list.add(new OptExpressNumVO("派件",0));
+            }
+            result.add(new OptExpressProvinceVO(name,list));
+        });
+        //如果收货省份还有未添加的
+        if(map.keySet().size()>0){
+            map.values().forEach(e->{
+                String name = e.getName();
+                int count = e.getCount();
+                List<OptExpressNumVO> list = new ArrayList<>();
+                list.add(new OptExpressNumVO("寄件",0));
+                list.add(new OptExpressNumVO("派件",count));
+                result.add(new OptExpressProvinceVO(name,list));
+            });
+        }
+        return result;
     }
 
     @Override

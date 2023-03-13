@@ -136,8 +136,7 @@ public class OptExpressController extends BaseController<IOptExpressApi, OptExpr
                     map.put("countStatus3", redisManager.getHashValue("report-express", "3"));
                     break;
                 case "countByProvinces":
-                    map.put("consignProvince",  redisManager.getHashValue("report-express", "consignProvince"));
-                    map.put("sendProvince", redisManager.getHashValue("report-express", "sendProvince"));
+                    map.put("province",  redisManager.getHashValue("report-express", "province"));
                     break;
                 case "countFlagByMonth":
                     map.put("questionNumByMonth",  redisManager.getHashValue("report-express", "questionNumByMonth"));
@@ -159,14 +158,14 @@ public class OptExpressController extends BaseController<IOptExpressApi, OptExpr
 
     @PreAuthorize("hasAnyRole('OPT_MANAGE_REPORT_REFRESH')")
     @ApiOperation("统计快递状态" +
-            "省份排名 寄件派送个数" +
+            "省份寄件派送个数" +
             "每月的问题件，退货件，每月的总件数统计" +
             "每月的成本费（寄件代收货款手续费、到付手续费成本、中转费成本、面单成本），保费收入，运费，罚款，收入统计")
     @PostMapping("/refreshExport")
     public ResponseEntity<String> refreshExport() {
         //统计快递状态，总件数统计
         countStatus();
-        //省份排名 寄件派送个数
+        //省份寄件派送个数
         countByProvinces();
         //每月的问题件，退货件
         countQuestionByMonth();
@@ -275,10 +274,8 @@ public class OptExpressController extends BaseController<IOptExpressApi, OptExpr
 
     //省份排名 寄件派送个数
     private void countByProvinces() {
-        List<OptExpressProvinceVO> consign = getApi().countConsignByProvinces();
-        List<OptExpressProvinceVO> send = getApi().countSendByProvinces();
-        redisManager.setHashValue("report-express", "consignProvince", consign);
-        redisManager.setHashValue("report-express", "sendProvince", send);
+        List<OptExpressProvinceVO> province = getApi().countByProvinces();
+        redisManager.setHashValue("report-express", "province", province);
     }
 
 }

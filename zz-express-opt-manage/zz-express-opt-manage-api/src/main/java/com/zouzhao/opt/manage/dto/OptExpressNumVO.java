@@ -5,8 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 /**
  * @author 姚超
  * @DATE: 2023-3-10
@@ -14,9 +12,9 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@ApiModel("统计省份寄件派送个数")
-public class OptExpressProvinceVO {
+@ApiModel("统计XX个数")
+public class OptExpressNumVO {
 
-    private String province;
-    private List<OptExpressNumVO> value;
+    private String name;
+    private int count;
 }

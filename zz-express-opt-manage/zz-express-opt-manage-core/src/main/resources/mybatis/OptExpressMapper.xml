@@ -352,16 +352,15 @@
         from opt_express
         where express_status = #{status}
     </select>
-    <select id="countConsignByProvinces" resultType="com.zouzhao.opt.manage.dto.OptExpressProvinceVO">
-        select consignee_province as province, count(1) as count
+    <select id="countByConsigneeProvinces" resultType="com.zouzhao.opt.manage.dto.OptExpressNumVO">
+        select consignee_province as name, count(1) as count
         from opt_express
         where consignee_province is not null
         group by consignee_province
         limit 10
     </select>
-
-    <select id="countSendByProvinces" resultType="com.zouzhao.opt.manage.dto.OptExpressProvinceVO">
-        select send_province as province, count(1) as count
+    <select id="countBySendProvinces" resultType="com.zouzhao.opt.manage.dto.OptExpressNumVO">
+        select send_province as name, count(1) as count
         from opt_express
         where send_province is not null
         group by send_province
@@ -477,6 +476,7 @@
             </if>
         </where>
     </select>
+
 
 
 </mapper>

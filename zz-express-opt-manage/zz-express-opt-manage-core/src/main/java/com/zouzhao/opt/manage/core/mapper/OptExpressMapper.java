@@ -5,7 +5,7 @@ import com.zouzhao.opt.file.dto.OptExportConditionVO;
 import com.zouzhao.opt.manage.core.entity.OptExpress;
 import com.zouzhao.opt.manage.dto.OptExpressMonthFeeVO;
 import com.zouzhao.opt.manage.dto.OptExpressMonthNumVO;
-import com.zouzhao.opt.manage.dto.OptExpressProvinceVO;
+import com.zouzhao.opt.manage.dto.OptExpressNumVO;
 import com.zouzhao.opt.manage.dto.OptExpressVO;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.session.ResultHandler;
@@ -25,9 +25,9 @@ public interface OptExpressMapper extends IPageMapper<OptExpress, OptExpressVO> 
 
     int countByStatus(@Param("status")Integer status);
 
-    List<OptExpressProvinceVO> countConsignByProvinces();
+    List<OptExpressNumVO> countByConsigneeProvinces();
 
-    List<OptExpressProvinceVO> countSendByProvinces();
+    List<OptExpressNumVO> countBySendProvinces();
 
     List<OptExpressMonthNumVO> countByBounce();
 
@@ -47,4 +47,6 @@ public interface OptExpressMapper extends IPageMapper<OptExpress, OptExpressVO> 
     //导出数据流
 
     void pageQueryByCondition(@Param("v") OptExportConditionVO vo, ResultHandler<OptExpressVO> handler);
+
+
 }
