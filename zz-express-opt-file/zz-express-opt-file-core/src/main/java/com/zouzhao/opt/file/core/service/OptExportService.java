@@ -151,7 +151,7 @@ public class OptExportService extends PageServiceImpl<OptExportMapper, OptExport
                 redisManager.deleteKey(redisKey);
             }
             //增加附件
-            String filePath=redisManager.getValue("export-filename:")+exportId;
+            String filePath=(String) redisManager.getValue("export-filename:"+exportId);
             OptFileVO optFileVO=new OptFileVO();
             optFileVO.setFilePath(filePath);
             IdDTO idDTO = optFileApi.add(optFileVO);
