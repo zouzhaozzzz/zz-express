@@ -53,4 +53,7 @@ public interface IOptExpressApi extends IPageApi<OptExpressVO> {
 
     @PostMapping("/countExpressNum")
     int countExpressNum(OptExpressVO vo);
+
+    @PostMapping("/countExpressNumByMonth")
+    List<OptExpressMonthNumVO> countExpressNumByMonth();
 }

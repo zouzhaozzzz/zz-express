@@ -43,7 +43,8 @@ public class KafkaService {
     private static final Logger log = LoggerFactory.getLogger(KafkaService.class);
     private Map<String, ThreadLocal<ExcelWriter>> threadLocalMap = new HashMap<>();
     private ThreadLocal<OSS> threadLocal = new ThreadLocal<>();
-    private ThreadLocal<InputStream> isThreadLocal = new ThreadLocal<>();
+    private ThreadLocal<InputStream> templateThreadLocal = new ThreadLocal<>();
+    private ThreadLocal<ByteArrayOutputStream> outputStreamThreadLocal = new ThreadLocal<>();
 
     @Value("${export.batchSize}")
     private int batchSize;
@@ -106,24 +107,23 @@ public class KafkaService {
     //写excel
     private void writeExcel(String key, List<OptExpressVO> expressVOList, Boolean endFlag) throws IOException {
         //拿到输出文件流
-        try (
-                ByteArrayOutputStream os = new ByteArrayOutputStream()
-        ) {
-            ExcelWriter excelWriter = getExcelWriter(key, os);
-            WriteSheet writeSheet = EasyExcel.writerSheet(0).build();
-            excelWriter.fill(expressVOList, writeSheet);
-            //阿里云分片上传
-            if (endFlag) {
-                excelWriter.finish();
-                uploadOss(key, os);
-            }
-            //在redis中放入成功数
-            if (expressVOList.size() > 0) incrementNum("export-success:" + key, expressVOList.size());
-            expressVOList.clear();
+        ByteArrayOutputStream os = getOutputStream();
+        ExcelWriter excelWriter = getExcelWriter(key, os);
+        WriteSheet writeSheet = EasyExcel.writerSheet(0).build();
+        excelWriter.fill(expressVOList, writeSheet);
+        //阿里云分片上传
+        if (endFlag) {
+            excelWriter.finish();
+            uploadOss(key, os);
         }
+        //在redis中放入成功数
+        if (expressVOList.size() > 0) incrementNum("export-success:" + key, expressVOList.size());
+        expressVOList.clear();
+
     }
 
     //阿里云分片上传
+
     private void uploadOss(String key, ByteArrayOutputStream os) throws IOException {
         if (os.size() < 1) throw new MyException("输出流为空");
         InputStream is = new ByteArrayInputStream(os.toByteArray());
@@ -138,7 +138,7 @@ public class KafkaService {
         // 返回uploadId，它是分片上传事件的唯一标识。您可以根据该uploadId发起相关的操作，例如取消分片上传、查询分片上传等。
         String uploadId = upresult.getUploadId();
         // partETags是PartETag的集合。PartETag由分片的ETag和分片号组成。
-        List<PartETag> partETags =  new ArrayList<PartETag>();
+        List<PartETag> partETags = new ArrayList<PartETag>();
         // 每个分片的大小，用于计算文件有多少个分片。单位为字节。
         final long partSize = 1 * 1024 * 1024L;   //1 MB。
         long fileLength = is.available();
@@ -160,7 +160,7 @@ public class KafkaService {
             // 设置分片大小。除了最后一个分片没有大小限制，其他的分片最小为100 KB。
             uploadPartRequest.setPartSize(curPartSize);
             // 设置分片号。每一个上传的分片都有一个分片号，取值范围是1~10000，如果超出此范围，OSS将返回InvalidArgument错误码。
-            uploadPartRequest.setPartNumber( i + 1);
+            uploadPartRequest.setPartNumber(i + 1);
             // 每个分片不需要按顺序上传，甚至可以在不同客户端上传，OSS会按照分片号排序组成完整的文件。
             UploadPartResult uploadPartResult = ossClient.uploadPart(uploadPartRequest);
             // 每次上传分片之后，OSS的返回结果包含PartETag。PartETag将被保存在partETags中。
@@ -183,10 +183,15 @@ public class KafkaService {
 
         // 完成分片上传。
         CompleteMultipartUploadResult completeMultipartUploadResult = ossClient.completeMultipartUpload(completeMultipartUploadRequest);
-        System.out.println(completeMultipartUploadResult.getETag());
+        log.debug("上传完成--------------------------------");
+        //关闭输出流
+        is.close();
+        ByteArrayOutputStream outputStream = outputStreamThreadLocal.get();
+        if (outputStream != null) {
+            outputStream.close();
+            outputStreamThreadLocal.remove();
+        }
     }
-
-
 
     private OSS getOssClient() {
         OSS ossClient = threadLocal.get();
@@ -230,6 +235,7 @@ public class KafkaService {
     }
 
     //拿到写excel流
+
     private ExcelWriter getExcelWriter(String key, ByteArrayOutputStream os) throws IOException {
         ExcelWriter excelWriter;
         //判断是否有write
@@ -247,19 +253,28 @@ public class KafkaService {
         }
         return excelWriter;
     }
-
     private InputStream getExcelTemplate() {
-        InputStream inputStream = isThreadLocal.get();
+        InputStream inputStream = templateThreadLocal.get();
         if (inputStream == null) {
             OSS ossClient = getOssClient();
             // 调用ossClient.getObject返回一个OSSObject实例，该实例包含文件内容及文件元信息。
             OSSObject ossObject = ossClient.getObject(bucketName, "template/快递导出模版.xlsx");
             // 调用ossObject.getObjectContent获取文件输入流，可读取此输入流获取其内容。
             InputStream content = ossObject.getObjectContent();
-            isThreadLocal.set(content);
+            templateThreadLocal.set(content);
             return content;
         }
         return inputStream;
+    }
+
+    private ByteArrayOutputStream getOutputStream() {
+        ByteArrayOutputStream outputStream = outputStreamThreadLocal.get();
+        if (outputStream == null) {
+            outputStream=new ByteArrayOutputStream();
+            outputStreamThreadLocal.set(outputStream);
+            return outputStream;
+        }
+        return outputStream;
     }
 
 
@@ -276,10 +291,11 @@ public class KafkaService {
                 excelWriter.close();
                 threadLocalMap.remove(key);
             }
-            InputStream inputStream = isThreadLocal.get();
-            if(inputStream != null){
+            //关闭模版输出流
+            InputStream inputStream = templateThreadLocal.get();
+            if (inputStream != null) {
                 inputStream.close();
-                isThreadLocal.remove();
+                templateThreadLocal.remove();
             }
             optExportClient.updateExportJustFinish(key);
         } catch (Exception e) {

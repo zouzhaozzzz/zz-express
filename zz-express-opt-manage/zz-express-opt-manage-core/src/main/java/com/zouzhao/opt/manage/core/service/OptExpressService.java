@@ -146,6 +146,11 @@ public class OptExpressService extends PageServiceImpl<OptExpressMapper, OptExpr
         return getMapper().countExpressNum(vo);
     }
 
+    @Override
+    public List<OptExpressMonthNumVO> countExpressNumByMonth() {
+        return getMapper().countExpressNumByMonth();
+    }
+
     private void incrementNum(String redisKey, Integer size) {
         Object num = redisManager.getValue(redisKey);
         if (ObjectUtil.isEmpty(num)) {

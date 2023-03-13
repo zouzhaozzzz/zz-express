@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -123,15 +124,44 @@ public class OptExpressController extends BaseController<IOptExpressApi, OptExpr
     @PreAuthorize("hasAnyRole('OPT_MANAGE_REPORT_LIST')")
     @ApiOperation("从redis中拿统计数据")
     @PostMapping("/export")
-    public List<Map<String, Object>> export() {
-        return null;
+    public List<Map<String, Object>> export(@RequestBody List<String> keys) {
+        List<Map<String, Object>> result = new ArrayList<>();
+        keys.forEach(key -> {
+            Map<String,Object> map=new HashMap<>();
+            switch (key) {
+                case "countStatus":
+                    map.put("countStatus0", redisManager.getHashValue("report-express", "0"));
+                    map.put("countStatus1", redisManager.getHashValue("report-express", "1"));
+                    map.put("countStatus2", redisManager.getHashValue("report-express", "2"));
+                    map.put("countStatus3", redisManager.getHashValue("report-express", "3"));
+                    break;
+                case "countByProvinces":
+                    map.put("consignProvince",  redisManager.getHashValue("report-express", "consignProvince"));
+                    map.put("sendProvince", redisManager.getHashValue("report-express", "sendProvince"));
+                    break;
+                case "countFlagByMonth":
+                    map.put("questionNumByMonth",  redisManager.getHashValue("report-express", "questionNumByMonth"));
+                    map.put("bounceByMonth", redisManager.getHashValue("report-express", "bounceByMonth"));
+                    map.put("expressNumByMonth", redisManager.getHashValue("report-express", "expressNumByMonth"));
+                    break;
+                case "countFeeByMonth":
+                    map.put("totalCostByMonth",  redisManager.getHashValue("report-express", "totalCostByMonth"));
+                    map.put("premiumByMonth",  redisManager.getHashValue("report-express", "premiumByMonth"));
+                    map.put("freightByMonth",  redisManager.getHashValue("report-express", "freightByMonth"));
+                    map.put("sendFineByMonth",  redisManager.getHashValue("report-express", "sendFineByMonth"));
+                    map.put("income",  redisManager.getHashValue("report-express", "income"));
+                    break;
+            }
+            result.add(map);
+        });
+        return result;
     }
 
     @PreAuthorize("hasAnyRole('OPT_MANAGE_REPORT_REFRESH')")
     @ApiOperation("统计快递状态" +
             "省份排名 寄件派送个数" +
-            "每月的问题件，退货件，总件数统计" +
-            "每月的成本费，运费，保费，手续费，收入统计")
+            "每月的问题件，退货件，每月的总件数统计" +
+            "每月的成本费（寄件代收货款手续费、到付手续费成本、中转费成本、面单成本），保费收入，运费，罚款，收入统计")
     @PostMapping("/refreshExport")
     public ResponseEntity<String> refreshExport() {
         //统计快递状态，总件数统计
@@ -141,16 +171,20 @@ public class OptExpressController extends BaseController<IOptExpressApi, OptExpr
         //每月的问题件，退货件
         countQuestionByMonth();
         countBounceByMonth();
-        //每月的成本费（寄件代收货款手续费、到付手续费成本、中转费成本、面单成本），保费，运费，罚款，收入统计
+        countExpressNumByMonth();
+        //每月的成本费（寄件代收货款手续费、到付手续费成本、中转费成本、面单成本），保费收入，运费，罚款，收入统计
         List<OptExpressMonthFeeVO> totalCost = countTotalCostByMonth();
         //保费收入=保费*0.6
         List<OptExpressMonthFeeVO> premium = countPremiumByMonth();
+        //运费
         List<OptExpressMonthFeeVO> freight = countFreightByMonth();
+        //罚款
         List<OptExpressMonthFeeVO> sendFine = countSendFineByMonth();
         //收入=运费+罚款+保费收入-成本
         countIncomeByMouth(totalCost, premium, freight, sendFine);
         return new ResponseEntity<>("刷新成功", HttpStatus.OK);
     }
+
 
     //统计每月收入
     private void countIncomeByMouth(List<OptExpressMonthFeeVO> totalCost, List<OptExpressMonthFeeVO> premium, List<OptExpressMonthFeeVO> freight, List<OptExpressMonthFeeVO> sendFine) {
@@ -205,6 +239,12 @@ public class OptExpressController extends BaseController<IOptExpressApi, OptExpr
         List<OptExpressMonthFeeVO> totalCostByMonth = getApi().countTotalCostByMonth();
         redisManager.setHashValue("report-express", "totalCostByMonth", totalCostByMonth);
         return totalCostByMonth;
+    }
+
+    //统计每月的总件数
+    private void countExpressNumByMonth() {
+        List<OptExpressMonthNumVO> expressNumByMonth = getApi().countExpressNumByMonth();
+        redisManager.setHashValue("report-express", "expressNumByMonth", expressNumByMonth);
     }
 
     //统计每月的问题件
