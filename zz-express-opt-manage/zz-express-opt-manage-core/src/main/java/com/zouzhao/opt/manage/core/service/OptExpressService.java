@@ -2,6 +2,7 @@ package com.zouzhao.opt.manage.core.service;
 
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zouzhao.common.core.service.PageServiceImpl;
 import com.zouzhao.common.security.utils.RedisManager;
 import com.zouzhao.opt.file.dto.OptExportConditionVO;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -193,6 +195,38 @@ public class OptExpressService extends PageServiceImpl<OptExpressMapper, OptExpr
     @Override
     public List<OptExpressMonthNumVO> countExpressNumByMonth() {
         return getMapper().countExpressNumByMonth();
+    }
+
+    @Override
+    public Page<OptExpressVO> pagePlus(Page<OptExpressVO> page) {
+        long current = page.getCurrent();
+        long size = page.getSize();
+        OptExpressVO optExpressVO = ObjectUtils.isEmpty(page.getRecords()) ? null : page.getRecords().get(0);
+        long total=getMapper().findCount(optExpressVO);
+        List<OptExpressVO> records;
+        if(total == 0){
+            page.setCurrent(1);
+            page.setTotal(0);
+            page.setPages(0);
+            records=new ArrayList<>();
+        }else if(current*size>total){
+            //查询最后一页
+            long newCurrent=total/size;
+            if(newCurrent*size < total){newCurrent++;}
+            page.setCurrent(newCurrent);
+            page.setTotal(total);
+            page.setPages(newCurrent);
+            records=getMapper().pagePlus((newCurrent-1)*size,size,optExpressVO);
+        }else{
+            //查询当前页
+            long newCurrent=total/size;
+            if(newCurrent*size < total){newCurrent++;}
+            page.setTotal(total);
+            page.setPages(newCurrent);
+            records=getMapper().pagePlus((current-1)*size,size,optExpressVO);
+        }
+        page.setRecords(records);
+        return page;
     }
 
     private void incrementNum(String redisKey, Integer size) {

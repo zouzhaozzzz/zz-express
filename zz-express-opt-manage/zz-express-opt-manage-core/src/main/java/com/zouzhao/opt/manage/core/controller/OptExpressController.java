@@ -91,7 +91,8 @@ public class OptExpressController extends BaseController<IOptExpressApi, OptExpr
 
     @PreAuthorize("hasAnyRole('OPT_MANAGE_EXPRESS_LIST','OPT_MANAGE_EXPRESS_ADMIN')")
     public Page<OptExpressVO> page(@RequestBody Page<OptExpressVO> page) {
-        List<OptExpressVO> list = PageController.super.page(page).getRecords();
+        Page<OptExpressVO> pageResult=getApi().pagePlus(page);
+        List<OptExpressVO> list = pageResult.getRecords();
         //填充寄件客户，寄件公司
         //填充
         if (list != null && list.size() > 0) list.forEach(
@@ -111,7 +112,7 @@ public class OptExpressController extends BaseController<IOptExpressApi, OptExpr
                     }
                 }
         );
-        return page;
+        return pageResult;
     }
 
     @PostMapping("/countExpressNum")

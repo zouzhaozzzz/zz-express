@@ -20,6 +20,7 @@ import java.util.List;
 @AllArgsConstructor
 public class SysOrgElementVO {
     private String orgElementId;
+    private List<String> orgElementIdList;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", locale = "zh", timezone = "GMT+8")
     private Date orgElementCreateTime;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", locale = "zh", timezone = "GMT+8")

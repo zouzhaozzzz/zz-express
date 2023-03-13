@@ -49,4 +49,9 @@ public interface OptExpressMapper extends IPageMapper<OptExpress, OptExpressVO> 
     void pageQueryByCondition(@Param("v") OptExportConditionVO vo, ResultHandler<OptExpressVO> handler);
 
 
+    //分页plus start
+    long findCount(@Param("v") OptExpressVO e);
+
+    List<OptExpressVO> pagePlus(@Param("current") long current, @Param("size") long size, @Param("v") OptExpressVO optExpressVO);
+    //分页plus end
 }

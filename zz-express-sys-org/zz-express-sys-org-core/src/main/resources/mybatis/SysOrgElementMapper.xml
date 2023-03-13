@@ -63,9 +63,9 @@
         from sys_org_element
     </sql>
     <update id="batchUpdateStatus" parameterType="map">
-        update sys_org_element set org_element_status = #{status} where  org_element_id in
+        update sys_org_element set org_element_status = #{status} where org_element_id in
         <foreach collection="ids" item="id" separator="," open="(" close=")">
-           #{id}
+            #{id}
         </foreach>
     </update>
 
@@ -73,6 +73,12 @@
     <select id="findList" parameterType="SysOrgElement" resultMap="SysOrgElementResult">
         <include refid="selectSysOrgElementVo"/>
         <where>
+            <if test="orgElementId != null and orgElementId !=''">and org_element_id = #{orgElementId}</if>
+            <if test="orgElementIdList != null and orgElementIdList.size > 0">and org_element_id in
+                <foreach collection="orgElementIdList" item="id" open="(" close=")" separator=",">
+                    #{id}
+                </foreach>
+            </if>
             <if test="orgElementName != null  and orgElementName != ''">and org_element_name like concat('%',
                 #{orgElementName}, '%')
             </if>
@@ -92,10 +98,17 @@
             <if test="orgElementStatus != null ">and org_element_status = #{orgElementStatus}</if>
         </where>
         order by org_element_order ,org_element_status desc
+        limit 0,100
     </select>
     <select id="findVOList" parameterType="SysOrgElement" resultMap="SysOrgElementVOResult">
         <include refid="selectSysOrgElementVo"/>
         <where>
+            <if test="orgElementId != null and orgElementId !=''">and org_element_id = #{orgElementId}</if>
+            <if test="orgElementIdList != null and orgElementIdList.size > 0">and org_element_id in
+                <foreach collection="orgElementIdList" item="id" open="(" close=")" separator=",">
+                    #{id}
+                </foreach>
+            </if>
             <if test="orgElementName != null  and orgElementName != ''">and org_element_name like concat('%',
                 #{orgElementName}, '%')
             </if>
@@ -115,6 +128,7 @@
             <if test="orgElementStatus != null ">and org_element_status = #{orgElementStatus}</if>
         </where>
         order by org_element_order ,org_element_status desc
+        limit 0,100
     </select>
 
     <select id="findById" parameterType="String" resultMap="SysOrgElementResult">

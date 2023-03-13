@@ -104,7 +104,7 @@
     <select id="listPersonIdByAccount" resultType="java.lang.String">
         select b.org_account_def_person_id
         from sys_right_go_rela a
-                 left join sys_org_account b on a.org_account_id = b.org_account_id and a.right_group_id = #{id}
+                 inner join sys_org_account b on a.org_account_id = b.org_account_id and a.right_group_id = #{id}
     </select>
 
     <select id="listAccountIdsByGroupId" resultType="java.lang.String">

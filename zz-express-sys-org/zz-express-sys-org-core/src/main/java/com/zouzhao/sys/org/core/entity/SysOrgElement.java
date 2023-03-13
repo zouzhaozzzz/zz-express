@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author 姚超
@@ -38,6 +39,9 @@ public class SysOrgElement extends BaseEntity {
             type = IdType.ASSIGN_ID
     )
     private String orgElementId;
+    @TableField(exist = false)
+    @Transient
+    private List<String> orgElementIdList;
     @TableField(updateStrategy = FieldStrategy.NEVER)
     @Column(insertable = false, updatable = false, columnDefinition = "DATETIME  DEFAULT CURRENT_TIMESTAMP")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", locale = "zh", timezone = "GMT+8")

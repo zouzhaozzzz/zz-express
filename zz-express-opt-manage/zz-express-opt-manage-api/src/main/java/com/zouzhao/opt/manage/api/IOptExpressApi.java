@@ -1,5 +1,6 @@
 package com.zouzhao.opt.manage.api;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zouzhao.common.api.IPageApi;
 import com.zouzhao.opt.file.dto.OptExportConditionVO;
 import com.zouzhao.opt.manage.dto.*;
@@ -53,4 +54,7 @@ public interface IOptExpressApi extends IPageApi<OptExpressVO> {
 
     @PostMapping("/countExpressNumByMonth")
     List<OptExpressMonthNumVO> countExpressNumByMonth();
+
+    @PostMapping("/pagePlus")
+    Page<OptExpressVO> pagePlus(Page<OptExpressVO> page);
 }

@@ -59,7 +59,7 @@ public class SysOrgElementService extends PageServiceImpl<SysOrgElementMapper, S
     }
 
     private void judgeParent(String parentId, String id) {
-        if (StrUtil.isBlank(parentId) && !parentId.equals("0")) {
+        if (StrUtil.isNotBlank(parentId) && !parentId.equals("0")) {
             if (parentId.equals(id)) throw new MyException("存在循环嵌套关系");
             judgeParent(getMapper().findById(parentId).getOrgElementParentId(),id);
         }
