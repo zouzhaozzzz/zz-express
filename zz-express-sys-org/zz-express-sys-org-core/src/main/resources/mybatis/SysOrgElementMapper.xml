@@ -166,4 +166,10 @@
         </where>
         order by org_element_order ,org_element_status desc
     </select>
+
+    <select id="randomPerson" parameterType="SysOrgElement" resultType="com.zouzhao.sys.org.dto.SysOrgElementVO">
+        select org_element_id, org_element_org_id from sys_org_element
+        where org_element_status =1
+        limit #{randomNumber},1
+    </select>
 </mapper>

@@ -134,6 +134,11 @@ public class SysOrgElementService extends PageServiceImpl<SysOrgElementMapper, S
         getMapper().batchUpdateStatus(ids,false);
     }
 
+    @Override
+    public SysOrgElementVO randomPerson(int randomNumber) {
+        return getMapper().randomPerson(randomNumber);
+    }
+
 
     private void loadMenu(List<SysOrgElementVO> root, List<SysOrgElementVO> menu) {
         //遍历加上菜单

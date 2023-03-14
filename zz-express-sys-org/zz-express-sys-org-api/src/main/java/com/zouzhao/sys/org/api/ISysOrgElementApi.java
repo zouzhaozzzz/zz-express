@@ -5,6 +5,7 @@ import com.zouzhao.common.dto.IdsDTO;
 import com.zouzhao.sys.org.dto.SysOrgElementVO;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
@@ -20,4 +21,7 @@ public interface ISysOrgElementApi extends IPageApi<SysOrgElementVO> {
     @PostMapping("/disableAll")
     @ApiOperation("批量停用")
     void disableAll(IdsDTO idsDTO);
+
+    @PostMapping("/randomPerson")
+    SysOrgElementVO randomPerson(@RequestBody int randomNumber);
 }

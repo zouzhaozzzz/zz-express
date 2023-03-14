@@ -21,14 +21,14 @@ public class SysOrgTest {
     private SysOrgElementService sysOrgElementService;
 
     private final static int BATCH_SIZE=10000;
-    private final static int PERSON_ALL_SIZE=90000;
+    private final static int ALL_SIZE =90000;
 
 
     @Test
     public void person(){
         List<SysOrgElement> dataList=new ArrayList<>(BATCH_SIZE);
         //新建人员
-        int max = PERSON_ALL_SIZE / BATCH_SIZE;
+        int max = ALL_SIZE / BATCH_SIZE;
         for (int j = 0; j <max ; j++) {
             for (int i = 0; i <BATCH_SIZE ; i++) {
                 SysOrgElement data = new SysOrgElement();

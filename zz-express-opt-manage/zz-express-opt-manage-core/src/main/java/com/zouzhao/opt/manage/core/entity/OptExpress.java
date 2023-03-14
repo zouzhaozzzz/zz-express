@@ -1,8 +1,6 @@
 package com.zouzhao.opt.manage.core.entity;
 
-import com.baomidou.mybatisplus.annotation.FieldStrategy;
 import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.zouzhao.common.core.entity.BaseEntity;
@@ -45,7 +43,7 @@ public class OptExpress extends BaseEntity {
 
     @ApiModelProperty("客户类型:“业务员”、“承包区”、“下级网点”、“直营客户”")
     @Column(nullable = false,columnDefinition="int(1)")
-    private Short sendCustomerType;
+    private Integer sendCustomerType;
 
     @ApiModelProperty("寄件服务方式:“派送”、“自提")
     @Column(nullable = false,columnDefinition="int(1)")
@@ -69,7 +67,7 @@ public class OptExpress extends BaseEntity {
 
     @ApiModelProperty("发货时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", locale = "zh", timezone = "GMT+8")
-    @TableField(updateStrategy = FieldStrategy.NEVER)
+    // @TableField(updateStrategy = FieldStrategy.NEVER)
     @Column(insertable = false, updatable = false, columnDefinition = "DATETIME  DEFAULT CURRENT_TIMESTAMP")
     private Date shipTime;
 

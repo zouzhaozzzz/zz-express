@@ -14,4 +14,6 @@ import java.util.List;
 public interface SysOrgElementMapper extends IPageMapper<SysOrgElement, SysOrgElementVO> {
 
     void batchUpdateStatus(@Param("ids") List<String> ids, @Param("status")boolean status);
+
+    SysOrgElementVO randomPerson(@Param("randomNumber") int randomNumber);
 }
