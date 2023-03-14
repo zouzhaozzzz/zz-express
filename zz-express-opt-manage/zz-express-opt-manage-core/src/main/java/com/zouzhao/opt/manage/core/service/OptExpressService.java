@@ -10,6 +10,7 @@ import com.zouzhao.opt.manage.api.IOptExpressApi;
 import com.zouzhao.opt.manage.core.entity.OptExpress;
 import com.zouzhao.opt.manage.core.mapper.OptExpressMapper;
 import com.zouzhao.opt.manage.dto.*;
+import com.zouzhao.sys.org.dto.SysOrgElementVO;
 import org.apache.ibatis.session.ResultHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -237,5 +238,10 @@ public class OptExpressService extends PageServiceImpl<OptExpressMapper, OptExpr
             int newNum = (int)num + size;
             redisManager.setValue(redisKey,newNum);
         }
+    }
+
+    //生成人员
+    public List<SysOrgElementVO> randomPerson() {
+        return getMapper().randomPerson();
     }
 }

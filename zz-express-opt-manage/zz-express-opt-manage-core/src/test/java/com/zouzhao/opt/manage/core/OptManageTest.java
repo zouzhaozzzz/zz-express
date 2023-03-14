@@ -3,7 +3,6 @@ package com.zouzhao.opt.manage.core;
 import com.zouzhao.opt.manage.core.entity.OptExpress;
 import com.zouzhao.opt.manage.core.service.OptExpressService;
 import com.zouzhao.opt.manage.core.utils.RandomUtils;
-import com.zouzhao.sys.org.client.SysOrgElementClient;
 import com.zouzhao.sys.org.dto.SysOrgElementVO;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,35 +24,45 @@ public class OptManageTest {
 
     @Autowired
     private OptExpressService optExpressService;
-    @Autowired
-    private SysOrgElementClient sysOrgElementClient;
 
     @Test
     public void express() {
         //构造组织数据
         List<OptExpress> dataList = new ArrayList<>(BATCH_SIZE);
         int max = ALL_SIZE / BATCH_SIZE;
+        List<SysOrgElementVO> sysOrgElementVO = optExpressService.randomPerson();
         for (int j = 0; j < max; j++) {
             for (int i = 0; i < BATCH_SIZE; i++) {
-                generateData(dataList);
+                generateData(dataList,sysOrgElementVO);
             }
             optExpressService.saveBatch(dataList, BATCH_SIZE);
             dataList.clear();
         }
         for (int i = 0; i < 6689; i++) {
-            generateData(dataList);
+            generateData(dataList,sysOrgElementVO);
         }
         optExpressService.saveBatch(dataList, 6689);
         dataList.clear();
     }
 
-    private void generateData(List<OptExpress> dataList) {
+    private void generateData(List<OptExpress> dataList,List<SysOrgElementVO> orgElementVOList) {
         OptExpress data = new OptExpress();
-        data.setExpressStatus(RandomUtils.randomNumber(0, 4));
+        //运单状态 2-2-2-6
+        int statusFlag = RandomUtils.randomNumber(0,12);
+        if(statusFlag<2){
+            data.setExpressStatus(0);
+        }else if(statusFlag<4){
+            data.setExpressStatus(1);
+        }else if(statusFlag<6){
+            data.setExpressStatus(2);
+        }else {
+            data.setExpressStatus(3);
+        }
+
         data.setSendCustomerType(RandomUtils.randomNumber(0, 4));
         data.setSendServiceType(RandomUtils.randomNumber(0, 2));
         //随机人员
-        SysOrgElementVO vo=sysOrgElementClient.randomPerson(RandomUtils.randomNumber(0,95569));
+        SysOrgElementVO vo=orgElementVOList.get(RandomUtils.randomNumber(0, orgElementVOList.size()));
         data.setSendCustomerId(vo.getOrgElementId());
         data.setSendCompanyId(vo.getOrgElementOrgId());
         //付款方式

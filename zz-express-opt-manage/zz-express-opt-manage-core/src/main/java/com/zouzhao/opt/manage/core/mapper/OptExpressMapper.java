@@ -7,6 +7,7 @@ import com.zouzhao.opt.manage.dto.OptExpressMonthFeeVO;
 import com.zouzhao.opt.manage.dto.OptExpressMonthNumVO;
 import com.zouzhao.opt.manage.dto.OptExpressNumVO;
 import com.zouzhao.opt.manage.dto.OptExpressVO;
+import com.zouzhao.sys.org.dto.SysOrgElementVO;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.session.ResultHandler;
 
@@ -54,4 +55,6 @@ public interface OptExpressMapper extends IPageMapper<OptExpress, OptExpressVO> 
 
     List<OptExpressVO> pagePlus(@Param("current") long current, @Param("size") long size, @Param("v") OptExpressVO optExpressVO);
     //分页plus end
+
+    List<SysOrgElementVO> randomPerson();
 }
