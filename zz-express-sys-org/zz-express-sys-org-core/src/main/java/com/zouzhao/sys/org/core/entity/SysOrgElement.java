@@ -58,6 +58,7 @@ public class SysOrgElement extends BaseEntity {
     private Integer orgElementType;
     @Column(length = 200)
     @ApiModelProperty("编号")
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private Integer orgElementNo;
     @ApiModelProperty("邮箱")
     private String orgElementEmail;

@@ -50,8 +50,10 @@ public class SysOrgAccount extends BaseEntity implements UserDetails {
     @Column(unique = true)
     private String orgAccountLoginName;
     @ApiModelProperty("密码")
+    @Column(nullable = false)
     private String orgAccountPassword;
     @ApiModelProperty("默认人员")
+    @Column(nullable = false)
     private String orgAccountDefPersonId;
     @ApiModelProperty("加密方式")
     private String orgAccountEncryption;

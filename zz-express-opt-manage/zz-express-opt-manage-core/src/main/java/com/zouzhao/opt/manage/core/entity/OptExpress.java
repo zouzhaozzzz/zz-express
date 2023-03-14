@@ -130,7 +130,7 @@ public class OptExpress extends BaseEntity {
     private Integer expressNumber;
 
     @ApiModelProperty("网点重量：必填项，数字，小数点后保留2位小数")
-    @Column(columnDefinition = "decimal(20,2)")
+    @Column(columnDefinition = "decimal(20,2)",nullable = false)
     private BigDecimal weight;
 
     @ApiModelProperty("体积：数字，小数点后保留2位小数")
@@ -146,7 +146,7 @@ public class OptExpress extends BaseEntity {
     private BigDecimal finalWeight;
 
     @ApiModelProperty("包装类型：下拉选择货物的包装类型")
-    @Column(columnDefinition = "int(1)")
+    @Column(nullable = false,columnDefinition = "int(1)")
     private Integer packMode;
 
     @ApiModelProperty("备注")
@@ -162,15 +162,15 @@ public class OptExpress extends BaseEntity {
 
     @ApiModelProperty("退件标识")
     @Column(columnDefinition = "int(1)")
-    private Integer bounceFlag;
+    private Integer bounceFlag=0;
 
     @ApiModelProperty("问题件")
     @Column(columnDefinition = "int(1)")
-    private Integer questionFlag;
+    private Integer questionFlag=0;
 
     @ApiModelProperty("数据来源")
     @Column(length = 20)
-    private String expressDataSource;
+    private String expressDataSource="上游导入";
 
     @ApiModelProperty("保险金额")
     @Column(columnDefinition = "decimal(20,2)")

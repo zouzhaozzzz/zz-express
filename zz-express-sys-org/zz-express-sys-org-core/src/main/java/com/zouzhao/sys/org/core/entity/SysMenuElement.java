@@ -40,8 +40,9 @@ public class SysMenuElement extends BaseEntity {
     @Column(insertable = false, updatable = false, columnDefinition = "DATETIME  DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", locale = "zh", timezone = "GMT+8")
     private Date menuElementAlterTime;
-
+    @Column(nullable = false)
     private String menuElementName;
+    @Column(nullable = false)
     private String menuElementPath;
     private String menuElementParentId;
     private String menuElementIcon;
