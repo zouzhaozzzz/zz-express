@@ -203,7 +203,10 @@ public class OptExpressService extends PageServiceImpl<OptExpressMapper, OptExpr
         long current = page.getCurrent();
         long size = page.getSize();
         OptExpressVO optExpressVO = ObjectUtils.isEmpty(page.getRecords()) ? null : page.getRecords().get(0);
-        long total=getMapper().findCount(optExpressVO);
+        long total=page.getTotal();
+        if(page.searchCount()){
+            total=getMapper().findCount(optExpressVO);
+        }
         List<OptExpressVO> records;
         if(total == 0){
             page.setCurrent(1);

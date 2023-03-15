@@ -620,6 +620,7 @@
                 <if test="v.weight != null ">and weight = #{v.weight}</if>
             </if>
         </where>
+        order by ship_time
         limit #{current},#{size})as a using(express_id)
     </select>
     <select id="randomPerson" resultType="com.zouzhao.sys.org.dto.SysOrgElementVO">

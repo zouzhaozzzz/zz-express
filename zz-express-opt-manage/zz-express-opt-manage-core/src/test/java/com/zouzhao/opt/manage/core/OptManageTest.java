@@ -20,7 +20,7 @@ import java.util.List;
 public class OptManageTest {
 
     private final static int BATCH_SIZE = 10000;
-    private final static int ALL_SIZE = 23_150_000;
+    private final static int ALL_SIZE = 5_150_000;
 
     @Autowired
     private OptExpressService optExpressService;

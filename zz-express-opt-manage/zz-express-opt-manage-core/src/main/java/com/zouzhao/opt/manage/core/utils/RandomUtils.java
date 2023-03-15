@@ -25,7 +25,7 @@ public class RandomUtils {
     // private static final String[] genders = new String[]{"male, female"};
     private static final String[] genders = {"male", "female"}; // 利用了编译器的优化机制(语法糖)进行简化","和上面这一行等效
 
-    private static final String[] firstNames = {"王", "李", "张", "刘", "陈", "杨", "黄", "赵", "吴", "周", "徐", "孙", "马", "朱", "胡", "郭", "何", "高", "林", "罗", "郑", "梁", "谢", "宋", "唐", "许", "韩", "冯", "邓", "曹", " 彭", "曾", "肖", "田", "董", "袁", "潘", "于", "蒋", "蔡", " 余", "杜", "叶", "程", "苏", "魏", "吕", "丁", "任", "沈", " 姚", "卢", "姜", "崔", "钟", "谭", "陆", "汪", "范", "金", "石", "廖", "贾", "夏", "韦", "傅", "方", "白", "邹", "孟", " 熊", "秦", "邱", "江", "尹", "薛", "闫", "段", "雷", "侯"};
+    private static final String[] firstNames = {"王", "李", "张", "刘", "陈", "杨", "黄", "赵", "吴", "周", "徐", "孙", "马", "朱", "胡", "郭", "何", "高", "林", "罗", "郑", "梁", "谢", "宋", "唐", "许", "韩", "冯", "邓", "曹", "彭", "曾", "肖", "田", "董", "袁", "潘", "于", "蒋", "蔡", "余", "杜", "叶", "程", "苏", "魏", "吕", "丁", "任", "沈", "姚", "卢", "姜", "崔", "钟", "谭", "陆", "汪", "范", "金", "石", "廖", "贾", "夏", "韦", "傅", "方", "白", "邹", "孟", "熊", "秦", "邱", "江", "尹", "薛", "闫", "段", "雷", "侯"};
     private static final String[] lastNames = {"加", "鸿", "稷", "蔚", "鸿", "香", "昕", "中", "轩", "梓", "鑫", "玥", "怡", "濡", "玲", "卓", "逸", "骏", "康", "冰", "锟", "颜", "腾", "月", "韦", "曼", "勇", "雪", "舒", "礼", "彦", "丽", "柏", "正", "升", "优", "霞", "尧", "吉", "璇", "雯", "侠", "裕", "彤", "裕", "鑫", "冬", "柔", "娅", "振", "妮", "升", "泽", "凯", "沛", "鹤", "柏", "年", "梓", "函", "礼", "邦", "喆", "彬", "潍", "澄", "澄", "优", "凡", "礼",
             "韦", "坤", "昕", "璟", "海", "函", "惠", "东", "彩", "荣", "彦", "震", "呈", "钰", "腾", "谛", "欣", "雪", "初", "暄", "紫", "德", "浩", "祜", "怡", "铭", "斌", "稷", "桂", "帝", "弦", "香", "峰", "花", "洲", "柏", "运", "子", "淑", "翱", "鹏", "弘", "鹏", "雅", "东", "芃", "格", "岚", "蓓", "祥", "沛", "橘", "年", "璟", "平", "可", "璟", "辞", "洲", "佑", "凡", "锦", "敏", "柏", "云", "美", "加", "楠", "菡", "运", "荣", "金", "璇", "初", "航", "芳", "诗", "欣", "金", "娅", "泽", "爵", "怡", "琪",
             "杉", "金", "星", "鑫", "礼", "克", "芸", "桂", "佑", "东", "日", "弦", "恒", "璟", "锟", "秀", "初", "采", "玥", "欢", "中", "欣", "晓", "泽", "钰", "凡", "克", "璟", "韵", "薇", "翱邦", "允", "灵", "雪", "蓓", "曦", "柏", "鸿", "祥", "香", "子", "心", "惠", "佑", "枫"};
@@ -136,7 +136,6 @@ public class RandomUtils {
             return index * var5;
         }
     }
-
 
 
     //随机体积(传入参数为整数位数)
@@ -271,9 +270,24 @@ public class RandomUtils {
 
 
     public static Date randomTime2022() {
-        String dateStr = "2022-" + randomNumber(1, 13) + "-" + randomNumber(1, 27) + " " + randomNumber(0, 24) + ":" + randomNumber(0, 59) + ":" + randomNumber(0, 59);
+        String dateStr = "2022-";
+        //3-3-3-4-4-5-5-5-6-6-6-9
+        int i = randomNumber(0, 59);
+        String month;
+        if (i < 9) {
+            month = randomNumber(1, 4) + "-" + randomNumber(1, 27) + " " + randomNumber(0, 24) + ":" + randomNumber(0, 59) + ":" + randomNumber(0, 59);
+        } else if (i < 16) {
+            month = randomNumber(4, 6) + "-" + randomNumber(1, 27) + " " + randomNumber(0, 24) + ":" + randomNumber(0, 59) + ":" + randomNumber(0, 59);
+        } else if (i < 31) {
+            month = randomNumber(6, 9) + "-" + randomNumber(1, 27) + " " + randomNumber(0, 24) + ":" + randomNumber(0, 59) + ":" + randomNumber(0, 59);
+        } else if (i < 49) {
+            month = randomNumber(9, 12) + "-" + randomNumber(1, 27) + " " + randomNumber(0, 24) + ":" + randomNumber(0, 59) + ":" + randomNumber(0, 59);
+        } else {
+            month = 12 + "-" + randomNumber(1, 27) + " " + randomNumber(0, 24) + ":" + randomNumber(0, 59) + ":" + randomNumber(0, 59);
+        }
+
         try {
-            return sdf.parse(dateStr);
+            return sdf.parse(dateStr + month);
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -281,7 +295,7 @@ public class RandomUtils {
     }
 
     public static Date randomAddTime(Date date) {
-        date.setTime(date.getTime()+ (long) randomNumber(0, 168) *60*60*1000);
+        date.setTime(date.getTime() + (long) randomNumber(0, 168) * 60 * 60 * 1000);
         return date;
     }
 
