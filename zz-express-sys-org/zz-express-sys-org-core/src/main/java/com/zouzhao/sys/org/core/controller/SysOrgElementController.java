@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -111,6 +112,8 @@ public class SysOrgElementController extends BaseController<ISysOrgElementApi, S
     @PostMapping({"/listInRoles"})
     @ApiOperation("列表查询接口")
     public List<SysOrgElementVO> listInRoles(@RequestBody SysOrgElementVO request) {
+        String LoginName=(String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        request.setOrgElementLoginName(LoginName);
         return getApi().listInRoles(request);
     }
 
