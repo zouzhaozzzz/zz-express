@@ -108,5 +108,10 @@ public class SysOrgElementController extends BaseController<ISysOrgElementApi, S
         return result;
     }
 
+    @PostMapping({"/listInRoles"})
+    @ApiOperation("列表查询接口")
+    public List<SysOrgElementVO> listInRoles(@RequestBody SysOrgElementVO request) {
+        return getApi().listInRoles(request);
+    }
 
 }
