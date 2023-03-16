@@ -28,4 +28,8 @@ public interface ISysOrgAccountApi extends IApi<SysOrgAccountVO> {
 
     @PostMapping("/changePasswordByDefPerson")
     void changePasswordByDefPerson(@RequestBody SysOrgAccountVO sysOrgAccountVO);
+
+    @PostMapping("/findVOByLoginName")
+    SysOrgAccountVO findVOByLoginName(String loginName);
+
 }

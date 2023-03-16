@@ -18,4 +18,10 @@ public interface SysOrgElementMapper extends IPageMapper<SysOrgElement, SysOrgEl
     int countOrg();
 
     int countPerson();
+
+    SysOrgElementVO findByLoginName(@Param("v") SysOrgElementVO request);
+
+    List<SysOrgElementVO> findChildOrgById(@Param("v") SysOrgElementVO org);
+
+    List<SysOrgElementVO> findVOListInOrgs(@Param("v") SysOrgElementVO org,@Param("list")List<SysOrgElementVO> data);
 }

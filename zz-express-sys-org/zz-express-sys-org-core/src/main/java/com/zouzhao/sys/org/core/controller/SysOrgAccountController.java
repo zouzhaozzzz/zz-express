@@ -1,6 +1,7 @@
 package com.zouzhao.sys.org.core.controller;
 
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import com.zouzhao.common.core.controller.BaseController;
 import com.zouzhao.common.core.exception.MyException;
 import com.zouzhao.sys.org.api.ISysOrgAccountApi;
@@ -59,5 +60,14 @@ public class SysOrgAccountController extends BaseController<ISysOrgAccountApi, S
     }
 
 
+    @PostMapping("/findByLoginName")
+    @ApiOperation("根据用户名查询")
+    public String findByLoginName(@RequestBody SysOrgAccountVO user) {
+        String loginName = user.getOrgAccountLoginName();
+        if (StrUtil.isBlank(loginName)) throw new MyException("登录名为空或者有空字符");
+        SysOrgAccountVO accountVO = getApi().findVOByLoginName(loginName);
+        if (accountVO != null) return "false";
+        return "success";
+    }
 }
 

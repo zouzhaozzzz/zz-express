@@ -84,7 +84,7 @@ public class SysOrgElementController extends BaseController<ISysOrgElementApi, S
 
     @PostMapping({"/list"})
     @ApiOperation("列表查询接口")
-    @PreAuthorize("hasAnyRole('SYS_ORG_ELEMENT_LIST','SYS_ORG_ELEMENT_ADMIN')")
+    @PreAuthorize("hasAnyRole('SYS_ORG_ELEMENT_ADMIN')")
     public List<SysOrgElementVO> list(@RequestBody SysOrgElementVO request) {
         return getApi().findAll(request);
     }

@@ -100,6 +100,11 @@ public class SysOrgAccountService extends BaseServiceImpl<SysOrgAccountMapper, S
         getMapper().changePasswordByDefPerson(sysOrgAccountVO.getOrgAccountDefPersonId(),ps);
     }
 
+    @Override
+    public SysOrgAccountVO findVOByLoginName(String loginName) {
+        return getMapper().findVOByLoginName(loginName);
+    }
+
 
     public IdDTO add(SysOrgAccountVO vo) {
         String password = vo.getOrgAccountPassword();

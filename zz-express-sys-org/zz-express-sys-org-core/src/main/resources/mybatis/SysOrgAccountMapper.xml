@@ -80,5 +80,8 @@
         select org_account_id   from sys_org_account where org_account_def_person_id in
         <foreach collection="list" item="id" separator="," open="(" close=")">#{id}</foreach>
     </select>
+    <select id="findVOByLoginName" resultType="com.zouzhao.sys.org.dto.SysOrgAccountVO">
+        select * from sys_org_account where org_account_login_name = #{loginName}
+    </select>
 
 </mapper>

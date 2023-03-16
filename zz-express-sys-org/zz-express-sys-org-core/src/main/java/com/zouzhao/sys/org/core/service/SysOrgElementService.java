@@ -3,10 +3,10 @@ package com.zouzhao.sys.org.core.service;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.zouzhao.common.dto.IdDTO;
-import com.zouzhao.common.dto.IdsDTO;
 import com.zouzhao.common.core.exception.MyException;
 import com.zouzhao.common.core.service.PageServiceImpl;
+import com.zouzhao.common.dto.IdDTO;
+import com.zouzhao.common.dto.IdsDTO;
 import com.zouzhao.sys.org.api.ISysOrgAccountApi;
 import com.zouzhao.sys.org.api.ISysOrgElementApi;
 import com.zouzhao.sys.org.core.entity.SysOrgElement;
@@ -48,11 +48,11 @@ public class SysOrgElementService extends PageServiceImpl<SysOrgElementMapper, S
     protected void beforeSaveOrUpdate(SysOrgElement entity, boolean isAdd) {
         super.beforeSaveOrUpdate(entity, isAdd);
         //设置排序号
-        if(entity.getOrgElementOrder() == null)entity.setOrgElementOrder(999999999);
+        if (entity.getOrgElementOrder() == null) entity.setOrgElementOrder(999999999);
         //如果为更新
         if (!isAdd) {
             //判断上级，防止循环
-            String parentId=entity.getOrgElementParentId();
+            String parentId = entity.getOrgElementParentId();
             String id = entity.getId();
             judgeParent(parentId, id);
         }
@@ -61,7 +61,7 @@ public class SysOrgElementService extends PageServiceImpl<SysOrgElementMapper, S
     private void judgeParent(String parentId, String id) {
         if (StrUtil.isNotBlank(parentId) && !parentId.equals("0")) {
             if (parentId.equals(id)) throw new MyException("存在循环嵌套关系");
-            judgeParent(getMapper().findById(parentId).getOrgElementParentId(),id);
+            judgeParent(getMapper().findById(parentId).getOrgElementParentId(), id);
         }
     }
 
@@ -76,11 +76,16 @@ public class SysOrgElementService extends PageServiceImpl<SysOrgElementMapper, S
         IdDTO result = super.add(vo);
         //如果为人员，需要对账号account操作
         if (vo.getOrgElementType() == 1) {
+            String loginName = vo.getOrgElementLoginName();
+            if (StrUtil.isBlank(loginName)) throw new MyException("登录名为空");
+            SysOrgAccountVO exist = sysOrgAccountService.findVOByLoginName(loginName);
+            if (exist != null) throw new RuntimeException("用户名已存在");
             SysOrgAccountVO accountVO = new SysOrgAccountVO();
-            accountVO.setOrgAccountLoginName(vo.getOrgElementLoginName());
+            accountVO.setOrgAccountLoginName(loginName);
             accountVO.setOrgAccountPassword(vo.getOrgElementPassword());
             accountVO.setOrgAccountDefPersonId(result.getId());
             sysOrgAccountService.add(accountVO);
+
         }
         return result;
     }
@@ -129,9 +134,9 @@ public class SysOrgElementService extends PageServiceImpl<SysOrgElementMapper, S
     @Transactional
     public void disableAll(IdsDTO idsDTO) {
         List<String> ids = idsDTO.getIds();
-        if(ids ==null || ids.size()<1)return;
+        if (ids == null || ids.size() < 1) return;
         //批量更新状态
-        getMapper().batchUpdateStatus(ids,false);
+        getMapper().batchUpdateStatus(ids, false);
     }
 
     @Override
@@ -142,6 +147,45 @@ public class SysOrgElementService extends PageServiceImpl<SysOrgElementMapper, S
     @Override
     public int countPerson() {
         return getMapper().countPerson();
+    }
+
+    @Override
+    public List<SysOrgElementVO> listInRoles(SysOrgElementVO request) {
+        Integer type = request.getOrgElementType();
+        if (ObjectUtil.isEmpty(type)) throw new MyException("组织类型为空");
+        List<SysOrgElementVO> data = new ArrayList<>();
+        //组织
+        //拿到当前登陆人的组织
+        SysOrgElementVO org = getMapper().findByLoginName(request);
+        //当前人员没有分配组织，查不到组织
+        if (StrUtil.isEmpty(org.getOrgElementOrgId()) && type == 0) return null;
+        //当前人员没有分配组织，人员只能查自己
+        if (StrUtil.isEmpty(org.getOrgElementOrgId()) && type == 1) {
+            data.add(org);
+            return data;
+        }
+
+        SysOrgElementVO parent = getMapper().findVOById(org.getOrgElementOrgId());
+        if (parent == null) return null;
+        data.add(parent);
+        //添加下级组织
+        addChildrenOrg(parent, data);
+
+        if (type == 0) {
+            return data;
+        } else {
+            //人员
+            //当前人员有组织，查当前组织和下级组织的人员
+            return getMapper().findVOListInOrgs(request, data);
+        }
+    }
+
+    private void addChildrenOrg(SysOrgElementVO org, List<SysOrgElementVO> data) {
+        List<SysOrgElementVO> child = getMapper().findChildOrgById(org);
+        if (child != null && child.size() > 0) {
+            data.addAll(child);
+            child.forEach(e -> addChildrenOrg(e, data));
+        }
     }
 
 

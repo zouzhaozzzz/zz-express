@@ -26,4 +26,7 @@ public interface ISysOrgElementApi extends IPageApi<SysOrgElementVO> {
 
     @PostMapping("/countPerson")
     int countPerson();
+
+    @PostMapping("/listInRoles")
+    List<SysOrgElementVO> listInRoles(SysOrgElementVO request);
 }

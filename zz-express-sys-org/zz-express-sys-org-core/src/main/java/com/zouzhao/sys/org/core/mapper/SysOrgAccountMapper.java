@@ -18,4 +18,6 @@ public interface SysOrgAccountMapper extends IMapper<SysOrgAccount,SysOrgAccount
     List<String> getIdsByDefPersonIds(@Param("list") List<String> elementIds);
 
     void changePasswordByDefPerson(@Param("accountDefPersonId") String accountDefPersonId, @Param("password") String ps);
+
+    SysOrgAccountVO findVOByLoginName(@Param("loginName")String loginName);
 }
