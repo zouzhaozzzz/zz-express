@@ -1,7 +1,7 @@
 package com.zouzhao.opt.manage.core.config.schedule;
 
 
-import com.zouzhao.opt.manage.core.controller.OptExpressController;
+import com.zouzhao.opt.manage.core.service.OptExpressService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +18,7 @@ import java.util.Date;
 public class OptManageSchedulePlan {
     private static final Logger log = LoggerFactory.getLogger(OptManageSchedulePlan.class);
     @Autowired
-    private OptExpressController optExpressController;
+    private OptExpressService optExpressService;
 
     // @Scheduled(initialDelay = 15*60*1000,fixedDelay = 60*60*1000 )
     @Scheduled(fixedDelay = 20*60*1000 )
@@ -30,7 +30,7 @@ public class OptManageSchedulePlan {
         //获取当前时间
         Date date = new Date();
         log.debug("定时任务开始刷新报表时间：{}", sdf.format(date));
-        optExpressController.refreshExport();
+        optExpressService.refreshExport();
     }
 
 }

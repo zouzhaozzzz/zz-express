@@ -3,6 +3,7 @@ package com.zouzhao.opt.manage.core.service;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.zouzhao.common.core.exception.MyException;
 import com.zouzhao.common.core.service.PageServiceImpl;
 import com.zouzhao.common.security.utils.RedisManager;
 import com.zouzhao.opt.file.dto.OptExportConditionVO;
@@ -23,6 +24,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -98,12 +100,166 @@ public class OptExpressService extends PageServiceImpl<OptExpressMapper, OptExpr
     }
 
     @Override
-    public int countByStatus(Integer status) {
-        return getMapper().countByStatus(status);
+    public int countExpressNum(OptExpressVO vo) {
+        return getMapper().countExpressNum(vo);
     }
 
     @Override
-    public List<OptExpressProvinceVO> countByProvinces() {
+    public Page<OptExpressVO> pagePlus(Page<OptExpressVO> page) {
+        long current = page.getCurrent();
+        long size = page.getSize();
+        OptExpressVO optExpressVO = ObjectUtils.isEmpty(page.getRecords()) ? null : page.getRecords().get(0);
+        long total=page.getTotal();
+        if(page.searchCount()){
+            total=getMapper().findCount(optExpressVO);
+        }
+        List<OptExpressVO> records;
+        if(total == 0){
+            page.setCurrent(1);
+            page.setTotal(0);
+            page.setPages(0);
+            records=new ArrayList<>();
+        }else if(current*size>total){
+            //查询最后一页
+            long newCurrent=total/size;
+            if(newCurrent*size < total){newCurrent++;}
+            page.setCurrent(newCurrent);
+            page.setTotal(total);
+            page.setPages(newCurrent);
+            records=getMapper().pagePlus((newCurrent-1)*size,size,optExpressVO);
+        }else{
+            //查询当前页
+            long newCurrent=total/size;
+            if(newCurrent*size < total){newCurrent++;}
+            page.setTotal(total);
+            page.setPages(newCurrent);
+            records=getMapper().pagePlus((current-1)*size,size,optExpressVO);
+        }
+        page.setRecords(records);
+        return page;
+    }
+
+    @Override
+    public void refreshExport() {
+        //统计快递状态，总件数统计
+        countStatus();
+        //省份寄件派送个数
+        countByProvinces();
+        //每月的问题件，退货件
+        countQuestionByMonth();
+        countBounceByMonth();
+        countExpressNumByMonth();
+        //每月的成本费（寄件代收货款手续费、到付手续费成本、中转费成本、面单成本），保费收入，运费，罚款，收入统计
+        List<OptExpressMonthFeeVO> totalCost = countTotalCostByMonth();
+        //保费收入=保费*0.6
+        List<OptExpressMonthFeeVO> premium = countPremiumByMonth();
+        //运费
+        List<OptExpressMonthFeeVO> freight = countFreightByMonth();
+        //罚款
+        List<OptExpressMonthFeeVO> sendFine = countSendFineByMonth();
+        //收入=运费+罚款+保费收入-成本
+        countIncomeByMouth(totalCost, premium, freight, sendFine);
+    }
+
+
+
+
+
+    //统计每月收入
+    private void countIncomeByMouth(List<OptExpressMonthFeeVO> totalCost, List<OptExpressMonthFeeVO> premium, List<OptExpressMonthFeeVO> freight, List<OptExpressMonthFeeVO> sendFine) {
+        if (totalCost == null || premium == null || freight == null || sendFine == null)
+            throw new MyException("计算收入出错，缺失数据");
+        List<OptExpressMonthFeeVO> income = new ArrayList<>();
+        for (int i = 0; i < totalCost.size(); i++) {
+            OptExpressMonthFeeVO costVO = totalCost.get(i);
+            BigDecimal premiumFee = premium.get(i).getFee();
+            BigDecimal freightFee = freight.get(i).getFee();
+            BigDecimal sendFineFee = sendFine.get(i).getFee();
+            //如果为空设为0
+            if (costVO.getFee() == null) costVO.setFee(new BigDecimal("0"));
+            if (premiumFee == null) premiumFee = new BigDecimal("0");
+            if (freightFee == null) freightFee = new BigDecimal("0");
+            if (sendFineFee == null) sendFineFee = new BigDecimal("0");
+            //每月收入
+            BigDecimal incomeFee = premiumFee.add(freightFee).add(sendFineFee).subtract(costVO.getFee());
+            costVO.setFee(incomeFee);
+            income.add(costVO);
+        }
+        redisManager.setHashValue("report-express", "income", income);
+    }
+
+
+    //统计每月的罚款
+    private List<OptExpressMonthFeeVO> countSendFineByMonth() {
+        List<OptExpressMonthFeeVO> sendFineByMonth = getMapper().countSendFineByMonth();
+        redisManager.setHashValue("report-express", "sendFineByMonth", sendFineByMonth);
+        return sendFineByMonth;
+    }
+
+    //统计每月的运费
+    private List<OptExpressMonthFeeVO> countFreightByMonth() {
+        List<OptExpressMonthFeeVO> freightByMonth = getMapper().countFreightByMonth();
+        redisManager.setHashValue("report-express", "freightByMonth", freightByMonth);
+        return freightByMonth;
+    }
+
+    //统计每月的保费收入 保费收入=保费*0.6
+    private List<OptExpressMonthFeeVO> countPremiumByMonth() {
+        List<OptExpressMonthFeeVO> premiumByMonth = getMapper().countPremiumByMonth();
+        premiumByMonth.forEach(e -> {
+            if (e.getFee() != null) e.setFee(e.getFee().multiply(new BigDecimal("0.6")));
+        });
+        redisManager.setHashValue("report-express", "premiumByMonth", premiumByMonth);
+        return premiumByMonth;
+    }
+
+    //统计每月的总成本
+    private List<OptExpressMonthFeeVO> countTotalCostByMonth() {
+        List<OptExpressMonthFeeVO> totalCostByMonth = getMapper().countTotalCostByMonth();
+        redisManager.setHashValue("report-express", "totalCostByMonth", totalCostByMonth);
+        return totalCostByMonth;
+    }
+
+    //统计每月的总件数
+    private void countExpressNumByMonth() {
+        List<OptExpressMonthNumVO> expressNumByMonth = getMapper().countExpressNumByMonth();
+        redisManager.setHashValue("report-express", "expressNumByMonth", expressNumByMonth);
+    }
+
+    //统计每月的问题件
+    private void countBounceByMonth() {
+        List<OptExpressMonthNumVO> bounceByMonth = getMapper().countByBounce();
+        redisManager.setHashValue("report-express", "bounceByMonth", bounceByMonth);
+    }
+
+    //统计每月的退货件
+    private void countQuestionByMonth() {
+        List<OptExpressMonthNumVO> questionNumByMonth = getMapper().countByQuestion();
+        redisManager.setHashValue("report-express", "questionNumByMonth", questionNumByMonth);
+    }
+
+    //统计快递状态
+    private void countStatus() {
+        //统计待取货，运输中，派件中，已签收
+        int n1 = getMapper().countByStatus(0);
+        int n2 = getMapper().countByStatus(1);
+        int n3 = getMapper().countByStatus(2);
+        int n4 = getMapper().countByStatus(3);
+        redisManager.setHashValue("report-express", "0", n1);
+        redisManager.setHashValue("report-express", "1", n2);
+        redisManager.setHashValue("report-express", "2", n3);
+        redisManager.setHashValue("report-express", "3", n4);
+        redisManager.setHashValue("report-express", "all", n1 + n2 + n3 + n4);
+    }
+
+    //省份排名 寄件派送个数
+    private void countByProvinces() {
+        List<OptExpressProvinceVO> province =countNumByProvinces();
+        redisManager.setHashValue("report-express", "province", province);
+    }
+
+
+    public List<OptExpressProvinceVO> countNumByProvinces() {
         List<OptExpressProvinceVO> result=new ArrayList<>();
         List<OptExpressNumVO> consigneeProvinces = getMapper().countByConsigneeProvinces();
         List<OptExpressNumVO> sendProvinces = getMapper().countBySendProvinces();
@@ -156,81 +312,6 @@ public class OptExpressService extends PageServiceImpl<OptExpressMapper, OptExpr
             });
         }
         return result;
-    }
-
-    @Override
-    public List<OptExpressMonthNumVO> countBounceByMonth() {
-        return getMapper().countByBounce();
-    }
-
-    @Override
-    public List<OptExpressMonthNumVO> countQuestionByMonth() {
-        return getMapper().countByQuestion();
-    }
-
-    @Override
-    public List<OptExpressMonthFeeVO> countTotalCostByMonth() {
-        return getMapper().countTotalCostByMonth();
-    }
-
-    @Override
-    public List<OptExpressMonthFeeVO> countSendFineByMonth() {
-        return getMapper().countSendFineByMonth();
-    }
-
-    @Override
-    public List<OptExpressMonthFeeVO> countFreightByMonth() {
-        return getMapper().countFreightByMonth();
-    }
-
-    @Override
-    public List<OptExpressMonthFeeVO> countPremiumByMonth() {
-        return getMapper().countPremiumByMonth();
-    }
-
-    @Override
-    public int countExpressNum(OptExpressVO vo) {
-        return getMapper().countExpressNum(vo);
-    }
-
-    @Override
-    public List<OptExpressMonthNumVO> countExpressNumByMonth() {
-        return getMapper().countExpressNumByMonth();
-    }
-
-    @Override
-    public Page<OptExpressVO> pagePlus(Page<OptExpressVO> page) {
-        long current = page.getCurrent();
-        long size = page.getSize();
-        OptExpressVO optExpressVO = ObjectUtils.isEmpty(page.getRecords()) ? null : page.getRecords().get(0);
-        long total=page.getTotal();
-        if(page.searchCount()){
-            total=getMapper().findCount(optExpressVO);
-        }
-        List<OptExpressVO> records;
-        if(total == 0){
-            page.setCurrent(1);
-            page.setTotal(0);
-            page.setPages(0);
-            records=new ArrayList<>();
-        }else if(current*size>total){
-            //查询最后一页
-            long newCurrent=total/size;
-            if(newCurrent*size < total){newCurrent++;}
-            page.setCurrent(newCurrent);
-            page.setTotal(total);
-            page.setPages(newCurrent);
-            records=getMapper().pagePlus((newCurrent-1)*size,size,optExpressVO);
-        }else{
-            //查询当前页
-            long newCurrent=total/size;
-            if(newCurrent*size < total){newCurrent++;}
-            page.setTotal(total);
-            page.setPages(newCurrent);
-            records=getMapper().pagePlus((current-1)*size,size,optExpressVO);
-        }
-        page.setRecords(records);
-        return page;
     }
 
     private void incrementNum(String redisKey, Integer size) {

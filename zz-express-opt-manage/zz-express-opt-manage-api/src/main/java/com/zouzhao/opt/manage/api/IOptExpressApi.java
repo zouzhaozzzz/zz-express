@@ -25,36 +25,12 @@ public interface IOptExpressApi extends IPageApi<OptExpressVO> {
     @PostMapping("/updateStatusBatch")
     void updateStatusBatch(List<String> ids,Integer status);
 
-    @PostMapping("/countByStatus")
-    int countByStatus(Integer status);
+    @PostMapping("/pagePlus")
+    Page<OptExpressVO> pagePlus(Page<OptExpressVO> page);
 
-    @PostMapping("/countByProvinces")
-    List<OptExpressProvinceVO> countByProvinces();
-
-    @PostMapping("/countBounceByMonth")
-    List<OptExpressMonthNumVO> countBounceByMonth();
-
-    @PostMapping("/countQuestionByMonth")
-    List<OptExpressMonthNumVO> countQuestionByMonth();
-
-    @PostMapping("/countTotalCostByMonth")
-    List<OptExpressMonthFeeVO> countTotalCostByMonth();
-
-    @PostMapping("/countSendFineByMonth")
-    List<OptExpressMonthFeeVO> countSendFineByMonth();
-
-    @PostMapping("/countFreightByMonth")
-    List<OptExpressMonthFeeVO> countFreightByMonth();
-
-    @PostMapping("/countPremiumByMonth")
-    List<OptExpressMonthFeeVO> countPremiumByMonth();
+    @PostMapping("/refreshExport")
+    void refreshExport();
 
     @PostMapping("/countExpressNum")
     int countExpressNum(OptExpressVO vo);
-
-    @PostMapping("/countExpressNumByMonth")
-    List<OptExpressMonthNumVO> countExpressNumByMonth();
-
-    @PostMapping("/pagePlus")
-    Page<OptExpressVO> pagePlus(Page<OptExpressVO> page);
 }
