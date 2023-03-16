@@ -111,11 +111,11 @@ public class OptExportController extends BaseController<IOptExportApi, OptExport
         Object allStr;
         Object successStr;
         if (type == 0) {
-            allStr = redisManager.getValue("export-all:" + id);
-            successStr = redisManager.getValue("export-success:" + id);
-        } else {
             allStr = redisManager.getValue("import-all:" + id);
             successStr = redisManager.getValue("import-success:" + id);
+        } else {
+            allStr = redisManager.getValue("export-all:" + id);
+            successStr = redisManager.getValue("export-success:" + id);
         }
 
         if (ObjectUtil.isEmpty(allStr) || ObjectUtil.isEmpty(successStr)) {

@@ -20,7 +20,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author 姚超
@@ -32,7 +34,7 @@ import java.util.List;
         tags = "组织元素"
 )
 @PreAuthorize("hasAnyRole('SYS_ORG_ELEMENT_DEFAULT','SYS_ORG_ELEMENT_ADMIN')")
-public class SysOrgElementController extends BaseController<ISysOrgElementApi, SysOrgElementVO>  {
+public class SysOrgElementController extends BaseController<ISysOrgElementApi, SysOrgElementVO> {
 
     @Autowired
     private ISysOrgAccountApi sysOrgAccountService;
@@ -49,16 +51,18 @@ public class SysOrgElementController extends BaseController<ISysOrgElementApi, S
     public SysOrgElementVO get(@RequestBody IdDTO vo) {
         SysOrgElementVO sysOrgElementVO = getApi().findVOById(vo);
         //如果为人员，查询账号信息
-        if(sysOrgElementVO.getOrgElementType() == 1 && !StrUtil.isBlank(sysOrgElementVO.getOrgElementId()) ){
-        SysOrgAccountVO sysOrgAccountVO=sysOrgAccountService.findVOByDefPersonId(IdDTO.of(sysOrgElementVO.getOrgElementId()));
-        if(sysOrgAccountVO != null)sysOrgElementVO.setOrgElementLoginName(sysOrgAccountVO.getOrgAccountLoginName());}
+        if (sysOrgElementVO.getOrgElementType() == 1 && !StrUtil.isBlank(sysOrgElementVO.getOrgElementId())) {
+            SysOrgAccountVO sysOrgAccountVO = sysOrgAccountService.findVOByDefPersonId(IdDTO.of(sysOrgElementVO.getOrgElementId()));
+            if (sysOrgAccountVO != null)
+                sysOrgElementVO.setOrgElementLoginName(sysOrgAccountVO.getOrgAccountLoginName());
+        }
         return sysOrgElementVO;
     }
 
     @PostMapping("/disableAll")
     @ApiOperation("批量停用")
     @PreAuthorize("hasAnyRole('SYS_ORG_ELEMENT_UPDATE','SYS_ORG_ELEMENT_ADMIN')")
-    public ResponseEntity<String> disableAll(@RequestBody IdsDTO idsDTO){
+    public ResponseEntity<String> disableAll(@RequestBody IdsDTO idsDTO) {
         getApi().disableAll(idsDTO);
         return new ResponseEntity<String>("停用成功", HttpStatus.OK);
     }
@@ -73,7 +77,7 @@ public class SysOrgElementController extends BaseController<ISysOrgElementApi, S
     @PostMapping({"/update"})
     @ApiOperation("更新接口")
     @PreAuthorize("hasAnyRole('SYS_ORG_ELEMENT_UPDATE','SYS_ORG_ELEMENT_ADMIN')")
-     public IdDTO update(@RequestBody SysOrgElementVO vo) {
+    public IdDTO update(@RequestBody SysOrgElementVO vo) {
         return getApi().update(vo);
     }
 
@@ -91,4 +95,18 @@ public class SysOrgElementController extends BaseController<ISysOrgElementApi, S
     public Page<SysOrgElementVO> page(@RequestBody Page<SysOrgElementVO> page) {
         return getApi().page(page);
     }
+
+    @PreAuthorize("hasAnyRole('SYS_ORG_ELEMENT_ADMIN')")
+    @ApiOperation("统计组织架构和人员")
+    @PostMapping("/countOrg")
+    public Map<String,Object> refreshOrg() {
+        Map<String,Object> result=new HashMap<>();
+        int orgNum = getApi().countOrg();
+        int PersonNum = getApi().countPerson();
+        result.put("org",orgNum);
+        result.put("person",PersonNum);
+        return result;
+    }
+
+
 }

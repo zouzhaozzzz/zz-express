@@ -166,6 +166,12 @@
         </where>
         order by org_element_order ,org_element_status desc
     </select>
+    <select id="countOrg" resultType="java.lang.Integer">
+        select count(*) from sys_org_element where org_element_type = 0;
+    </select>
 
+    <select id="countPerson" resultType="java.lang.Integer">
+        select count(*) from sys_org_element where org_element_type = 1;
+    </select>
 
 </mapper>

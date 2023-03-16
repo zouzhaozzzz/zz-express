@@ -343,43 +343,43 @@
         where express_id = #{expressId}
     </select>
     <select id="isExistById" resultType="java.lang.Integer">
-        select count(1)
+        select count(*)
         from opt_express
         where express_id = #{id};
     </select>
     <select id="countByStatus" resultType="java.lang.Integer">
-        select count(1)
+        select count(*)
         from opt_express
         where express_status = #{status}
     </select>
     <select id="countByConsigneeProvinces" resultType="com.zouzhao.opt.manage.dto.OptExpressNumVO">
-        select consignee_province as name, count(1) as count
+        select consignee_province as name, count(*) as count
         from opt_express
         where consignee_province is not null
         group by consignee_province
     </select>
     <select id="countBySendProvinces" resultType="com.zouzhao.opt.manage.dto.OptExpressNumVO">
-        select send_province as name, count(1) as count
+        select send_province as name, count(*) as count
         from opt_express
         where send_province is not null
         group by send_province
     </select>
     <select id="countByBounce" resultType="com.zouzhao.opt.manage.dto.OptExpressMonthNumVO">
-        SELECT DATE_FORMAT(ship_time, '%m') as month, COUNT(1) as count
+        SELECT DATE_FORMAT(ship_time, '%m') as month, count(*) as count
         FROM opt_express
         where bounce_flag = 1
         GROUP BY DATE_FORMAT(ship_time, '%m')
         ORDER BY ship_time
     </select>
     <select id="countByQuestion" resultType="com.zouzhao.opt.manage.dto.OptExpressMonthNumVO">
-        SELECT DATE_FORMAT(ship_time, '%m') as month, COUNT(1) as count
+        SELECT DATE_FORMAT(ship_time, '%m') as month, count(*) as count
         FROM opt_express
         where question_flag = 1
         GROUP BY DATE_FORMAT(ship_time, '%m')
         ORDER BY ship_time
     </select>
     <select id="countExpressNumByMonth" resultType="com.zouzhao.opt.manage.dto.OptExpressMonthNumVO">
-        SELECT DATE_FORMAT(ship_time, '%m') as month, COUNT(1) as count
+        SELECT DATE_FORMAT(ship_time, '%m') as month, count(*) as count
         FROM opt_express
         GROUP BY DATE_FORMAT(ship_time, '%m')
         ORDER BY ship_time
@@ -409,7 +409,7 @@
         ORDER BY ship_time
     </select>
     <select id="countExpressNum" resultType="java.lang.Integer">
-        select count(1) from opt_express
+        select count(*) from opt_express
         <where>
             <if test="v != null">
                 <if test="v.expressIdList != null and v.expressIdList.size > 0 ">and express_id in
@@ -475,7 +475,7 @@
         </where>
     </select>
     <select id="findCount" resultType="java.lang.Long" parameterType="com.zouzhao.opt.manage.dto.OptExpressVO">
-        select count(1) from opt_express
+        select count(*) from opt_express
         <where>
             <if test="v != null">
                 <if test="v.expressId != null and v.expressId != ''">and express_id = #{v.expressId}</if>
@@ -548,8 +548,7 @@
     </select>
 
     <select id="pagePlus" parameterType="com.zouzhao.opt.manage.dto.OptExpressVO" resultMap="OptExpressVOResult">
-        select s.* from opt_express s
-        inner join
+        select s.* from
         (select express_id from opt_express
         <where>
             <if test="v != null">
@@ -621,7 +620,10 @@
             </if>
         </where>
         order by ship_time
-        limit #{current},#{size})as a using(express_id)
+        limit #{current},#{size}
+        )as a
+        inner join opt_express s
+        using(express_id)
     </select>
     <select id="randomPerson" resultType="com.zouzhao.sys.org.dto.SysOrgElementVO">
         select org_element_id, org_element_org_id from sys_org_element

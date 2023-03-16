@@ -41,6 +41,10 @@ public class RedisManager {
         redisTemplate.opsForValue().set(key,value,1, TimeUnit.DAYS);
     }
 
+    public static void setValueForever(String key,Object value){
+        redisTemplate.opsForValue().set(key,value);
+    }
+
     public static <T> T getHashValue(String key,String hashKey, Function<Integer,T> mapper) {
         Object o = redisTemplate.opsForHash().get(key,hashKey);
         if (ObjectUtils.isEmpty(o)) {

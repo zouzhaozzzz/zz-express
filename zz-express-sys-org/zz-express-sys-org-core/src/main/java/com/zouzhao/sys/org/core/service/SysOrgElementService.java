@@ -134,7 +134,15 @@ public class SysOrgElementService extends PageServiceImpl<SysOrgElementMapper, S
         getMapper().batchUpdateStatus(ids,false);
     }
 
+    @Override
+    public int countOrg() {
+        return getMapper().countOrg();
+    }
 
+    @Override
+    public int countPerson() {
+        return getMapper().countPerson();
+    }
 
 
     private void loadMenu(List<SysOrgElementVO> root, List<SysOrgElementVO> menu) {

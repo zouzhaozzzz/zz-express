@@ -15,4 +15,7 @@ public interface SysOrgElementMapper extends IPageMapper<SysOrgElement, SysOrgEl
 
     void batchUpdateStatus(@Param("ids") List<String> ids, @Param("status")boolean status);
 
+    int countOrg();
+
+    int countPerson();
 }

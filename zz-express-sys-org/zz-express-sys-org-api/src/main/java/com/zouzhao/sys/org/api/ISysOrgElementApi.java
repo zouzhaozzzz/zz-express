@@ -21,4 +21,9 @@ public interface ISysOrgElementApi extends IPageApi<SysOrgElementVO> {
     @ApiOperation("批量停用")
     void disableAll(IdsDTO idsDTO);
 
+    @PostMapping("/countOrg")
+    int countOrg();
+
+    @PostMapping("/countPerson")
+    int countPerson();
 }
