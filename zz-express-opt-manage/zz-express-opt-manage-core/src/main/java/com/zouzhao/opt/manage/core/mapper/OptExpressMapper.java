@@ -24,7 +24,7 @@ public interface OptExpressMapper extends IPageMapper<OptExpress, OptExpressVO> 
 
     void updateStatusBatch(@Param("list")List<String> ids, @Param("status") Integer status);
 
-    int countByStatus(@Param("status")Integer status);
+    int countByStatus(@Param("status") Integer status,@Param("orgId") String orgElementOrgId);
 
     List<OptExpressNumVO> countByConsigneeProvinces();
 

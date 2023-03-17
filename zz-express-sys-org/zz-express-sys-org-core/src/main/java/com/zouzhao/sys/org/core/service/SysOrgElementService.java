@@ -154,18 +154,17 @@ public class SysOrgElementService extends PageServiceImpl<SysOrgElementMapper, S
         Integer type = request.getOrgElementType();
         if (ObjectUtil.isEmpty(type)) throw new MyException("组织类型为空");
         List<SysOrgElementVO> data = new ArrayList<>();
-        //组织
-        //拿到当前登陆人的组织
-        SysOrgElementVO org = getMapper().findByLoginName(request);
+        //拿到当前登陆人
+        SysOrgElementVO person = getMapper().findByLoginName(request);
         //当前人员没有分配组织，查不到组织
-        if (StrUtil.isEmpty(org.getOrgElementOrgId()) && type == 0) return null;
+        if (StrUtil.isEmpty(person.getOrgElementOrgId()) && type == 0) return null;
         //当前人员没有分配组织，人员只能查自己
-        if (StrUtil.isEmpty(org.getOrgElementOrgId()) && type == 1) {
-            data.add(org);
+        if (StrUtil.isEmpty(person.getOrgElementOrgId()) && type == 1) {
+            data.add(person);
             return data;
         }
-
-        SysOrgElementVO parent = getMapper().findVOById(org.getOrgElementOrgId());
+        //查询当前登录人的组织
+        SysOrgElementVO parent = getMapper().findVOById(person.getOrgElementOrgId());
         if (parent == null) return null;
         data.add(parent);
         //添加下级组织
@@ -180,12 +179,27 @@ public class SysOrgElementService extends PageServiceImpl<SysOrgElementMapper, S
         }
     }
 
+    public SysOrgElementVO findByLoginName(SysOrgElementVO request) {
+        //拿到当前登陆人
+        return getMapper().findByLoginName(request);
+    }
+
+    @Override
+    public List<SysOrgElementVO> findAllParentOrg() {
+        //拿到所有顶级组织
+        return getMapper().findAllParentOrg();
+    }
+
     private void addChildrenOrg(SysOrgElementVO org, List<SysOrgElementVO> data) {
         List<SysOrgElementVO> child = getMapper().findChildOrgById(org);
         if (child != null && child.size() > 0) {
             data.addAll(child);
             child.forEach(e -> addChildrenOrg(e, data));
         }
+    }
+
+    public List<SysOrgElementVO> findChildOrgById(SysOrgElementVO org){
+        return getMapper().findChildOrgById(org);
     }
 
 

@@ -81,6 +81,7 @@ public class SysOrgElement extends BaseEntity {
     @ApiModelProperty("父结点")
     private SysOrgElement orgElementParent;
     @ApiModelProperty("父id")
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private String orgElementParentId;
     @ApiModelProperty("是否可用")
     private Boolean orgElementStatus;
@@ -92,6 +93,7 @@ public class SysOrgElement extends BaseEntity {
     @ApiModelProperty("领导")
     private SysOrgElement orgElementThisLeader;
     @ApiModelProperty("领导id")
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private String orgElementThisLeaderId;
     @ApiModelProperty("排序")
     private Integer orgElementOrder=999999999;

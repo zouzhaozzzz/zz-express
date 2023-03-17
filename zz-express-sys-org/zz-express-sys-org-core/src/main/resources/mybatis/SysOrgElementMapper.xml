@@ -186,7 +186,7 @@
                                                  e.org_element_status = 1
     </select>
     <select id="findChildOrgById" resultType="com.zouzhao.sys.org.dto.SysOrgElementVO">
-        select org_element_id, org_element_name
+        select org_element_id, org_element_name, org_element_parent_id
         from sys_org_element
         where org_element_type = 0
           and org_element_status = 1
@@ -208,6 +208,13 @@
         </if>
         order by org_element_order ,org_element_status desc
         limit 0,100
+    </select>
+    <select id="findAllParentOrg" resultType="com.zouzhao.sys.org.dto.SysOrgElementVO">
+        select *
+        from sys_org_element
+        where org_element_status = 1
+          and org_element_type = 0
+          and (org_element_parent_id is null or org_element_parent_id = '')
     </select>
 
 </mapper>

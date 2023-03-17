@@ -28,9 +28,9 @@ public class OptManageSchedulePlan {
         //a为am/pm的标记
         sdf.applyPattern("yyyy-MM-dd HH:mm:ssa");
         //获取当前时间
-        Date date = new Date();
-        log.debug("定时任务开始刷新报表时间：{}", sdf.format(date));
-        optExpressService.refreshExport();
+        log.debug("定时任务开始刷新报表时间：{}", sdf.format(new Date()));
+        optExpressService.refreshExport(true);
+        log.debug("定时任务完成刷新报表时间：{}", sdf.format(new Date()));
     }
 
 }

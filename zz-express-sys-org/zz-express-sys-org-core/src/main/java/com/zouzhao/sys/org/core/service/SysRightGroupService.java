@@ -94,21 +94,26 @@ public class SysRightGroupService extends PageServiceImpl<SysRightGroupMapper, S
     public void allotToAccount(SysRightGroupVO vo) {
         String rightGroupId = vo.getRightGroupId();
         List<String> elementIds = vo.getElementIds();
+        if (elementIds == null || elementIds.size() == 0) {
+            //移除角色分配的所有账号
+            getMapper().deleteAccountRelaById(rightGroupId);
+            return;
+        }
         //通过elementId拿到accountId
-        List<String> newIds=elementIdsToAccountIds(elementIds);
+        List<String> newIds = elementIdsToAccountIds(elementIds);
         if (rightGroupId == null) throw new MyException("角色id为空");
         List<String> oldIds = getMapper().listAccountIdsByGroupId(rightGroupId);
         SelectionUtils.handleSelect(oldIds, newIds, rightGroupId,
                 (id, ids) -> {
                     getMapper().insertAccountRela(id, ids);
                 },
-                (id,ids)-> {
+                (id, ids) -> {
                     getMapper().deleteAccountRela(id, ids);
                 }
-                );
+        );
     }
 
-    private List<String> elementIdsToAccountIds(List<String> elementIds){
+    private List<String> elementIdsToAccountIds(List<String> elementIds) {
         return sysOrgAccountApi.getIdsByDefPersonIds(elementIds);
     }
 }

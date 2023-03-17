@@ -9,9 +9,6 @@ import com.zouzhao.common.dto.IdDTO;
 import com.zouzhao.common.dto.IdsDTO;
 import com.zouzhao.common.security.utils.RedisManager;
 import com.zouzhao.opt.manage.api.IOptExpressApi;
-import com.zouzhao.opt.manage.dto.OptExpressMonthFeeVO;
-import com.zouzhao.opt.manage.dto.OptExpressMonthNumVO;
-import com.zouzhao.opt.manage.dto.OptExpressProvinceVO;
 import com.zouzhao.opt.manage.dto.OptExpressVO;
 import com.zouzhao.sys.org.client.SysOrgElementClient;
 import com.zouzhao.sys.org.dto.SysOrgElementVO;
@@ -26,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -163,9 +159,8 @@ public class OptExpressController extends BaseController<IOptExpressApi, OptExpr
             "每月的问题件，退货件，每月的总件数统计" +
             "每月的成本费（寄件代收货款手续费、到付手续费成本、中转费成本、面单成本），保费收入，运费，罚款，收入统计")
     @PostMapping("/refreshExport")
-    public ResponseEntity<String> refreshExport() {
-        getApi().refreshExport();
-        return new ResponseEntity<>("刷新成功", HttpStatus.OK);
+    public String refreshExport() {
+        return getApi().refreshExport(false);
     }
 
 

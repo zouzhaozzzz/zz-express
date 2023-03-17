@@ -24,4 +24,6 @@ public interface SysOrgElementMapper extends IPageMapper<SysOrgElement, SysOrgEl
     List<SysOrgElementVO> findChildOrgById(@Param("v") SysOrgElementVO org);
 
     List<SysOrgElementVO> findVOListInOrgs(@Param("v") SysOrgElementVO org,@Param("list")List<SysOrgElementVO> data);
+
+    List<SysOrgElementVO> findAllParentOrg();
 }

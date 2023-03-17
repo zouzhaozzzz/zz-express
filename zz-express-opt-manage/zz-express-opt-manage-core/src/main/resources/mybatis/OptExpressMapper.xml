@@ -350,7 +350,7 @@
     <select id="countByStatus" resultType="java.lang.Integer">
         select count(*)
         from opt_express
-        where express_status = #{status}
+        where express_status = #{status} and send_company_id=#{orgId}
     </select>
     <select id="countByConsigneeProvinces" resultType="com.zouzhao.opt.manage.dto.OptExpressNumVO">
         select consignee_province as name, count(*) as count

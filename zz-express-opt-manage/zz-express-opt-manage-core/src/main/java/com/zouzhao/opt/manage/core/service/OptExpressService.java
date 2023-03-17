@@ -5,12 +5,14 @@ import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zouzhao.common.core.exception.MyException;
 import com.zouzhao.common.core.service.PageServiceImpl;
+import com.zouzhao.common.dto.IdDTO;
 import com.zouzhao.common.security.utils.RedisManager;
 import com.zouzhao.opt.file.dto.OptExportConditionVO;
 import com.zouzhao.opt.manage.api.IOptExpressApi;
 import com.zouzhao.opt.manage.core.entity.OptExpress;
 import com.zouzhao.opt.manage.core.mapper.OptExpressMapper;
 import com.zouzhao.opt.manage.dto.*;
+import com.zouzhao.sys.org.client.SysOrgElementClient;
 import com.zouzhao.sys.org.dto.SysOrgElementVO;
 import org.apache.ibatis.session.ResultHandler;
 import org.slf4j.Logger;
@@ -18,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
@@ -42,6 +45,8 @@ public class OptExpressService extends PageServiceImpl<OptExpressMapper, OptExpr
     private int batchSize;
     @Autowired
     private RedisManager redisManager;
+    @Autowired
+    private SysOrgElementClient sysOrgElementClient;
 
     @Value("${export.batchSize}")
     public void setBatchSize(int batchSize) {
@@ -88,7 +93,7 @@ public class OptExpressService extends PageServiceImpl<OptExpressMapper, OptExpr
 
     @Override
     public void pageQueryByCondition(OptExportConditionVO vo, ResultHandler<OptExpressVO> resultHandler) {
-        getMapper().pageQueryByCondition(vo,resultHandler);
+        getMapper().pageQueryByCondition(vo, resultHandler);
     }
 
 
@@ -109,60 +114,81 @@ public class OptExpressService extends PageServiceImpl<OptExpressMapper, OptExpr
         long current = page.getCurrent();
         long size = page.getSize();
         OptExpressVO optExpressVO = ObjectUtils.isEmpty(page.getRecords()) ? null : page.getRecords().get(0);
-        long total=page.getTotal();
-        if(page.searchCount()){
-            total=getMapper().findCount(optExpressVO);
+        long total = page.getTotal();
+        if (page.searchCount()) {
+            total = getMapper().findCount(optExpressVO);
         }
         List<OptExpressVO> records;
-        if(total == 0){
+        if (total == 0) {
             page.setCurrent(1);
             page.setTotal(0);
             page.setPages(0);
-            records=new ArrayList<>();
-        }else if(current*size>total){
+            records = new ArrayList<>();
+        } else if (current * size > total) {
             //查询最后一页
-            long newCurrent=total/size;
-            if(newCurrent*size < total){newCurrent++;}
+            long newCurrent = total / size;
+            if (newCurrent * size < total) {
+                newCurrent++;
+            }
             page.setCurrent(newCurrent);
             page.setTotal(total);
             page.setPages(newCurrent);
-            records=getMapper().pagePlus((newCurrent-1)*size,size,optExpressVO);
-        }else{
+            records = getMapper().pagePlus((newCurrent - 1) * size, size, optExpressVO);
+        } else {
             //查询当前页
-            long newCurrent=total/size;
-            if(newCurrent*size < total){newCurrent++;}
+            long newCurrent = total / size;
+            if (newCurrent * size < total) {
+                newCurrent++;
+            }
             page.setTotal(total);
             page.setPages(newCurrent);
-            records=getMapper().pagePlus((current-1)*size,size,optExpressVO);
+            records = getMapper().pagePlus((current - 1) * size, size, optExpressVO);
         }
         page.setRecords(records);
         return page;
     }
 
     @Override
-    public void refreshExport() {
-        //统计快递状态，总件数统计
-        countStatus();
-        //省份寄件派送个数
-        countByProvinces();
-        //每月的问题件，退货件
-        countQuestionByMonth();
-        countBounceByMonth();
-        countExpressNumByMonth();
-        //每月的成本费（寄件代收货款手续费、到付手续费成本、中转费成本、面单成本），保费收入，运费，罚款，收入统计
-        List<OptExpressMonthFeeVO> totalCost = countTotalCostByMonth();
-        //保费收入=保费*0.6
-        List<OptExpressMonthFeeVO> premium = countPremiumByMonth();
-        //运费
-        List<OptExpressMonthFeeVO> freight = countFreightByMonth();
-        //罚款
-        List<OptExpressMonthFeeVO> sendFine = countSendFineByMonth();
-        //收入=运费+罚款+保费收入-成本
-        countIncomeByMouth(totalCost, premium, freight, sendFine);
+    public String refreshExport(Boolean initFlag) {
+        if (initFlag) {
+            //查询出所有的顶级组织
+            List<SysOrgElementVO> parentOrgList = sysOrgElementClient.findAllParentOrg();
+            if (parentOrgList == null || parentOrgList.size() < 1) return "组织架构信息错误";
+            parentOrgList.forEach(this::countExpress);
+        } else {
+            //只能刷新自己的部门和下级部门数据
+            String LoginName = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            SysOrgElementVO vo = new SysOrgElementVO();
+            vo.setOrgElementLoginName(LoginName);
+            //当前登录人信息
+            SysOrgElementVO person = sysOrgElementClient.findByLoginName(vo);
+            if (person == null || StrUtil.isEmpty(person.getOrgElementOrgId())) return "当前登陆人无组织信息";
+            SysOrgElementVO personOrg = sysOrgElementClient.findVOById(IdDTO.of(person.getOrgElementOrgId()));
+            countExpress(personOrg);
+        }
+        return "success";
     }
 
-
-
+    private void countExpress(SysOrgElementVO personOrg) {
+        //统计快递状态，总件数统计
+        countStatus(personOrg);
+        //省份寄件派送个数
+        countByProvinces(personOrg);
+        // //每月的问题件，退货件
+        // countQuestionByMonth(orgList, initFlag);
+        // countBounceByMonth(orgList, initFlag);
+        // countExpressNumByMonth(orgList, initFlag);
+        // //每月的成本费（寄件代收货款手续费、到付手续费成本、中转费成本、面单成本），保费收入，运费，罚款，收入统计
+        // List<OptExpressMonthFeeVO> totalCost = countTotalCostByMonth(orgList, initFlag);
+        // //保费收入=保费*0.6
+        // List<OptExpressMonthFeeVO> premium = countPremiumByMonth(orgList, initFlag);
+        // //运费
+        // List<OptExpressMonthFeeVO> freight = countFreightByMonth(orgList, initFlag);
+        // //罚款
+        // List<OptExpressMonthFeeVO> sendFine = countSendFineByMonth(orgList, initFlag);
+        // //收入=运费+罚款+保费收入-成本
+        // countIncomeByMouth(totalCost, premium, freight, sendFine, orgList, initFlag);
+    }
 
 
     //统计每月收入
@@ -239,76 +265,89 @@ public class OptExpressService extends PageServiceImpl<OptExpressMapper, OptExpr
     }
 
     //统计快递状态
-    private void countStatus() {
+    private List<Integer> countStatus(SysOrgElementVO personOrg) {
+        if (personOrg == null) return null;
         //统计待取货，运输中，派件中，已签收
-        int n1 = getMapper().countByStatus(0);
-        int n2 = getMapper().countByStatus(1);
-        int n3 = getMapper().countByStatus(2);
-        int n4 = getMapper().countByStatus(3);
-        redisManager.setHashValue("report-express", "0", n1);
-        redisManager.setHashValue("report-express", "1", n2);
-        redisManager.setHashValue("report-express", "2", n3);
-        redisManager.setHashValue("report-express", "3", n4);
-        redisManager.setHashValue("report-express", "all", n1 + n2 + n3 + n4);
+        List<Integer> data = new ArrayList<>();
+        int n1 = getMapper().countByStatus(0, personOrg.getOrgElementId());
+        int n2 = getMapper().countByStatus(1, personOrg.getOrgElementId());
+        int n3 = getMapper().countByStatus(2, personOrg.getOrgElementId());
+        int n4 = getMapper().countByStatus(3, personOrg.getOrgElementId());
+        data.add(n1);
+        data.add(n2);
+        data.add(n3);
+        data.add(n4);
+        List<SysOrgElementVO> children = sysOrgElementClient.findChildOrgById(personOrg);
+        children.forEach(child -> {
+            List<Integer> list = countStatus(child);
+            for (int i = 0; i < data.size(); i++) {
+                data.set(i, data.get(i) + list.get(i));
+            }
+        });
+        redisManager.setHashValue("report-express:" + personOrg.getOrgElementName(), "0", data.get(0));
+        redisManager.setHashValue("report-express:" + personOrg.getOrgElementName(), "1", data.get(1));
+        redisManager.setHashValue("report-express:" + personOrg.getOrgElementName(), "2", data.get(2));
+        redisManager.setHashValue("report-express:" + personOrg.getOrgElementName(), "3", data.get(3));
+        return data;
     }
 
     //省份排名 寄件派送个数
-    private void countByProvinces() {
-        List<OptExpressProvinceVO> province =countNumByProvinces();
+    private void countByProvinces(SysOrgElementVO personOrg) {
+        List<OptExpressProvinceVO> province = countNumByProvinces();
         redisManager.setHashValue("report-express", "province", province);
     }
 
 
     public List<OptExpressProvinceVO> countNumByProvinces() {
-        List<OptExpressProvinceVO> result=new ArrayList<>();
+        List<OptExpressProvinceVO> result = new ArrayList<>();
         List<OptExpressNumVO> consigneeProvinces = getMapper().countByConsigneeProvinces();
         List<OptExpressNumVO> sendProvinces = getMapper().countBySendProvinces();
-        if(ObjectUtil.isEmpty(consigneeProvinces)){
-            sendProvinces.forEach(e->{
+        if (ObjectUtil.isEmpty(consigneeProvinces)) {
+            sendProvinces.forEach(e -> {
                 String name = e.getName();
                 int count = e.getCount();
                 List<OptExpressNumVO> list = new ArrayList<>();
-                list.add(new OptExpressNumVO("寄件",count));
-                list.add(new OptExpressNumVO("派件",0));
-                result.add(new OptExpressProvinceVO(name,list));
+                list.add(new OptExpressNumVO("寄件", count));
+                list.add(new OptExpressNumVO("派件", 0));
+                result.add(new OptExpressProvinceVO(name, list));
             });
             return result;
         }
-        if(ObjectUtil.isEmpty(sendProvinces)){
-            consigneeProvinces.forEach(e->{
+        if (ObjectUtil.isEmpty(sendProvinces)) {
+            consigneeProvinces.forEach(e -> {
                 String name = e.getName();
                 int count = e.getCount();
                 List<OptExpressNumVO> list = new ArrayList<>();
-                list.add(new OptExpressNumVO("寄件",0));
-                list.add(new OptExpressNumVO("派件",count));
-                result.add(new OptExpressProvinceVO(name,list));
+                list.add(new OptExpressNumVO("寄件", 0));
+                list.add(new OptExpressNumVO("派件", count));
+                result.add(new OptExpressProvinceVO(name, list));
             });
             return result;
         }
         Map<String, OptExpressNumVO> map = consigneeProvinces.stream().collect(Collectors.toMap(OptExpressNumVO::getName, item -> item));
-        sendProvinces.forEach(e->{
+        sendProvinces.forEach(e -> {
             String name = e.getName();
             int count = e.getCount();
             List<OptExpressNumVO> list = new ArrayList<>();
-            list.add(new OptExpressNumVO("寄件",count));
+            list.add(new OptExpressNumVO("寄件", count));
             OptExpressNumVO consignee = map.get(name);
-            if(consignee !=null){
-                list.add(new OptExpressNumVO("派件",consignee.getCount()));
+            if (consignee != null) {
+                list.add(new OptExpressNumVO("派件", consignee.getCount()));
                 map.remove(name);
-            }else{
-                list.add(new OptExpressNumVO("派件",0));
+            } else {
+                list.add(new OptExpressNumVO("派件", 0));
             }
-            result.add(new OptExpressProvinceVO(name,list));
+            result.add(new OptExpressProvinceVO(name, list));
         });
         //如果收货省份还有未添加的
-        if(map.keySet().size()>0){
-            map.values().forEach(e->{
+        if (map.keySet().size() > 0) {
+            map.values().forEach(e -> {
                 String name = e.getName();
                 int count = e.getCount();
                 List<OptExpressNumVO> list = new ArrayList<>();
-                list.add(new OptExpressNumVO("寄件",0));
-                list.add(new OptExpressNumVO("派件",count));
-                result.add(new OptExpressProvinceVO(name,list));
+                list.add(new OptExpressNumVO("寄件", 0));
+                list.add(new OptExpressNumVO("派件", count));
+                result.add(new OptExpressProvinceVO(name, list));
             });
         }
         return result;
@@ -319,8 +358,8 @@ public class OptExpressService extends PageServiceImpl<OptExpressMapper, OptExpr
         if (ObjectUtil.isEmpty(num)) {
             redisManager.setValue(redisKey, size);
         } else {
-            int newNum = (int)num + size;
-            redisManager.setValue(redisKey,newNum);
+            int newNum = (int) num + size;
+            redisManager.setValue(redisKey, newNum);
         }
     }
 

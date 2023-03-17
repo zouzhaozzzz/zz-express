@@ -5,6 +5,7 @@ import com.zouzhao.common.dto.IdsDTO;
 import com.zouzhao.sys.org.dto.SysOrgElementVO;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
@@ -15,7 +16,7 @@ import java.util.List;
 public interface ISysOrgElementApi extends IPageApi<SysOrgElementVO> {
 
     @PostMapping({"/treeData"})
-    List<SysOrgElementVO> treeData(SysOrgElementVO request);
+    List<SysOrgElementVO> treeData(@RequestBody SysOrgElementVO request);
 
     @PostMapping("/disableAll")
     @ApiOperation("批量停用")
@@ -28,5 +29,14 @@ public interface ISysOrgElementApi extends IPageApi<SysOrgElementVO> {
     int countPerson();
 
     @PostMapping("/listInRoles")
-    List<SysOrgElementVO> listInRoles(SysOrgElementVO request);
+    List<SysOrgElementVO> listInRoles(@RequestBody SysOrgElementVO request);
+
+    @PostMapping("/findChildOrgById")
+    List<SysOrgElementVO> findChildOrgById(@RequestBody SysOrgElementVO request);
+
+    @PostMapping("/findByLoginName")
+    SysOrgElementVO findByLoginName(@RequestBody SysOrgElementVO request);
+
+    @PostMapping("/findAllParentOrg")
+    List<SysOrgElementVO> findAllParentOrg();
 }
