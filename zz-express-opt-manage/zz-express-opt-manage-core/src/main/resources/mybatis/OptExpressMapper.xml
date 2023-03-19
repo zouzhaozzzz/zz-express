@@ -36,6 +36,8 @@
         <result property="sendCounty" column="send_county"/>
         <result property="sendCustomerId" column="send_customer_id"/>
         <result property="sendCustomerType" column="send_customer_type"/>
+        <result property="consigneeCustomerId" column="consignee_customer_id"/>
+        <result property="consigneeCompanyId" column="consignee_customer_type"/>
         <result property="sendFine" column="send_fine"/>
         <result property="sendProvince" column="send_province"/>
         <result property="sendServiceType" column="send_service_type"/>
@@ -84,6 +86,8 @@
         <result property="sendCounty" column="send_county"/>
         <result property="sendCustomerId" column="send_customer_id"/>
         <result property="sendCustomerType" column="send_customer_type"/>
+        <result property="consigneeCustomerId" column="consignee_customer_id"/>
+        <result property="consigneeCompanyId" column="consignee_customer_type"/>
         <result property="sendFine" column="send_fine"/>
         <result property="sendProvince" column="send_province"/>
         <result property="sendServiceType" column="send_service_type"/>
@@ -132,6 +136,8 @@
                send_county,
                send_customer_id,
                send_customer_type,
+               consignee_customer_id,
+               consignee_company_id,
                send_fine,
                send_province,
                send_service_type,
@@ -189,9 +195,15 @@
             <if test="sendArriveCost != null ">and send_arrive_cost = #{sendArriveCost}</if>
             <if test="sendCity != null  and sendCity != ''">and send_city = #{sendCity}</if>
             <if test="sendCollectionFee != null ">and send_collection_fee = #{sendCollectionFee}</if>
-            <if test="sendCompanyId != null  and sendCompanyId != ''">and send_company_id = #{sendCompanyId}</if>
             <if test="sendCounty != null  and sendCounty != ''">and send_county = #{sendCounty}</if>
             <if test="sendCustomerId != null  and sendCustomerId != ''">and send_customer_id = #{sendCustomerId}</if>
+            <if test="sendCompanyId != null  and sendCompanyId != ''">and send_company_id = #{sendCompanyId}</if>
+            <if test="consigneeCustomerId != null  and consigneeCustomerId != ''">and consignee_customer_id =
+                #{consigneeCustomerId}
+            </if>
+            <if test="consigneeCompanyId != null  and consigneeCompanyId != ''">and consignee_company_id =
+                #{consigneeCompanyId}
+            </if>
             <if test="sendCustomerType != null ">and send_customer_type = #{sendCustomerType}</if>
             <if test="sendFine != null ">and send_fine = #{sendFine}</if>
             <if test="sendProvince != null  and sendProvince != ''">and send_province = #{sendProvince}</if>
@@ -246,6 +258,12 @@
             <if test="sendCounty != null  and sendCounty != ''">and send_county = #{sendCounty}</if>
             <if test="sendCustomerId != null  and sendCustomerId != ''">and send_customer_id = #{sendCustomerId}</if>
             <if test="sendCustomerType != null ">and send_customer_type = #{sendCustomerType}</if>
+            <if test="consigneeCustomerId != null  and consigneeCustomerId != ''">and consignee_customer_id =
+                #{consigneeCustomerId}
+            </if>
+            <if test="consigneeCompanyId != null  and consigneeCompanyId != ''">and consignee_company_id =
+                #{consigneeCompanyId}
+            </if>
             <if test="sendFine != null ">and send_fine = #{sendFine}</if>
             <if test="sendProvince != null  and sendProvince != ''">and send_province = #{sendProvince}</if>
             <if test="sendServiceType != null ">and send_service_type = #{sendServiceType}</if>
@@ -262,7 +280,7 @@
     </select>
 
     <select id="page" parameterType="com.zouzhao.opt.manage.dto.OptExpressVO" resultMap="OptExpressVOResult">
-       <include refid="selectOptExpressVo"/>
+        <include refid="selectOptExpressVo"/>
         <where>
             <if test="v != null">
                 <if test="v.expressId != null and v.expressId != ''">and express_id = #{v.expressId}</if>
@@ -350,7 +368,8 @@
     <select id="countByStatus" resultType="java.lang.Integer">
         select count(*)
         from opt_express
-        where express_status = #{status} and send_company_id=#{orgId}
+        where express_status = #{status}
+          and send_company_id = #{orgId}
     </select>
     <select id="countByConsigneeProvinces" resultType="com.zouzhao.opt.manage.dto.OptExpressNumVO">
         select consignee_province as name, count(*) as count
@@ -420,6 +439,9 @@
                 <if test="v.bounceFlag != null ">and bounce_flag = #{v.bounceFlag}</if>
                 <if test="v.consignee != null  and v.consignee != ''">and consignee = #{v.consignee}
                 </if>
+                <if test="v.shipper != null  and v.shipper != ''">and shipper like concat('%',
+                    #{v.shipper}, '%')
+                </if>
                 <if test="v.shipTimeList != null and v.shipTimeList.size>1 ">
                     and ship_time >= #{v.shipTimeList[0]} and ship_time <![CDATA[<=]]> #{v.shipTimeList[1]}
                 </if>
@@ -434,9 +456,13 @@
                 <if test="v.sendCustomerId != null  and v.sendCustomerId != ''">and send_customer_id =
                     #{v.sendCustomerId}
                 </if>
-                <if test="v.shipper != null  and v.shipper != ''">and shipper like concat('%',
-                    #{v.shipper}, '%')
+                <if test="v.consigneeCompanyId != null  and v.consigneeCompanyId != ''">and consignee_company_id =
+                    #{v.consigneeCompanyId}
                 </if>
+                <if test="v.consigneeCustomerId != null  and v.consigneeCustomerId != ''">and consignee_customer_id =
+                    #{v.consigneeCustomerId}
+                </if>
+
             </if>
         </where>
     </select>
@@ -468,118 +494,80 @@
                 <if test="v.sendCustomerId != null  and v.sendCustomerId != ''">and send_customer_id =
                     #{v.sendCustomerId}
                 </if>
+                <if test="consigneeCustomerId != null  and consigneeCustomerId != ''">and consignee_customer_id =
+                    #{consigneeCustomerId}
+                </if>
+                <if test="consigneeCompanyId != null  and consigneeCompanyId != ''">and consignee_company_id =
+                    #{consigneeCompanyId}
+                </if>
                 <if test="v.shipper != null  and v.shipper != ''">and shipper like concat('%',
                     #{v.shipper}, '%')
                 </if>
             </if>
         </where>
     </select>
-    <select id="findCount" resultType="java.lang.Long" parameterType="com.zouzhao.opt.manage.dto.OptExpressVO">
-        select count(*) from opt_express
+    <sql id="pageWhere">
         <where>
             <if test="v != null">
-                <if test="v.expressId != null and v.expressId != ''">and express_id = #{v.expressId}</if>
                 <if test="v.expressIdList != null and v.expressIdList.size > 0 ">and express_id in
                     <foreach collection="v.expressIdList" item="expressIdListId" open="(" close=")" separator=",">
                         #{expressIdListId}
                     </foreach>
                 </if>
                 <if test="v.bounceFlag != null ">and bounce_flag = #{v.bounceFlag}</if>
-                <if test="v.cleanType != null ">and clean_type = #{v.cleanType}</if>
                 <if test="v.consignee != null  and v.consignee != ''">and consignee concat('%',
                     #{v.consignee}, '%')
                 </if>
-                <if test="v.consigneePhone != null  and v.consigneePhone != ''">and consignee_phone =
-                    #{v.consigneePhone}
-                </if>
-                <if test="v.consigneeTime != null ">and consignee_time = #{v.consigneeTime}</if>
-                <if test="v.consigneeTimeList != null and v.consigneeTimeList.size >1 ">
-                    and consignee_time >= #{v.consigneeTimeList[0]} consignee_time <![CDATA[<=]]>
-                    #{v.consigneeTimeList[1]}
-                </if>
-                <if test="v.customerFreight != null ">and customer_freight = #{v.customerFreight}</if>
-                <if test="v.expressDataSource != null  and v.expressDataSource != ''">and express_data_source =
-                    #{v.expressDataSource}
-                </if>
-                <if test="v.expressNumber != null  and v.expressNumber != ''">and express_number = #{v.expressNumber}
-                </if>
-                <if test="v.expressStatus != null ">and express_status = #{v.expressStatus}</if>
                 <if test="v.expressStatusList != null and v.expressStatusList.size >0">and express_status in
                     <foreach collection="v.expressStatusList" item="expressStatusItem" open="(" close=")" separator=",">
                         #{expressStatusItem}
                     </foreach>
                 </if>
-                <if test="v.faceCost != null ">and face_cost = #{v.faceCost}</if>
-                <if test="v.faceFee != null ">and face_fee = #{v.faceFee}</if>
-                <if test="v.faceType != null ">and face_type = #{v.faceType}</if>
-                <if test="v.finalWeight != null ">and final_weight = #{v.finalWeight}</if>
-                <if test="v.insuredAmount != null ">and insured_amount = #{v.insuredAmount}</if>
-                <if test="v.objMode != null  and v.objMode != ''">and obj_mode = #{v.objMode}</if>
-                <if test="v.otherCharges != null ">and other_charges = #{v.otherCharges}</if>
-                <if test="v.packMode != null ">and pack_mode = #{v.packMode}</if>
-                <if test="v.payType != null  and v.payType != ''">and pay_type = #{v.payType}</if>
-                <if test="v.premium != null ">and premium = #{v.premium}</if>
                 <if test="v.questionFlag != null ">and question_flag = #{v.questionFlag}</if>
-                <if test="v.sendArriveCost != null ">and send_arrive_cost = #{v.sendArriveCost}</if>
-                <if test="v.sendCollectionFee != null ">and send_collection_fee = #{v.sendCollectionFee}</if>
-                <if test="v.sendCompanyId != null  and v.sendCompanyId != ''">and send_company_id = #{v.sendCompanyId}
-                </if>
                 <if test="v.sendCustomerId != null  and v.sendCustomerId != ''">and send_customer_id =
                     #{v.sendCustomerId}
                 </if>
-                <if test="v.sendCustomerType != null ">and send_customer_type = #{v.sendCustomerType}</if>
-                <if test="v.sendFine != null ">and send_fine = #{v.sendFine}</if>
-                <if test="v.sendServiceType != null ">and send_service_type = #{v.sendServiceType}</if>
-                <if test="v.sendTransitCost != null ">and send_transit_cost = #{v.sendTransitCost}</if>
-                <if test="v.shipTime != null ">and ship_time = #{v.shipTime}</if>
+                <if test="v.sendCompanyId != null  and v.sendCompanyId != ''">and send_company_id = #{v.sendCompanyId}
+                </if>
+                <if test="(v.sendCompanyId == null or v.sendCompanyId == '') and (searchCompany == 1 or searchCompany == 3)">
+                    and send_company_id
+                    in
+                    <foreach collection="orgList" item="org" open="(" close=")" separator=",">
+                        #{org.orgElementId}
+                    </foreach>
+
+                </if>
+                <if test="v.consigneeCustomerId != null  and v.consigneeCustomerId != ''">and consignee_customer_id =
+                    #{v.consigneeCustomerId}
+                </if>
+                <if test="v.consigneeCompanyId != null  and v.consigneeCompanyId != ''">and consignee_company_id =
+                    #{v.consigneeCompanyId}
+                </if>
+                <if test="(v.consigneeCompanyId == null or v.consigneeCompanyId == '') and (searchCompany == 2 or searchCompany == 3)">
+                    and consignee_company_id
+                    in
+                    <foreach collection="orgList" item="org" open="(" close=")" separator=",">
+                        #{org.orgElementId}
+                    </foreach>
+                </if>
                 <if test="v.shipTimeList != null and v.shipTimeList.size>1 ">
                     and ship_time >= #{v.shipTimeList[0]} and ship_time <![CDATA[<=]]> #{v.shipTimeList[1]}
                 </if>
                 <if test="v.shipper != null  and v.shipper != ''">and shipper like concat('%',
                     #{v.shipper}, '%')
                 </if>
-                <if test="v.shipperPhone != null  and v.shipperPhone != ''">and shipper_phone = #{v.shipperPhone}</if>
-                <if test="v.totalCost != null ">and total_cost = #{v.totalCost}</if>
-                <if test="v.volume != null ">and volume = #{v.volume}</if>
-                <if test="v.volumeWeight != null ">and volume_weight = #{v.volumeWeight}</if>
-                <if test="v.weight != null ">and weight = #{v.weight}</if>
             </if>
         </where>
+    </sql>
+    <select id="findCount" resultType="java.lang.Long">
+        select count(*) from opt_express
+        <include refid="pageWhere"/>
     </select>
 
     <select id="pagePlus" parameterType="com.zouzhao.opt.manage.dto.OptExpressVO" resultMap="OptExpressVOResult">
         select s.* from
         (select express_id from opt_express
-        <where>
-            <if test="v != null">
-                <if test="v.expressIdList != null and v.expressIdList.size > 0 ">and express_id in
-                    <foreach collection="v.expressIdList" item="expressIdListId" open="(" close=")" separator=",">
-                        #{expressIdListId}
-                    </foreach>
-                </if>
-                <if test="v.bounceFlag != null ">and bounce_flag = #{v.bounceFlag}</if>
-                <if test="v.consignee != null  and v.consignee != ''">and consignee concat('%',
-                    #{v.consignee}, '%')
-                </if>
-                <if test="v.expressStatusList != null and v.expressStatusList.size >0">and express_status in
-                    <foreach collection="v.expressStatusList" item="expressStatusItem" open="(" close=")" separator=",">
-                        #{expressStatusItem}
-                    </foreach>
-                </if>
-                <if test="v.questionFlag != null ">and question_flag = #{v.questionFlag}</if>
-                <if test="v.sendCompanyId != null  and v.sendCompanyId != ''">and send_company_id = #{v.sendCompanyId}
-                </if>
-                <if test="v.sendCustomerId != null  and v.sendCustomerId != ''">and send_customer_id =
-                    #{v.sendCustomerId}
-                </if>
-                <if test="v.shipTimeList != null and v.shipTimeList.size>1 ">
-                    and ship_time >= #{v.shipTimeList[0]} and ship_time <![CDATA[<=]]> #{v.shipTimeList[1]}
-                </if>
-                <if test="v.shipper != null  and v.shipper != ''">and shipper like concat('%',
-                    #{v.shipper}, '%')
-                </if>
-            </if>
-        </where>
+        <include refid="pageWhere"/>
         order by ship_time
         limit #{current},#{size}
         )as a
@@ -587,7 +575,8 @@
         using(express_id)
     </select>
     <select id="randomPerson" resultType="com.zouzhao.sys.org.dto.SysOrgElementVO">
-        select org_element_id, org_element_org_id from sys_org_element
-        where org_element_status =1
+        select org_element_id, org_element_org_id
+        from sys_org_element
+        where org_element_status = 1
     </select>
 </mapper>

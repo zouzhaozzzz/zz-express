@@ -18,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -87,9 +89,21 @@ public class OptExpressController extends BaseController<IOptExpressApi, OptExpr
 
     @PreAuthorize("hasAnyRole('OPT_MANAGE_EXPRESS_LIST','OPT_MANAGE_EXPRESS_ADMIN')")
     public Page<OptExpressVO> page(@RequestBody Page<OptExpressVO> page) {
-        Page<OptExpressVO> pageResult=getApi().pagePlus(page);
+        OptExpressVO optExpressVO = ObjectUtils.isEmpty(page.getRecords()) ? null : page.getRecords().get(0);
+        List<SysOrgElementVO> orgList=null;
+        //前端没有传寄件公司或派件公司
+        if (optExpressVO == null || ObjectUtil.isEmpty(optExpressVO.getSendCompanyId()) || ObjectUtil.isEmpty(optExpressVO.getSendCompanyId())) {
+            //拿到当前登录人的组织和下级组织
+            String loginName = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            SysOrgElementVO request = new SysOrgElementVO();
+            request.setOrgElementType(0);
+            request.setOrgElementLoginName(loginName);
+            orgList= sysOrgElementClient.listInRoles(request);
+        }
+
+        //分页查询
+        Page<OptExpressVO> pageResult = getApi().pagePlus(page, orgList);
         List<OptExpressVO> list = pageResult.getRecords();
-        //填充寄件客户，寄件公司
         //填充
         if (list != null && list.size() > 0) list.forEach(
                 expressVO -> {
@@ -100,11 +114,23 @@ public class OptExpressController extends BaseController<IOptExpressApi, OptExpr
                         SysOrgElementVO result = sysOrgElementClient.findVOById(IdDTO.of(sendCustomerId));
                         if (ObjectUtil.isNotEmpty(result)) expressVO.setSendCustomer(result);
                     }
-                    //所属公司
+                    //寄件客户所属公司
                     String sendCompanyId = expressVO.getSendCompanyId();
                     if (ObjectUtil.isNotEmpty(sendCompanyId)) {
                         SysOrgElementVO result = sysOrgElementClient.findVOById(IdDTO.of(sendCompanyId));
                         if (ObjectUtil.isNotEmpty(result)) expressVO.setSendCompany(result);
+                    }
+                    //收件客户
+                    String consigneeCustomerId = expressVO.getConsigneeCustomerId();
+                    if (ObjectUtil.isNotEmpty(consigneeCustomerId)) {
+                        SysOrgElementVO result = sysOrgElementClient.findVOById(IdDTO.of(consigneeCustomerId));
+                        if (ObjectUtil.isNotEmpty(result)) expressVO.setConsigneeCustomer(result);
+                    }
+                    //收件客户所属公司
+                    String consigneeCompanyId = expressVO.getConsigneeCompanyId();
+                    if (ObjectUtil.isNotEmpty(consigneeCompanyId)) {
+                        SysOrgElementVO result = sysOrgElementClient.findVOById(IdDTO.of(consigneeCompanyId));
+                        if (ObjectUtil.isNotEmpty(result)) expressVO.setConsigneeCompany(result);
                     }
                 }
         );
@@ -124,7 +150,7 @@ public class OptExpressController extends BaseController<IOptExpressApi, OptExpr
     public List<Map<String, Object>> export(@RequestBody List<String> keys) {
         List<Map<String, Object>> result = new ArrayList<>();
         keys.forEach(key -> {
-            Map<String,Object> map=new HashMap<>();
+            Map<String, Object> map = new HashMap<>();
             switch (key) {
                 case "countStatus":
                     map.put("countStatus0", redisManager.getHashValue("report-express", "0"));
@@ -133,19 +159,19 @@ public class OptExpressController extends BaseController<IOptExpressApi, OptExpr
                     map.put("countStatus3", redisManager.getHashValue("report-express", "3"));
                     break;
                 case "countByProvinces":
-                    map.put("province",  redisManager.getHashValue("report-express", "province"));
+                    map.put("province", redisManager.getHashValue("report-express", "province"));
                     break;
                 case "countFlagByMonth":
-                    map.put("questionNumByMonth",  redisManager.getHashValue("report-express", "questionNumByMonth"));
+                    map.put("questionNumByMonth", redisManager.getHashValue("report-express", "questionNumByMonth"));
                     map.put("bounceByMonth", redisManager.getHashValue("report-express", "bounceByMonth"));
                     map.put("expressNumByMonth", redisManager.getHashValue("report-express", "expressNumByMonth"));
                     break;
                 case "countFeeByMonth":
-                    map.put("totalCostByMonth",  redisManager.getHashValue("report-express", "totalCostByMonth"));
-                    map.put("premiumByMonth",  redisManager.getHashValue("report-express", "premiumByMonth"));
-                    map.put("freightByMonth",  redisManager.getHashValue("report-express", "freightByMonth"));
-                    map.put("sendFineByMonth",  redisManager.getHashValue("report-express", "sendFineByMonth"));
-                    map.put("income",  redisManager.getHashValue("report-express", "income"));
+                    map.put("totalCostByMonth", redisManager.getHashValue("report-express", "totalCostByMonth"));
+                    map.put("premiumByMonth", redisManager.getHashValue("report-express", "premiumByMonth"));
+                    map.put("freightByMonth", redisManager.getHashValue("report-express", "freightByMonth"));
+                    map.put("sendFineByMonth", redisManager.getHashValue("report-express", "sendFineByMonth"));
+                    map.put("income", redisManager.getHashValue("report-express", "income"));
                     break;
             }
             result.add(map);

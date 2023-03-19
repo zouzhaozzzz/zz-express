@@ -21,7 +21,7 @@ public class OptManageSchedulePlan {
     private OptExpressService optExpressService;
 
     // @Scheduled(initialDelay = 15*60*1000,fixedDelay = 60*60*1000 )
-    @Scheduled(fixedDelay = 20*60*1000 )
+    @Scheduled(initialDelay = 60*60*1000,fixedDelay = 20*60*1000 )
     public void refreshExport() {
         //格式化时间
         SimpleDateFormat sdf = new SimpleDateFormat();

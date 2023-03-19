@@ -44,17 +44,18 @@ public interface OptExpressMapper extends IPageMapper<OptExpress, OptExpressVO> 
 
     List<OptExpressMonthFeeVO> countPremiumByMonth();
 
-    int countExpressNum(@Param("v") OptExpressVO vo);
 
     //导出数据流
     void pageQueryByCondition(@Param("v") OptExportConditionVO vo, ResultHandler<OptExpressVO> handler);
 
 
     //分页plus start
-    long findCount(@Param("v") OptExpressVO e);
+    long findCount(@Param("v") OptExpressVO e,@Param("searchCompany")int searchCompany,@Param("orgList") List<SysOrgElementVO> orgList);
 
-    List<OptExpressVO> pagePlus(@Param("current") long current, @Param("size") long size, @Param("v") OptExpressVO optExpressVO);
+    List<OptExpressVO> pagePlus(@Param("current") long current, @Param("size") long size, @Param("v") OptExpressVO optExpressVO,@Param("searchCompany")int searchCompany,@Param("orgList") List<SysOrgElementVO> orgList);
     //分页plus end
 
     List<SysOrgElementVO> randomPerson();
+
+    int countExpressNum(@Param("v") OptExpressVO vo);
 }

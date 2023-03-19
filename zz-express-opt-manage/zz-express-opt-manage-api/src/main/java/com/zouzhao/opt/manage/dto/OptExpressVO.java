@@ -51,6 +51,17 @@ public class OptExpressVO {
 
     private SysOrgElementVO sendCompany;
 
+    @ApiModelProperty("收件客户")
+    private String consigneeCustomerId;
+
+    private SysOrgElementVO consigneeCustomer;
+
+    @ApiModelProperty("收件所属公司")
+    private String consigneeCompanyId;
+
+    private SysOrgElementVO consigneeCompany;
+
+
     @ExcelProperty(index = 6)
     @ApiModelProperty("付款方式:寄付 到付")
     private Integer payType;

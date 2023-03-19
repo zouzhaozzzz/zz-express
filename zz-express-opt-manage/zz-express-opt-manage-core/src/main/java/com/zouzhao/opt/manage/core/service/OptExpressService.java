@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -106,17 +107,20 @@ public class OptExpressService extends PageServiceImpl<OptExpressMapper, OptExpr
 
     @Override
     public int countExpressNum(OptExpressVO vo) {
-        return getMapper().countExpressNum(vo);
+        int searchCompany = getSearchCompany(vo);
+        return (int) getMapper().countExpressNum(vo);
     }
 
     @Override
-    public Page<OptExpressVO> pagePlus(Page<OptExpressVO> page) {
+    public Page<OptExpressVO> pagePlus(Page<OptExpressVO> page, List<SysOrgElementVO> orgList) {
         long current = page.getCurrent();
         long size = page.getSize();
         OptExpressVO optExpressVO = ObjectUtils.isEmpty(page.getRecords()) ? null : page.getRecords().get(0);
+        //是否差寄派件公司  1查寄件公司 2查派件公司 3都查 0都不查
+        int searchCompany = getSearchCompany(optExpressVO);
         long total = page.getTotal();
         if (page.searchCount()) {
-            total = getMapper().findCount(optExpressVO);
+            total = getMapper().findCount(optExpressVO, searchCompany, orgList);
         }
         List<OptExpressVO> records;
         if (total == 0) {
@@ -133,7 +137,7 @@ public class OptExpressService extends PageServiceImpl<OptExpressMapper, OptExpr
             page.setCurrent(newCurrent);
             page.setTotal(total);
             page.setPages(newCurrent);
-            records = getMapper().pagePlus((newCurrent - 1) * size, size, optExpressVO);
+            records = getMapper().pagePlus((newCurrent - 1) * size, size, optExpressVO, searchCompany, orgList);
         } else {
             //查询当前页
             long newCurrent = total / size;
@@ -142,10 +146,29 @@ public class OptExpressService extends PageServiceImpl<OptExpressMapper, OptExpr
             }
             page.setTotal(total);
             page.setPages(newCurrent);
-            records = getMapper().pagePlus((current - 1) * size, size, optExpressVO);
+            records = getMapper().pagePlus((current - 1) * size, size, optExpressVO, searchCompany, orgList);
         }
         page.setRecords(records);
         return page;
+    }
+
+    private int getSearchCompany(OptExpressVO optExpressVO) {
+        int searchCompany = 0;
+        if (optExpressVO != null && ObjectUtil.isNotEmpty(optExpressVO.getExpressStatusList())) {
+            List<Integer> statusList = optExpressVO.getExpressStatusList();
+            AtomicBoolean flag1 = new AtomicBoolean(false);
+            AtomicBoolean flag2 = new AtomicBoolean(false);
+            statusList.forEach(status -> {
+                //寄件
+                if (status == 0 || status == 1) flag1.set(true);
+                //派件
+                if (status == 2 || status == 3) flag2.set(true);
+            });
+            if (flag1.get() && flag2.get()) searchCompany = 3;
+            else if (flag1.get()) searchCompany = 1;
+            else if (flag2.get()) searchCompany = 2;
+        }
+        return searchCompany;
     }
 
     @Override

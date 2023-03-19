@@ -57,6 +57,14 @@ public class OptExpress extends BaseEntity {
     @Column(length = 20)
     private String sendCompanyId;
 
+    @ApiModelProperty("收件客户")
+    @Column(length = 20,nullable = false)
+    private String consigneeCustomerId;
+
+    @ApiModelProperty("收件所属公司")
+    @Column(length = 20)
+    private String consigneeCompanyId;
+
     @ApiModelProperty("付款方式:寄付 到付")
     @Column(columnDefinition = "int(1)",nullable = false)
     private Integer payType;
