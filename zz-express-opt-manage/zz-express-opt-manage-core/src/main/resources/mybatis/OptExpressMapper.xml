@@ -37,7 +37,7 @@
         <result property="sendCustomerId" column="send_customer_id"/>
         <result property="sendCustomerType" column="send_customer_type"/>
         <result property="consigneeCustomerId" column="consignee_customer_id"/>
-        <result property="consigneeCompanyId" column="consignee_customer_type"/>
+        <result property="consigneeCompanyId" column="consignee_company_id"/>
         <result property="sendFine" column="send_fine"/>
         <result property="sendProvince" column="send_province"/>
         <result property="sendServiceType" column="send_service_type"/>
@@ -87,7 +87,7 @@
         <result property="sendCustomerId" column="send_customer_id"/>
         <result property="sendCustomerType" column="send_customer_type"/>
         <result property="consigneeCustomerId" column="consignee_customer_id"/>
-        <result property="consigneeCompanyId" column="consignee_customer_type"/>
+        <result property="consigneeCompanyId" column="consignee_company_id"/>
         <result property="sendFine" column="send_fine"/>
         <result property="sendProvince" column="send_province"/>
         <result property="sendServiceType" column="send_service_type"/>
