@@ -17,6 +17,7 @@ import java.math.BigDecimal;
 @ApiModel("统计每月XX费用")
 public class OptExpressMonthFeeVO {
 
+    private String name;
     private String month;
     private BigDecimal fee;
 }

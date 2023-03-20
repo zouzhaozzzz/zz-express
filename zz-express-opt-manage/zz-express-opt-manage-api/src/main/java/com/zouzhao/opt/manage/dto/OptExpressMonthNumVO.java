@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 @ApiModel("统计每月XX数量")
 public class OptExpressMonthNumVO {
 
+    private String name;
     private String month;
     private int count;
 }

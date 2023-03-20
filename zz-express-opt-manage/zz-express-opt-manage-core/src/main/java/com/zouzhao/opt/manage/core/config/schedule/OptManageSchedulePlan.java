@@ -29,7 +29,7 @@ public class OptManageSchedulePlan {
         sdf.applyPattern("yyyy-MM-dd HH:mm:ssa");
         //获取当前时间
         log.debug("定时任务开始刷新报表时间：{}", sdf.format(new Date()));
-        optExpressService.refreshExport(true);
+        optExpressService.refreshExport();
         log.debug("定时任务完成刷新报表时间：{}", sdf.format(new Date()));
     }
 

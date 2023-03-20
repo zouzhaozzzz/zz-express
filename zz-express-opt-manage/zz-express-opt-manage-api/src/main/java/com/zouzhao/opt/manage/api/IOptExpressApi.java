@@ -30,7 +30,7 @@ public interface IOptExpressApi extends IPageApi<OptExpressVO> {
     Page<OptExpressVO> pagePlus(Page<OptExpressVO> page, List<SysOrgElementVO> orgList);
 
     @PostMapping("/refreshExport")
-    String refreshExport(Boolean initFlag);
+    String refreshExport();
 
     @PostMapping("/countExpressNum")
     int countExpressNum(OptExpressVO vo);

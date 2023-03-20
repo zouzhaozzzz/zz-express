@@ -24,16 +24,20 @@ public interface OptExpressMapper extends IPageMapper<OptExpress, OptExpressVO> 
 
     void updateStatusBatch(@Param("list")List<String> ids, @Param("status") Integer status);
 
-    int countByStatus(@Param("status") Integer status,@Param("orgId") String orgElementOrgId);
+    //统计待取货，运输中，派件中，已签收
+    List<OptExpressNumVO> countByStatus(@Param("status") Integer status);
 
     List<OptExpressNumVO> countByConsigneeProvinces();
 
     List<OptExpressNumVO> countBySendProvinces();
 
+    //统计每月的退货件
     List<OptExpressMonthNumVO> countByBounce();
 
+    //统计每月的问题件
     List<OptExpressMonthNumVO> countByQuestion();
 
+    //统计每月的总件数
     List<OptExpressMonthNumVO> countExpressNumByMonth();
 
     List<OptExpressMonthFeeVO> countTotalCostByMonth();

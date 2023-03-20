@@ -186,7 +186,7 @@ public class OptExpressController extends BaseController<IOptExpressApi, OptExpr
             "每月的成本费（寄件代收货款手续费、到付手续费成本、中转费成本、面单成本），保费收入，运费，罚款，收入统计")
     @PostMapping("/refreshExport")
     public String refreshExport() {
-        return getApi().refreshExport(false);
+        return getApi().refreshExport();
     }
 
 

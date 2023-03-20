@@ -365,11 +365,11 @@
         from opt_express
         where express_id = #{id};
     </select>
-    <select id="countByStatus" resultType="java.lang.Integer">
-        select count(*)
+    <select id="countByStatus" resultType="com.zouzhao.opt.manage.dto.OptExpressNumVO">
+        select send_company_id as name,count(*) as count
         from opt_express
         where express_status = #{status}
-          and send_company_id = #{orgId}
+        group by send_company_id
     </select>
     <select id="countByConsigneeProvinces" resultType="com.zouzhao.opt.manage.dto.OptExpressNumVO">
         select consignee_province as name, count(*) as count
@@ -384,47 +384,47 @@
         group by send_province
     </select>
     <select id="countByBounce" resultType="com.zouzhao.opt.manage.dto.OptExpressMonthNumVO">
-        SELECT DATE_FORMAT(ship_time, '%m') as month, count(*) as count
+        SELECT send_company_id as name,DATE_FORMAT(ship_time, '%m') as month, count(*) as count
         FROM opt_express
         where bounce_flag = 1
-        GROUP BY DATE_FORMAT(ship_time, '%m')
+        GROUP BY send_company_id,DATE_FORMAT(ship_time, '%m')
         ORDER BY ship_time
     </select>
     <select id="countByQuestion" resultType="com.zouzhao.opt.manage.dto.OptExpressMonthNumVO">
-        SELECT DATE_FORMAT(ship_time, '%m') as month, count(*) as count
+        SELECT send_company_id as name,DATE_FORMAT(ship_time, '%m') as month, count(*) as count
         FROM opt_express
         where question_flag = 1
-        GROUP BY DATE_FORMAT(ship_time, '%m')
+        GROUP BY send_company_id,DATE_FORMAT(ship_time, '%m')
         ORDER BY ship_time
     </select>
     <select id="countExpressNumByMonth" resultType="com.zouzhao.opt.manage.dto.OptExpressMonthNumVO">
-        SELECT DATE_FORMAT(ship_time, '%m') as month, count(*) as count
+        SELECT send_company_id as name,DATE_FORMAT(ship_time, '%m') as month, count(*) as count
         FROM opt_express
-        GROUP BY DATE_FORMAT(ship_time, '%m')
+        GROUP BY send_company_id,DATE_FORMAT(ship_time, '%m')
         ORDER BY ship_time
     </select>
     <select id="countTotalCostByMonth" resultType="com.zouzhao.opt.manage.dto.OptExpressMonthFeeVO">
-        SELECT DATE_FORMAT(ship_time, '%m') as month, SUM(total_cost) as fee
+        SELECT send_company_id as name, DATE_FORMAT(ship_time, '%m') as month, SUM(total_cost) as fee
         FROM opt_express
-        GROUP BY DATE_FORMAT(ship_time, '%m')
+        GROUP BY send_company_id,DATE_FORMAT(ship_time, '%m')
         ORDER BY ship_time
     </select>
     <select id="countSendFineByMonth" resultType="com.zouzhao.opt.manage.dto.OptExpressMonthFeeVO">
-        SELECT DATE_FORMAT(ship_time, '%m') as month, SUM(send_fine) as fee
+        SELECT send_company_id as name, DATE_FORMAT(ship_time, '%m') as month, SUM(send_fine) as fee
         FROM opt_express
-        GROUP BY DATE_FORMAT(ship_time, '%m')
+        GROUP BY send_company_id,DATE_FORMAT(ship_time, '%m')
         ORDER BY ship_time
     </select>
     <select id="countFreightByMonth" resultType="com.zouzhao.opt.manage.dto.OptExpressMonthFeeVO">
-        SELECT DATE_FORMAT(ship_time, '%m') as month, SUM(customer_freight) as fee
+        SELECT send_company_id as name,DATE_FORMAT(ship_time, '%m') as month, SUM(customer_freight) as fee
         FROM opt_express
-        GROUP BY DATE_FORMAT(ship_time, '%m')
+        GROUP BY send_company_id,DATE_FORMAT(ship_time, '%m')
         ORDER BY ship_time
     </select>
     <select id="countPremiumByMonth" resultType="com.zouzhao.opt.manage.dto.OptExpressMonthFeeVO">
-        SELECT DATE_FORMAT(ship_time, '%m') as month, SUM(premium) as fee
+        SELECT send_company_id as name,DATE_FORMAT(ship_time, '%m') as month, SUM(premium) as fee
         FROM opt_express
-        GROUP BY DATE_FORMAT(ship_time, '%m')
+        GROUP BY send_company_id,DATE_FORMAT(ship_time, '%m')
         ORDER BY ship_time
     </select>
     <select id="countExpressNum" resultType="java.lang.Integer">
