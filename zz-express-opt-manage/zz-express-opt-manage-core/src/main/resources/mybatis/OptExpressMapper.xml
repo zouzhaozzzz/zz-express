@@ -529,7 +529,7 @@
                 </if>
                 <if test="v.sendCompanyId != null  and v.sendCompanyId != ''">and send_company_id = #{v.sendCompanyId}
                 </if>
-                <if test="(v.sendCompanyId == null or v.sendCompanyId == '') and (searchCompany == 1 or searchCompany == 3)">
+                <if test="(v.sendCompanyId == null or v.sendCompanyId == '') and searchCompany == 1 ">
                     and send_company_id
                     in
                     <foreach collection="orgList" item="org" open="(" close=")" separator=",">
@@ -543,7 +543,7 @@
                 <if test="v.consigneeCompanyId != null  and v.consigneeCompanyId != ''">and consignee_company_id =
                     #{v.consigneeCompanyId}
                 </if>
-                <if test="(v.consigneeCompanyId == null or v.consigneeCompanyId == '') and (searchCompany == 2 or searchCompany == 3)">
+                <if test="(v.consigneeCompanyId == null or v.consigneeCompanyId == '') and searchCompany == 2 ">
                     and consignee_company_id
                     in
                     <foreach collection="orgList" item="org" open="(" close=")" separator=",">

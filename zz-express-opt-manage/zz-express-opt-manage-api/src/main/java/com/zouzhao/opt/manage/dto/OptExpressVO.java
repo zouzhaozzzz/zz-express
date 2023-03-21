@@ -30,6 +30,7 @@ public class OptExpressVO {
     @ApiModelProperty("运单状态")
     private Integer expressStatus;
     private List<Integer> expressStatusList;
+    private Integer expressStatusFlag;
 
     @ExcelProperty(index = 2)
     @ApiModelProperty("客户类型:“业务员”、“承包区”、“下级网点”、“直营客户”")
@@ -223,4 +224,5 @@ public class OptExpressVO {
     @ExcelProperty(index = 44)
     @ApiModelProperty("罚款")
     private BigDecimal sendFine;
+
 }

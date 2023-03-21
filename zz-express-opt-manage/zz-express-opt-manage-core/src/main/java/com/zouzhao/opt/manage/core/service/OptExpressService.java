@@ -3,6 +3,7 @@ package com.zouzhao.opt.manage.core.service;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.zouzhao.common.core.exception.MyException;
 import com.zouzhao.common.core.service.PageServiceImpl;
 import com.zouzhao.common.security.utils.RedisManager;
 import com.zouzhao.opt.file.dto.OptExportConditionVO;
@@ -28,7 +29,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -47,6 +47,8 @@ public class OptExpressService extends PageServiceImpl<OptExpressMapper, OptExpr
     private RedisManager redisManager;
     @Autowired
     private SysOrgElementClient sysOrgElementClient;
+
+    private final String[] month = {"01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12",};
 
     @Value("${export.batchSize}")
     public void setBatchSize(int batchSize) {
@@ -113,9 +115,12 @@ public class OptExpressService extends PageServiceImpl<OptExpressMapper, OptExpr
     public Page<OptExpressVO> pagePlus(Page<OptExpressVO> page, List<SysOrgElementVO> orgList) {
         long current = page.getCurrent();
         long size = page.getSize();
-        OptExpressVO optExpressVO = ObjectUtils.isEmpty(page.getRecords()) ? null : page.getRecords().get(0);
-        //是否差寄派件公司  1查寄件公司 2查派件公司 3都查 0都不查
-        int searchCompany = getSearchCompany(optExpressVO);
+        if (ObjectUtils.isEmpty(page.getRecords()) || ObjectUtils.isEmpty(page.getRecords().get(0)) || ObjectUtil.isEmpty(page.getRecords().get(0).getExpressStatusFlag())) {
+            throw new MyException("相关信息传入不全");
+        }
+        OptExpressVO optExpressVO = page.getRecords().get(0);
+        //是否差寄派件公司  1查寄件公司 2查派件公司
+        Integer searchCompany = optExpressVO.getExpressStatusFlag();
         long total = page.getTotal();
         if (page.searchCount()) {
             total = getMapper().findCount(optExpressVO, searchCompany, orgList);
@@ -150,24 +155,6 @@ public class OptExpressService extends PageServiceImpl<OptExpressMapper, OptExpr
         return page;
     }
 
-    private int getSearchCompany(OptExpressVO optExpressVO) {
-        int searchCompany = 0;
-        if (optExpressVO != null && ObjectUtil.isNotEmpty(optExpressVO.getExpressStatusList())) {
-            List<Integer> statusList = optExpressVO.getExpressStatusList();
-            AtomicBoolean flag1 = new AtomicBoolean(false);
-            AtomicBoolean flag2 = new AtomicBoolean(false);
-            statusList.forEach(status -> {
-                //寄件
-                if (status == 0 || status == 1) flag1.set(true);
-                //派件
-                if (status == 2 || status == 3) flag2.set(true);
-            });
-            if (flag1.get() && flag2.get()) searchCompany = 3;
-            else if (flag1.get()) searchCompany = 1;
-            else if (flag2.get()) searchCompany = 2;
-        }
-        return searchCompany;
-    }
 
     @Override
     public String refreshExport() {
@@ -196,7 +183,6 @@ public class OptExpressService extends PageServiceImpl<OptExpressMapper, OptExpr
 
     //统计每月收入
     private void countIncomeByMouth() {
-        String[] month = {"01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12",};
         //查询出所有组织
         SysOrgElementVO request = new SysOrgElementVO();
         request.setOrgElementType(0);
@@ -209,15 +195,15 @@ public class OptExpressService extends PageServiceImpl<OptExpressMapper, OptExpr
                 Object premium = redisManager.getHashValue("report-express:premiumByMonth:" + orgElementId, currentMonth);
                 Object freight = redisManager.getHashValue("report-express:freightByMonth:" + orgElementId, currentMonth);
                 Object sendFine = redisManager.getHashValue("report-express:sendFineByMonth:" + orgElementId, currentMonth);
-                Object totalCost = redisManager.getHashValue("report-express:totalCostByMonth:" + orgElementId,currentMonth);
+                Object totalCost = redisManager.getHashValue("report-express:totalCostByMonth:" + orgElementId, currentMonth);
                 //如果为空设为0
                 if (premium == null) premium = new BigDecimal("0");
                 if (freight == null) freight = new BigDecimal("0");
                 if (sendFine == null) sendFine = new BigDecimal("0");
                 if (totalCost == null) totalCost = new BigDecimal("0");
                 //每月收入
-                BigDecimal income = ((BigDecimal)premium).add((BigDecimal)freight).add((BigDecimal)sendFine).subtract((BigDecimal)totalCost);
-                redisManager.setHashValue("report-express:incomeByMonth"+orgElementId, currentMonth, income);
+                BigDecimal income = ((BigDecimal) premium).add((BigDecimal) freight).add((BigDecimal) sendFine).subtract((BigDecimal) totalCost);
+                redisManager.setHashValue("report-express:incomeByMonth" + orgElementId, currentMonth, income);
             }
         });
     }
@@ -261,14 +247,14 @@ public class OptExpressService extends PageServiceImpl<OptExpressMapper, OptExpr
     //统计每月的退货件
     private void countBounceByMonth() {
         getMapper().countByBounce().forEach(
-                e -> redisManager.setHashValue("report-express:bounceMonth:" + e.getName(), e.getMonth(), e.getCount())
+                e -> redisManager.setHashValue("report-express:bounceByMonth:" + e.getName(), e.getMonth(), e.getCount())
         );
     }
 
     //统计每月的问题件
     private void countQuestionByMonth() {
         getMapper().countByQuestion().forEach(
-                e -> redisManager.setHashValue("report-express:questionMonth:" + e.getName(), e.getMonth(), e.getCount())
+                e -> redisManager.setHashValue("report-express:questionByMonth:" + e.getName(), e.getMonth(), e.getCount())
         );
     }
 
