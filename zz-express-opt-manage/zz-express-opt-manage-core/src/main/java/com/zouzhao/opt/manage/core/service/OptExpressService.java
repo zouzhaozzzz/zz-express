@@ -26,6 +26,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -170,12 +171,6 @@ public class OptExpressService extends PageServiceImpl<OptExpressMapper, OptExpr
 
     @Override
     public String refreshExport() {
-        //查询出所有的顶级组织
-        //查询出所有组织
-        // SysOrgElementVO request = new SysOrgElementVO();
-        // request.setOrgElementType(0);
-        // request.setOrgElementStatus(true);
-        // List<SysOrgElementVO> orgList = sysOrgElementClient.findAll(request);
         //省份寄件派送个数
         countByProvinces();
         //统计快递状态，总件数统计
@@ -201,80 +196,79 @@ public class OptExpressService extends PageServiceImpl<OptExpressMapper, OptExpr
 
     //统计每月收入
     private void countIncomeByMouth() {
-        //查找所有组织
-        // sysOrgElementClient.findAll();
-        // List<OptExpressMonthFeeVO> totalCost;
-        // List<OptExpressMonthFeeVO> premium;
-        // List<OptExpressMonthFeeVO> freight;
-        // List<OptExpressMonthFeeVO> sendFine;
-        // if (totalCost == null || premium == null || freight == null || sendFine == null)
-        //     throw new MyException("计算收入出错，缺失数据");
-        // List<OptExpressMonthFeeVO> income = new ArrayList<>();
-        // for (int i = 0; i < totalCost.size(); i++) {
-        //     OptExpressMonthFeeVO costVO = totalCost.get(i);
-        //     BigDecimal premiumFee = premium.get(i).getFee();
-        //     BigDecimal freightFee = freight.get(i).getFee();
-        //     BigDecimal sendFineFee = sendFine.get(i).getFee();
-        //     //如果为空设为0
-        //     if (costVO.getFee() == null) costVO.setFee(new BigDecimal("0"));
-        //     if (premiumFee == null) premiumFee = new BigDecimal("0");
-        //     if (freightFee == null) freightFee = new BigDecimal("0");
-        //     if (sendFineFee == null) sendFineFee = new BigDecimal("0");
-        //     //每月收入
-        //     BigDecimal incomeFee = premiumFee.add(freightFee).add(sendFineFee).subtract(costVO.getFee());
-        //     costVO.setFee(incomeFee);
-        //     income.add(costVO);
-        // }
-        // redisManager.setHashValue("report-express", "income", income);
+        String[] month = {"01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12",};
+        //查询出所有组织
+        SysOrgElementVO request = new SysOrgElementVO();
+        request.setOrgElementType(0);
+        request.setOrgElementStatus(true);
+        List<SysOrgElementVO> orgList = sysOrgElementClient.findAll(request);
+        orgList.forEach(org -> {
+            for (int i = 0; i < month.length; i++) {
+                String orgElementId = org.getOrgElementId();
+                String currentMonth = month[i];
+                Object premium = redisManager.getHashValue("report-express:premiumByMonth:" + orgElementId, currentMonth);
+                Object freight = redisManager.getHashValue("report-express:freightByMonth:" + orgElementId, currentMonth);
+                Object sendFine = redisManager.getHashValue("report-express:sendFineByMonth:" + orgElementId, currentMonth);
+                Object totalCost = redisManager.getHashValue("report-express:totalCostByMonth:" + orgElementId,currentMonth);
+                //如果为空设为0
+                if (premium == null) premium = new BigDecimal("0");
+                if (freight == null) freight = new BigDecimal("0");
+                if (sendFine == null) sendFine = new BigDecimal("0");
+                if (totalCost == null) totalCost = new BigDecimal("0");
+                //每月收入
+                BigDecimal income = ((BigDecimal)premium).add((BigDecimal)freight).add((BigDecimal)sendFine).subtract((BigDecimal)totalCost);
+                redisManager.setHashValue("report-express:incomeByMonth"+orgElementId, currentMonth, income);
+            }
+        });
     }
 
 
     //统计每月的罚款
     private void countSendFineByMonth() {
         getMapper().countSendFineByMonth().forEach(
-                e -> redisManager.setHashValue("report-express:sendFineByMonth" + e.getName(), e.getMonth(), e.getFee())
+                e -> redisManager.setHashValue("report-express:sendFineByMonth:" + e.getName(), e.getMonth(), e.getFee())
         );
     }
 
     //统计每月的运费
     private void countFreightByMonth() {
         getMapper().countFreightByMonth().forEach(
-                e -> redisManager.setHashValue("report-express:freightByMonth" + e.getName(), e.getMonth(), e.getFee())
+                e -> redisManager.setHashValue("report-express:freightByMonth:" + e.getName(), e.getMonth(), e.getFee())
         );
     }
 
     //统计每月的保费收入 保费收入=保费*0.6
     private void countPremiumByMonth() {
         getMapper().countPremiumByMonth().forEach(
-                e -> redisManager.setHashValue("report-express:premiumByMonth" + e.getName(), e.getMonth(), e.getFee())
+                e -> redisManager.setHashValue("report-express:premiumByMonth:" + e.getName(), e.getMonth(), e.getFee())
         );
     }
 
     //统计每月的总成本
     private void countTotalCostByMonth() {
         getMapper().countTotalCostByMonth().forEach(
-                e -> redisManager.setHashValue("report-express:totalCostByMonth" + e.getName(), e.getMonth(), e.getFee())
+                e -> redisManager.setHashValue("report-express:totalCostByMonth:" + e.getName(), e.getMonth(), e.getFee())
         );
     }
 
     //统计每月的总件数
     private void countExpressNumByMonth() {
         getMapper().countExpressNumByMonth().forEach(
-                e -> redisManager.setHashValue("report-express:expressNumByMonth" + e.getName(), e.getMonth(), e.getCount())
+                e -> redisManager.setHashValue("report-express:expressNumByMonth:" + e.getName(), e.getMonth(), e.getCount())
         );
     }
 
     //统计每月的退货件
     private void countBounceByMonth() {
         getMapper().countByBounce().forEach(
-                e -> redisManager.setHashValue("report-express:bounceMonth" + e.getName(), e.getMonth(), e.getCount())
+                e -> redisManager.setHashValue("report-express:bounceMonth:" + e.getName(), e.getMonth(), e.getCount())
         );
     }
 
     //统计每月的问题件
     private void countQuestionByMonth() {
         getMapper().countByQuestion().forEach(
-                e -> redisManager.setHashValue("report-express:questionMonth" + e.getName(), e.getMonth(), e.getCount())
+                e -> redisManager.setHashValue("report-express:questionMonth:" + e.getName(), e.getMonth(), e.getCount())
         );
     }
 

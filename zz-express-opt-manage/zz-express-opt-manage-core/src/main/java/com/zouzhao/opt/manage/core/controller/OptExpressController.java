@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author 姚超
@@ -90,17 +91,12 @@ public class OptExpressController extends BaseController<IOptExpressApi, OptExpr
     @PreAuthorize("hasAnyRole('OPT_MANAGE_EXPRESS_LIST','OPT_MANAGE_EXPRESS_ADMIN')")
     public Page<OptExpressVO> page(@RequestBody Page<OptExpressVO> page) {
         OptExpressVO optExpressVO = ObjectUtils.isEmpty(page.getRecords()) ? null : page.getRecords().get(0);
-        List<SysOrgElementVO> orgList=null;
+        List<SysOrgElementVO> orgList = null;
         //前端没有传寄件公司或派件公司
         if (optExpressVO == null || ObjectUtil.isEmpty(optExpressVO.getSendCompanyId()) || ObjectUtil.isEmpty(optExpressVO.getSendCompanyId())) {
             //拿到当前登录人的组织和下级组织
-            String loginName = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            SysOrgElementVO request = new SysOrgElementVO();
-            request.setOrgElementType(0);
-            request.setOrgElementLoginName(loginName);
-            orgList= sysOrgElementClient.listInRoles(request);
+            orgList = getCurrentUserOrgList();
         }
-
         //分页查询
         Page<OptExpressVO> pageResult = getApi().pagePlus(page, orgList);
         List<OptExpressVO> list = pageResult.getRecords();
@@ -137,6 +133,15 @@ public class OptExpressController extends BaseController<IOptExpressApi, OptExpr
         return pageResult;
     }
 
+    //拿到当前登录人的组织和下级组织
+    private List<SysOrgElementVO> getCurrentUserOrgList() {
+        String loginName = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        SysOrgElementVO request = new SysOrgElementVO();
+        request.setOrgElementType(0);
+        request.setOrgElementLoginName(loginName);
+        return sysOrgElementClient.listInRoles(request);
+    }
+
     @PostMapping("/countExpressNum")
     @ApiOperation("统计符合条件的快递数量")
     @PreAuthorize("hasAnyRole('OPT_MANAGE_EXPRESS_LIST','OPT_MANAGE_EXPRESS_ADMIN')")
@@ -147,35 +152,61 @@ public class OptExpressController extends BaseController<IOptExpressApi, OptExpr
     @PreAuthorize("hasAnyRole('OPT_MANAGE_REPORT_LIST')")
     @ApiOperation("从redis中拿统计数据")
     @PostMapping("/export")
-    public List<Map<String, Object>> export(@RequestBody List<String> keys) {
-        List<Map<String, Object>> result = new ArrayList<>();
-        keys.forEach(key -> {
-            Map<String, Object> map = new HashMap<>();
-            switch (key) {
-                case "countStatus":
-                    map.put("countStatus0", redisManager.getHashValue("report-express", "0"));
-                    map.put("countStatus1", redisManager.getHashValue("report-express", "1"));
-                    map.put("countStatus2", redisManager.getHashValue("report-express", "2"));
-                    map.put("countStatus3", redisManager.getHashValue("report-express", "3"));
-                    break;
-                case "countByProvinces":
-                    map.put("province", redisManager.getHashValue("report-express", "province"));
-                    break;
-                case "countFlagByMonth":
-                    map.put("questionNumByMonth", redisManager.getHashValue("report-express", "questionNumByMonth"));
-                    map.put("bounceByMonth", redisManager.getHashValue("report-express", "bounceByMonth"));
-                    map.put("expressNumByMonth", redisManager.getHashValue("report-express", "expressNumByMonth"));
-                    break;
-                case "countFeeByMonth":
-                    map.put("totalCostByMonth", redisManager.getHashValue("report-express", "totalCostByMonth"));
-                    map.put("premiumByMonth", redisManager.getHashValue("report-express", "premiumByMonth"));
-                    map.put("freightByMonth", redisManager.getHashValue("report-express", "freightByMonth"));
-                    map.put("sendFineByMonth", redisManager.getHashValue("report-express", "sendFineByMonth"));
-                    map.put("income", redisManager.getHashValue("report-express", "income"));
-                    break;
-            }
-            result.add(map);
-        });
+    public Map<String, Object> export(@RequestBody Map<String, Object> request) {
+        Map<String, Object> result = new HashMap<>();
+        Object key = request.get("key");
+        Object relation = request.get("relation");
+        if (ObjectUtil.isEmpty(key) || ObjectUtil.isEmpty(relation)) throw new MyException("报表查询的条件不全");
+        //拿到当前登录人的组织和下级组织
+        List<SysOrgElementVO> orgList = getCurrentUserOrgList();
+        if (orgList == null || orgList.size() < 1) return null;
+        switch ((String) key) {
+            case "countStatus":
+                if ((boolean) relation) {
+                    AtomicInteger n0 = new AtomicInteger(0);
+                    AtomicInteger n1 = new AtomicInteger(0);
+                    AtomicInteger n2 = new AtomicInteger(0);
+                    AtomicInteger n3 = new AtomicInteger(0);
+                    orgList.forEach(org -> {
+                        String orgElementId = org.getOrgElementId();
+                        Object value;
+                        value = redisManager.getHashValue("report-express:" + orgElementId, "0");
+                        if (value != null) n0.addAndGet((int) value);
+                        value = redisManager.getHashValue("report-express:" + orgElementId, "1");
+                        if (value != null) n1.addAndGet((int) value);
+                        value = redisManager.getHashValue("report-express:" + orgElementId, "2");
+                        if (value != null) n2.addAndGet((int) value);
+                        value = redisManager.getHashValue("report-express:" + orgElementId, "3");
+                        if (value != null) n3.addAndGet((int) value);
+                    });
+                    result.put("countStatus0", n0);
+                    result.put("countStatus1", n1);
+                    result.put("countStatus2", n2);
+                    result.put("countStatus3", n3);
+                } else {
+                    String orgElementId = orgList.get(0).getOrgElementId();
+                    result.put("countStatus0", redisManager.getHashValue("report-express:" + orgElementId, "0"));
+                    result.put("countStatus1", redisManager.getHashValue("report-express:" + orgElementId, "1"));
+                    result.put("countStatus2", redisManager.getHashValue("report-express:" + orgElementId, "2"));
+                    result.put("countStatus3", redisManager.getHashValue("report-express:" + orgElementId, "3"));
+                }
+                break;
+            case "countByProvinces":
+                result.put("province", redisManager.getHashValue("report-express", "province"));
+                break;
+            case "countFlagByMonth":
+                result.put("questionNumByMonth", redisManager.getHashValue("report-express", "questionNumByMonth"));
+                result.put("bounceByMonth", redisManager.getHashValue("report-express", "bounceByMonth"));
+                result.put("expressNumByMonth", redisManager.getHashValue("report-express", "expressNumByMonth"));
+                break;
+            case "countFeeByMonth":
+                result.put("totalCostByMonth", redisManager.getHashValue("report-express", "totalCostByMonth"));
+                result.put("premiumByMonth", redisManager.getHashValue("report-express", "premiumByMonth"));
+                result.put("freightByMonth", redisManager.getHashValue("report-express", "freightByMonth"));
+                result.put("sendFineByMonth", redisManager.getHashValue("report-express", "sendFineByMonth"));
+                result.put("income", redisManager.getHashValue("report-express", "income"));
+                break;
+        }
         return result;
     }
 
