@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
@@ -123,7 +124,7 @@ public class OptExportController extends BaseController<IOptExportApi, OptExport
         } else {
             //保留一位小数
             BigDecimal var5 = BigDecimal.valueOf(Double.valueOf((Integer) successStr) / (Double.valueOf((Integer) allStr)) * 100);
-            return var5.setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue();
+            return var5.setScale(1, RoundingMode.HALF_UP).doubleValue();
         }
     }
 

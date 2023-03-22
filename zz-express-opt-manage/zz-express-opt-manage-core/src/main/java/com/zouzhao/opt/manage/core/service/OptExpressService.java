@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -202,8 +203,8 @@ public class OptExpressService extends PageServiceImpl<OptExpressMapper, OptExpr
                 if (sendFine == null) sendFine = new BigDecimal("0");
                 if (totalCost == null) totalCost = new BigDecimal("0");
                 //每月收入
-                BigDecimal income = ((BigDecimal) premium).add((BigDecimal) freight).add((BigDecimal) sendFine).subtract((BigDecimal) totalCost);
-                redisManager.setHashValue("report-express:incomeByMonth" + orgElementId, currentMonth, income);
+                BigDecimal income = (((BigDecimal) premium).add((BigDecimal) freight).add((BigDecimal) sendFine).subtract((BigDecimal) totalCost)).setScale(2, RoundingMode.HALF_UP);
+                redisManager.setHashValue("report-express:incomeByMonth:" + orgElementId, currentMonth, income);
             }
         });
     }
@@ -212,28 +213,28 @@ public class OptExpressService extends PageServiceImpl<OptExpressMapper, OptExpr
     //统计每月的罚款
     private void countSendFineByMonth() {
         getMapper().countSendFineByMonth().forEach(
-                e -> redisManager.setHashValue("report-express:sendFineByMonth:" + e.getName(), e.getMonth(), e.getFee())
+                e -> redisManager.setHashValue("report-express:sendFineByMonth:" + e.getName(), e.getMonth(), e.getFee().setScale(2, RoundingMode.HALF_UP))
         );
     }
 
     //统计每月的运费
     private void countFreightByMonth() {
         getMapper().countFreightByMonth().forEach(
-                e -> redisManager.setHashValue("report-express:freightByMonth:" + e.getName(), e.getMonth(), e.getFee())
+                e -> redisManager.setHashValue("report-express:freightByMonth:" + e.getName(), e.getMonth(), e.getFee().setScale(2, RoundingMode.HALF_UP))
         );
     }
 
-    //统计每月的保费收入 保费收入=保费*0.6
+    //统计每月的保费收入 保费收入=保费*0.4
     private void countPremiumByMonth() {
         getMapper().countPremiumByMonth().forEach(
-                e -> redisManager.setHashValue("report-express:premiumByMonth:" + e.getName(), e.getMonth(), e.getFee())
+                e -> redisManager.setHashValue("report-express:premiumByMonth:" + e.getName(), e.getMonth(), (e.getFee().multiply(new BigDecimal("0.4"))).setScale(2, RoundingMode.HALF_UP))
         );
     }
 
     //统计每月的总成本
     private void countTotalCostByMonth() {
         getMapper().countTotalCostByMonth().forEach(
-                e -> redisManager.setHashValue("report-express:totalCostByMonth:" + e.getName(), e.getMonth(), e.getFee())
+                e -> redisManager.setHashValue("report-express:totalCostByMonth:" + e.getName(), e.getMonth(), e.getFee().setScale(2, RoundingMode.HALF_UP))
         );
     }
 
@@ -263,10 +264,10 @@ public class OptExpressService extends PageServiceImpl<OptExpressMapper, OptExpr
      */
     private void countStatus() {
         //统计待取货，运输中，派件中，已签收
-        getMapper().countByStatus(0).forEach(org -> redisManager.setHashValue("report-express:" + org.getName(), "0", org.getCount()));
-        getMapper().countByStatus(1).forEach(org -> redisManager.setHashValue("report-express:" + org.getName(), "1", org.getCount()));
-        getMapper().countByStatus(2).forEach(org -> redisManager.setHashValue("report-express:" + org.getName(), "2", org.getCount()));
-        getMapper().countByStatus(3).forEach(org -> redisManager.setHashValue("report-express:" + org.getName(), "3", org.getCount()));
+        getMapper().countByStatus(0).forEach(org -> redisManager.setHashValue("report-express:countStatus:" + org.getName(), "0", org.getCount()));
+        getMapper().countByStatus(1).forEach(org -> redisManager.setHashValue("report-express:countStatus:" + org.getName(), "1", org.getCount()));
+        getMapper().countByStatus(2).forEach(org -> redisManager.setHashValue("report-express:countStatus:" + org.getName(), "2", org.getCount()));
+        getMapper().countByStatus(3).forEach(org -> redisManager.setHashValue("report-express:countStatus:" + org.getName(), "3", org.getCount()));
     }
 
     /**
@@ -301,7 +302,7 @@ public class OptExpressService extends PageServiceImpl<OptExpressMapper, OptExpr
     //省份排名 寄件派送个数
     private void countByProvinces() {
         List<OptExpressProvinceVO> province = countNumByProvinces();
-        redisManager.setHashValue("report-express", "province", province);
+        redisManager.setHashValue("report-express:province", "province", province);
     }
 
 

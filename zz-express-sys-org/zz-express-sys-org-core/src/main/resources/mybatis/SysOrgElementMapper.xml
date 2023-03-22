@@ -169,13 +169,13 @@
     <select id="countOrg" resultType="java.lang.Integer">
         select count(*)
         from sys_org_element
-        where org_element_type = 0;
+        where org_element_type = 0 and org_element_status =1;
     </select>
 
     <select id="countPerson" resultType="java.lang.Integer">
         select count(*)
         from sys_org_element
-        where org_element_type = 1;
+        where org_element_type = 1 and org_element_status =1;
     </select>
     <select id="findByLoginName" resultType="com.zouzhao.sys.org.dto.SysOrgElementVO">
         select e.org_element_id, e.org_element_name, e.org_element_org_id
@@ -201,10 +201,10 @@
         and org_element_status = 1
         and org_element_org_id in
         <foreach collection="list" item="item" open="(" separator="," close=")">
-            #{item.v.orgElementId}
+            #{item.orgElementId}
         </foreach>
-        <if test="orgElementName != null  and orgElementName != ''">and org_element_name like concat('%',
-            #{orgElementName}, '%')
+        <if test="v.orgElementName != null  and v.orgElementName != ''">and org_element_name like concat('%',
+            #{v.orgElementName}, '%')
         </if>
         order by org_element_order ,org_element_status desc
         limit 0,100

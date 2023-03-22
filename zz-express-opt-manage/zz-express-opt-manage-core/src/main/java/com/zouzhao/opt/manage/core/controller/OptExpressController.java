@@ -9,6 +9,7 @@ import com.zouzhao.common.dto.IdDTO;
 import com.zouzhao.common.dto.IdsDTO;
 import com.zouzhao.common.security.utils.RedisManager;
 import com.zouzhao.opt.manage.api.IOptExpressApi;
+import com.zouzhao.opt.manage.dto.OptExpressMonthFeeVO;
 import com.zouzhao.opt.manage.dto.OptExpressMonthNumVO;
 import com.zouzhao.opt.manage.dto.OptExpressVO;
 import com.zouzhao.sys.org.client.SysOrgElementClient;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -170,7 +172,7 @@ public class OptExpressController extends BaseController<IOptExpressApi, OptExpr
                 break;
             // "省份寄件派送个数"
             case "countByProvinces":
-                result.put("province", redisManager.getHashValue("report-express", "province"));
+                result.put("province", redisManager.getHashValue("report-express:province", "province"));
                 break;
             //"每月的问题件，退货件，每月的总件数统计"
             case "countFlagByMonth":
@@ -178,16 +180,56 @@ public class OptExpressController extends BaseController<IOptExpressApi, OptExpr
                 break;
             //"每月的成本费（寄件代收货款手续费、到付手续费成本、中转费成本、面单成本），保费收入，运费，罚款，收入统计"
             case "countFeeByMonth":
-                result.put("totalCostByMonth", redisManager.getHashValue("report-express", "totalCostByMonth"));
-                result.put("premiumByMonth", redisManager.getHashValue("report-express", "premiumByMonth"));
-                result.put("freightByMonth", redisManager.getHashValue("report-express", "freightByMonth"));
-                result.put("sendFineByMonth", redisManager.getHashValue("report-express", "sendFineByMonth"));
-                result.put("income", redisManager.getHashValue("report-express", "income"));
+                countFeeByMonth(result, (boolean) relation, orgList);
                 break;
         }
         return result;
     }
 
+    //"每月的成本费（寄件代收货款手续费、到付手续费成本、中转费成本、面单成本），保费收入，运费，罚款，收入统计"
+    private void countFeeByMonth(Map<String, Object> result, boolean relation, List<SysOrgElementVO> orgList) {
+        List<OptExpressMonthFeeVO> totalCostList = new ArrayList<>(12);
+        List<OptExpressMonthFeeVO> premiumList = new ArrayList<>(12);
+        List<OptExpressMonthFeeVO> sendFineList = new ArrayList<>(12);
+        List<OptExpressMonthFeeVO> freightList = new ArrayList<>(12);
+        List<OptExpressMonthFeeVO> income = new ArrayList<>(12);
+        result.put("totalCostByMonth", totalCostList);
+        result.put("premiumByMonth", premiumList);
+        result.put("sendFineByMonth", sendFineList);
+        result.put("freightByMonth", freightList);
+        result.put("incomeByMonth", income);
+        if (relation) {
+            orgList.forEach(org -> {
+                String elementId = org.getOrgElementId();
+                feeForMonth(totalCostList, premiumList, sendFineList, freightList, income,elementId);
+            });
+        } else {
+            String orgElementId = orgList.get(0).getOrgElementId();
+            feeForMonth(totalCostList, premiumList, sendFineList, freightList, income,orgElementId);
+        }
+
+    }
+
+
+    private void feeForMonth(List<OptExpressMonthFeeVO> totalCostList, List<OptExpressMonthFeeVO> premiumList, List<OptExpressMonthFeeVO> sendFineList, List<OptExpressMonthFeeVO> freightList,List<OptExpressMonthFeeVO> income, String orgElementId) {
+        for (int i = 0; i < month.length; i++) {
+            String monthValue = month[i];
+            setFeeMonthValue(totalCostList, orgElementId, i, monthValue, "report-express:totalCostByMonth:");
+            setFeeMonthValue(premiumList, orgElementId, i, monthValue, "report-express:premiumByMonth:");
+            setFeeMonthValue(sendFineList, orgElementId, i, monthValue, "report-express:sendFineByMonth:");
+            setFeeMonthValue(freightList, orgElementId, i, monthValue, "report-express:freightByMonth:");
+            setFeeMonthValue(income, orgElementId, i, monthValue, "report-express:incomeByMonth:");
+        }
+    }
+
+
+    private void setFeeMonthValue(List<OptExpressMonthFeeVO> list, String orgElementId, int i, String monthValue, String s) {
+        Object value = redisManager.getHashValue(s + orgElementId, monthValue);
+        if (list.size() <= i) list.add(i, new OptExpressMonthFeeVO(orgElementId, monthValue, new BigDecimal("0")));
+        if (value != null) list.get(i).setFee(list.get(i).getFee().add((BigDecimal) value));
+    }
+
+    // "统计快递状态"
     private void countStatus(Map<String, Object> result, boolean relation, List<SysOrgElementVO> orgList) {
         if (relation) {
             AtomicInteger n0 = new AtomicInteger(0);
@@ -197,13 +239,13 @@ public class OptExpressController extends BaseController<IOptExpressApi, OptExpr
             orgList.forEach(org -> {
                 String orgElementId = org.getOrgElementId();
                 Object value;
-                value = redisManager.getHashValue("report-express:" + orgElementId, "0");
+                value = redisManager.getHashValue("report-express:countStatus:" + orgElementId, "0");
                 if (value != null) n0.addAndGet((int) value);
-                value = redisManager.getHashValue("report-express:" + orgElementId, "1");
+                value = redisManager.getHashValue("report-express:countStatus:" + orgElementId, "1");
                 if (value != null) n1.addAndGet((int) value);
-                value = redisManager.getHashValue("report-express:" + orgElementId, "2");
+                value = redisManager.getHashValue("report-express:countStatus:" + orgElementId, "2");
                 if (value != null) n2.addAndGet((int) value);
-                value = redisManager.getHashValue("report-express:" + orgElementId, "3");
+                value = redisManager.getHashValue("report-express:countStatus:" + orgElementId, "3");
                 if (value != null) n3.addAndGet((int) value);
             });
             result.put("countStatus0", n0);
@@ -219,6 +261,7 @@ public class OptExpressController extends BaseController<IOptExpressApi, OptExpr
         }
     }
 
+    //"每月的问题件，退货件，每月的总件数统计"
     private void countFlagByMonth(Map<String, Object> result, boolean relation, List<SysOrgElementVO> orgList) {
         List<OptExpressMonthNumVO> questionList = new ArrayList<>(12);
         List<OptExpressMonthNumVO> bounceList = new ArrayList<>(12);
@@ -249,7 +292,7 @@ public class OptExpressController extends BaseController<IOptExpressApi, OptExpr
 
     private void setFlagMonthValue(List<OptExpressMonthNumVO> list, String orgElementId, int i, String monthValue, String s) {
         Object value = redisManager.getHashValue(s + orgElementId, monthValue);
-        if (list.size() <= i)list.add(i,new OptExpressMonthNumVO(orgElementId,monthValue,0));
+        if (list.size() <= i) list.add(i, new OptExpressMonthNumVO(orgElementId, monthValue, 0));
         if (value != null) list.get(i).setCount(list.get(i).getCount() + (int) value);
     }
 
