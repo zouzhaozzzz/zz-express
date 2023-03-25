@@ -85,7 +85,7 @@ public class SysOrgElementController extends BaseController<ISysOrgElementApi, S
 
     @PostMapping({"/list"})
     @ApiOperation("列表查询接口")
-    @PreAuthorize("hasAnyRole('SYS_ORG_ELEMENT_ADMIN')")
+    @PreAuthorize("hasAnyRole('SYS_ORG_ELEMENT_LIST','SYS_ORG_ELEMENT_ADMIN')")
     public List<SysOrgElementVO> list(@RequestBody SysOrgElementVO request) {
         return getApi().findAll(request);
     }
@@ -97,7 +97,7 @@ public class SysOrgElementController extends BaseController<ISysOrgElementApi, S
         return getApi().page(page);
     }
 
-    @PreAuthorize("hasAnyRole('SYS_ORG_ELEMENT_ADMIN')")
+    @PreAuthorize("hasAnyRole('SYS_ORG_ELEMENT_LIST','SYS_ORG_ELEMENT_ADMIN')")
     @ApiOperation("统计组织架构和人员")
     @PostMapping("/countOrg")
     public Map<String,Object> refreshOrg() {
@@ -109,6 +109,7 @@ public class SysOrgElementController extends BaseController<ISysOrgElementApi, S
         return result;
     }
 
+    @PreAuthorize("hasAnyRole('SYS_ORG_ELEMENT_LIST','SYS_ORG_ELEMENT_ADMIN')")
     @PostMapping({"/listInRoles"})
     @ApiOperation("列表查询接口")
     public List<SysOrgElementVO> listInRoles(@RequestBody SysOrgElementVO request) {

@@ -201,17 +201,17 @@ public class OptExpressController extends BaseController<IOptExpressApi, OptExpr
         if (relation) {
             orgList.forEach(org -> {
                 String elementId = org.getOrgElementId();
-                feeForMonth(totalCostList, premiumList, sendFineList, freightList, income,elementId);
+                feeForMonth(totalCostList, premiumList, sendFineList, freightList, income, elementId);
             });
         } else {
             String orgElementId = orgList.get(0).getOrgElementId();
-            feeForMonth(totalCostList, premiumList, sendFineList, freightList, income,orgElementId);
+            feeForMonth(totalCostList, premiumList, sendFineList, freightList, income, orgElementId);
         }
 
     }
 
 
-    private void feeForMonth(List<OptExpressMonthFeeVO> totalCostList, List<OptExpressMonthFeeVO> premiumList, List<OptExpressMonthFeeVO> sendFineList, List<OptExpressMonthFeeVO> freightList,List<OptExpressMonthFeeVO> income, String orgElementId) {
+    private void feeForMonth(List<OptExpressMonthFeeVO> totalCostList, List<OptExpressMonthFeeVO> premiumList, List<OptExpressMonthFeeVO> sendFineList, List<OptExpressMonthFeeVO> freightList, List<OptExpressMonthFeeVO> income, String orgElementId) {
         for (int i = 0; i < month.length; i++) {
             String monthValue = month[i];
             setFeeMonthValue(totalCostList, orgElementId, i, monthValue, "report-express:totalCostByMonth:");
@@ -248,16 +248,20 @@ public class OptExpressController extends BaseController<IOptExpressApi, OptExpr
                 value = redisManager.getHashValue("report-express:countStatus:" + orgElementId, "3");
                 if (value != null) n3.addAndGet((int) value);
             });
-            result.put("countStatus0", n0);
-            result.put("countStatus1", n1);
-            result.put("countStatus2", n2);
-            result.put("countStatus3", n3);
+            result.put("countStatus0", n0.get());
+            result.put("countStatus1", n1.get());
+            result.put("countStatus2", n2.get());
+            result.put("countStatus3", n3.get());
         } else {
             String orgElementId = orgList.get(0).getOrgElementId();
-            result.put("countStatus0", redisManager.getHashValue("report-express:" + orgElementId, "0"));
-            result.put("countStatus1", redisManager.getHashValue("report-express:" + orgElementId, "1"));
-            result.put("countStatus2", redisManager.getHashValue("report-express:" + orgElementId, "2"));
-            result.put("countStatus3", redisManager.getHashValue("report-express:" + orgElementId, "3"));
+            Object value = redisManager.getHashValue("report-express:" + orgElementId, "0");
+            result.put("countStatus0", value != null ? value : 0);
+            value = redisManager.getHashValue("report-express:" + orgElementId, "1");
+            result.put("countStatus1", value != null ? value : 0);
+            value = redisManager.getHashValue("report-express:" + orgElementId, "2");
+            result.put("countStatus2", value != null ? value : 0);
+            value = redisManager.getHashValue("report-express:" + orgElementId, "3");
+            result.put("countStatus3", value != null ? value : 0);
         }
     }
 

@@ -53,7 +53,7 @@ public class RedisManager {
         if (result != null)
             appendValue = value + result;
 
-        if (appendValue.length() > 250) {
+        if (appendValue!=null && appendValue.length() > 250) {
             redisTemplate.opsForValue().set(key, (value + result).substring(0, 250), 1, TimeUnit.DAYS);
         } else {
             redisTemplate.opsForValue().set(key, appendValue, 1, TimeUnit.DAYS);

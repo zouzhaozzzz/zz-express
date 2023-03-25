@@ -30,4 +30,8 @@ public class OptExportConditionVO {
     private String sendCustomerId;
 
     private String sendCompanyId;
+
+    private String consigneeCustomerId;
+
+    private String consigneeCompanyId;
 }

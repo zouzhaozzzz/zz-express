@@ -146,5 +146,21 @@ public class OptManageTest {
         dataList.add(data);
     }
 
+    // @Autowired
+    // private OssService ossService;
+    // @Value("${oss.bucketName}")
+    // private String bucketName;
+    //
+    //
+    // @Test
+    // public void testOss(){
+    //     OSS ossClient = ossService.getOssClient();
+    //     // 调用ossClient.getObject返回一个OSSObject实例，该实例包含文件内容及文件元信息。
+    //     OSSObject ossObject = ossClient.getObject(bucketName, "template/快递导出模版.xlsx");
+    //     // 调用ossObject.getObjectContent获取文件输入流，可读取此输入流获取其内容。
+    //     InputStream content = ossObject.getObjectContent();
+    //     ossClient.shutdown();
+    //     System.out.println(content.getClass());
+    // }
 
 }

@@ -494,11 +494,11 @@
                 <if test="v.sendCustomerId != null  and v.sendCustomerId != ''">and send_customer_id =
                     #{v.sendCustomerId}
                 </if>
-                <if test="consigneeCustomerId != null  and consigneeCustomerId != ''">and consignee_customer_id =
-                    #{consigneeCustomerId}
+                <if test="v.consigneeCustomerId != null  and v.consigneeCustomerId != ''">and consignee_customer_id =
+                    #{v.consigneeCustomerId}
                 </if>
-                <if test="consigneeCompanyId != null  and consigneeCompanyId != ''">and consignee_company_id =
-                    #{consigneeCompanyId}
+                <if test="v.consigneeCompanyId != null  and v.consigneeCompanyId != ''">and consignee_company_id =
+                    #{v.consigneeCompanyId}
                 </if>
                 <if test="v.shipper != null  and v.shipper != ''">and shipper like concat('%',
                     #{v.shipper}, '%')

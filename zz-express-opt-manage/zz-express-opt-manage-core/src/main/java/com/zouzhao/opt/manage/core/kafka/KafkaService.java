@@ -26,7 +26,10 @@ import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -42,9 +45,8 @@ public class KafkaService {
 
     private static final Logger log = LoggerFactory.getLogger(KafkaService.class);
     private Map<String, ThreadLocal<ExcelWriter>> threadLocalMap = new HashMap<>();
-    private ThreadLocal<OSS> threadLocal = new ThreadLocal<>();
-    private ThreadLocal<InputStream> templateThreadLocal = new ThreadLocal<>();
     private ThreadLocal<ByteArrayOutputStream> outputStreamThreadLocal = new ThreadLocal<>();
+    private ThreadLocal<OSS> ossThreadLocal = new ThreadLocal<>();
 
     @Value("${export.batchSize}")
     private int batchSize;
@@ -117,6 +119,7 @@ public class KafkaService {
             uploadOss(key, os);
         }
         //在redis中放入成功数
+        log.debug(key+"写入");
         if (expressVOList.size() > 0) incrementNum("export-success:" + key, expressVOList.size());
         expressVOList.clear();
 
@@ -127,79 +130,78 @@ public class KafkaService {
     private void uploadOss(String key, ByteArrayOutputStream os) throws IOException {
         if (os.size() < 1) throw new MyException("输出流为空");
         InputStream is = new ByteArrayInputStream(os.toByteArray());
-        //获取连接，上传文件
-        OSS ossClient = getOssClient();
-        //拿到文件名
-        String filename = (String) redisManager.getValue("export-filename:" + key);
-        // 创建InitiateMultipartUploadRequest对象。
-        InitiateMultipartUploadRequest request = new InitiateMultipartUploadRequest(bucketName, filename);
-        // 初始化分片。
-        InitiateMultipartUploadResult upresult = ossClient.initiateMultipartUpload(request);
-        // 返回uploadId，它是分片上传事件的唯一标识。您可以根据该uploadId发起相关的操作，例如取消分片上传、查询分片上传等。
-        String uploadId = upresult.getUploadId();
-        // partETags是PartETag的集合。PartETag由分片的ETag和分片号组成。
-        List<PartETag> partETags = new ArrayList<PartETag>();
-        // 每个分片的大小，用于计算文件有多少个分片。单位为字节。
-        final long partSize = 1 * 1024 * 1024L;   //1 MB。
-        long fileLength = is.available();
-        int partCount = (int) (fileLength / partSize);
-        if (fileLength % partSize != 0) {
-            partCount++;
+        try {
+            //拿到文件名
+            String filename = (String) redisManager.getValue("export-filename:" + key);
+            ossService.uploadStream(is,filename);
+            // //获取连接，上传文件
+            // //拿到文件名
+            // String filename = (String) redisManager.getValue("export-filename:" + key);
+            // // 创建InitiateMultipartUploadRequest对象。
+            // InitiateMultipartUploadRequest request = new InitiateMultipartUploadRequest(bucketName, filename);
+            // // 初始化分片。
+            // InitiateMultipartUploadResult upresult = ossClient.initiateMultipartUpload(request);
+            // // 返回uploadId，它是分片上传事件的唯一标识。您可以根据该uploadId发起相关的操作，例如取消分片上传、查询分片上传等。
+            // String uploadId = upresult.getUploadId();
+            // // partETags是PartETag的集合。PartETag由分片的ETag和分片号组成。
+            // List<PartETag> partETags = new ArrayList<PartETag>();
+            // // 每个分片的大小，用于计算文件有多少个分片。单位为字节。
+            // final long partSize = 1 * 1024 * 1024L;   //1 MB。
+            // long fileLength = is.available();
+            // int partCount = (int) (fileLength / partSize);
+            // if (fileLength % partSize != 0) {
+            //     partCount++;
+            // }
+            // // 遍历分片上传。
+            // for (int i = 0; i < partCount; i++) {
+            //     long startPos = i * partSize;
+            //     long curPartSize = (i + 1 == partCount) ? (fileLength - startPos) : partSize;
+            //     // 跳过已经上传的分片。
+            //     is.skip(startPos);
+            //     UploadPartRequest uploadPartRequest = new UploadPartRequest();
+            //     uploadPartRequest.setBucketName(bucketName);
+            //     uploadPartRequest.setKey(filename);
+            //     uploadPartRequest.setUploadId(uploadId);
+            //     uploadPartRequest.setInputStream(is);
+            //     // 设置分片大小。除了最后一个分片没有大小限制，其他的分片最小为100 KB。
+            //     uploadPartRequest.setPartSize(curPartSize);
+            //     // 设置分片号。每一个上传的分片都有一个分片号，取值范围是1~10000，如果超出此范围，OSS将返回InvalidArgument错误码。
+            //     uploadPartRequest.setPartNumber(i + 1);
+            //     // 每个分片不需要按顺序上传，甚至可以在不同客户端上传，OSS会按照分片号排序组成完整的文件。
+            //     UploadPartResult uploadPartResult = ossClient.uploadPart(uploadPartRequest);
+            //     // 每次上传分片之后，OSS的返回结果包含PartETag。PartETag将被保存在partETags中。
+            //     partETags.add(uploadPartResult.getPartETag());
+            // }
+            //
+            // // 创建CompleteMultipartUploadRequest对象。
+            // // 在执行完成分片上传操作时，需要提供所有有效的partETags。OSS收到提交的partETags后，会逐一验证每个分片的有效性。当所有的数据分片验证通过后，OSS将把这些分片组合成一个完整的文件。
+            // CompleteMultipartUploadRequest completeMultipartUploadRequest =
+            //         new CompleteMultipartUploadRequest(bucketName, filename, uploadId, partETags);
+            //
+            // // 如果需要在完成分片上传的同时设置文件访问权限，请参考以下示例代码。
+            // // completeMultipartUploadRequest.setObjectACL(CannedAccessControlList.Private);
+            // // 指定是否列举当前UploadId已上传的所有Part。如果通过服务端List分片数据来合并完整文件时，以上CompleteMultipartUploadRequest中的partETags可为null。
+            // // Map<String, String> headers = new HashMap<String, String>();
+            // // 如果指定了x-oss-complete-all:yes，则OSS会列举当前UploadId已上传的所有Part，然后按照PartNumber的序号排序并执行CompleteMultipartUpload操作。
+            // // 如果指定了x-oss-complete-all:yes，则不允许继续指定body，否则报错。
+            // // headers.put("x-oss-complete-all","yes");
+            // // completeMultipartUploadRequest.setHeaders(headers);
+            //
+            // // 完成分片上传。
+            // CompleteMultipartUploadResult completeMultipartUploadResult = ossClient.completeMultipartUpload(completeMultipartUploadRequest);
+            // log.debug("上传完成--------------------------------{}",completeMultipartUploadResult.getETag());
+            log.debug("{}上传完成",filename);
+
+        } finally {
+            //关闭输出流
+            is.close();
+            ByteArrayOutputStream outputStream = outputStreamThreadLocal.get();
+            if (outputStream != null) {
+                outputStream.close();
+                outputStreamThreadLocal.remove();
+            }
         }
-        // 遍历分片上传。
-        for (int i = 0; i < partCount; i++) {
-            long startPos = i * partSize;
-            long curPartSize = (i + 1 == partCount) ? (fileLength - startPos) : partSize;
-            // 跳过已经上传的分片。
-            is.skip(startPos);
-            UploadPartRequest uploadPartRequest = new UploadPartRequest();
-            uploadPartRequest.setBucketName(bucketName);
-            uploadPartRequest.setKey(filename);
-            uploadPartRequest.setUploadId(uploadId);
-            uploadPartRequest.setInputStream(is);
-            // 设置分片大小。除了最后一个分片没有大小限制，其他的分片最小为100 KB。
-            uploadPartRequest.setPartSize(curPartSize);
-            // 设置分片号。每一个上传的分片都有一个分片号，取值范围是1~10000，如果超出此范围，OSS将返回InvalidArgument错误码。
-            uploadPartRequest.setPartNumber(i + 1);
-            // 每个分片不需要按顺序上传，甚至可以在不同客户端上传，OSS会按照分片号排序组成完整的文件。
-            UploadPartResult uploadPartResult = ossClient.uploadPart(uploadPartRequest);
-            // 每次上传分片之后，OSS的返回结果包含PartETag。PartETag将被保存在partETags中。
-            partETags.add(uploadPartResult.getPartETag());
-        }
 
-        // 创建CompleteMultipartUploadRequest对象。
-        // 在执行完成分片上传操作时，需要提供所有有效的partETags。OSS收到提交的partETags后，会逐一验证每个分片的有效性。当所有的数据分片验证通过后，OSS将把这些分片组合成一个完整的文件。
-        CompleteMultipartUploadRequest completeMultipartUploadRequest =
-                new CompleteMultipartUploadRequest(bucketName, filename, uploadId, partETags);
-
-        // 如果需要在完成分片上传的同时设置文件访问权限，请参考以下示例代码。
-        // completeMultipartUploadRequest.setObjectACL(CannedAccessControlList.Private);
-        // 指定是否列举当前UploadId已上传的所有Part。如果通过服务端List分片数据来合并完整文件时，以上CompleteMultipartUploadRequest中的partETags可为null。
-        // Map<String, String> headers = new HashMap<String, String>();
-        // 如果指定了x-oss-complete-all:yes，则OSS会列举当前UploadId已上传的所有Part，然后按照PartNumber的序号排序并执行CompleteMultipartUpload操作。
-        // 如果指定了x-oss-complete-all:yes，则不允许继续指定body，否则报错。
-        // headers.put("x-oss-complete-all","yes");
-        // completeMultipartUploadRequest.setHeaders(headers);
-
-        // 完成分片上传。
-        CompleteMultipartUploadResult completeMultipartUploadResult = ossClient.completeMultipartUpload(completeMultipartUploadRequest);
-        log.debug("上传完成--------------------------------");
-        //关闭输出流
-        is.close();
-        ByteArrayOutputStream outputStream = outputStreamThreadLocal.get();
-        if (outputStream != null) {
-            outputStream.close();
-            outputStreamThreadLocal.remove();
-        }
-    }
-
-    private OSS getOssClient() {
-        OSS ossClient = threadLocal.get();
-        if (ossClient == null) {
-            ossClient = ossService.getOssClient();
-            threadLocal.set(ossClient);
-            return ossClient;
-        } else return ossClient;
     }
 
 
@@ -247,30 +249,31 @@ public class KafkaService {
             ThreadLocal<ExcelWriter> excelWriterLocal = new ThreadLocal<>();
             excelWriterLocal.set(excelWriter);
             threadLocalMap.put(key, excelWriterLocal);
-
+            //关闭oss连接
+            OSS oss = ossThreadLocal.get();
+            oss.shutdown();
+            ossThreadLocal.remove();
+            inputStream.close();
         } else {
             excelWriter = threadLocalMap.get(key).get();
         }
         return excelWriter;
     }
+
     private InputStream getExcelTemplate() {
-        InputStream inputStream = templateThreadLocal.get();
-        if (inputStream == null) {
-            OSS ossClient = getOssClient();
-            // 调用ossClient.getObject返回一个OSSObject实例，该实例包含文件内容及文件元信息。
-            OSSObject ossObject = ossClient.getObject(bucketName, "template/快递导出模版.xlsx");
-            // 调用ossObject.getObjectContent获取文件输入流，可读取此输入流获取其内容。
-            InputStream content = ossObject.getObjectContent();
-            templateThreadLocal.set(content);
-            return content;
-        }
-        return inputStream;
+        OSS ossClient = ossService.getOssClient();
+        ossThreadLocal.set(ossClient);
+        // 调用ossClient.getObject返回一个OSSObject实例，该实例包含文件内容及文件元信息。
+        OSSObject ossObject = ossClient.getObject(bucketName, "template/快递导出模版.xlsx");
+        // 调用ossObject.getObjectContent获取文件输入流，可读取此输入流获取其内容。
+        log.debug("读了一次导出模版");
+        return ossObject.getObjectContent();
     }
 
     private ByteArrayOutputStream getOutputStream() {
         ByteArrayOutputStream outputStream = outputStreamThreadLocal.get();
         if (outputStream == null) {
-            outputStream=new ByteArrayOutputStream();
+            outputStream = new ByteArrayOutputStream();
             outputStreamThreadLocal.set(outputStream);
             return outputStream;
         }
@@ -280,22 +283,14 @@ public class KafkaService {
 
     private void removeThreadLocalAndSave(String key) {
         try {
-            //关闭连接
-            OSS ossClient = threadLocal.get();
-            if (ossClient != null) {
-                ossClient.shutdown();
-                threadLocal.remove();
-            }
-            ExcelWriter excelWriter = threadLocalMap.get(key).get();
-            if (excelWriter != null) {
-                excelWriter.close();
-                threadLocalMap.remove(key);
-            }
-            //关闭模版输出流
-            InputStream inputStream = templateThreadLocal.get();
-            if (inputStream != null) {
-                inputStream.close();
-                templateThreadLocal.remove();
+
+            ThreadLocal<ExcelWriter> excelWriterThreadLocal = threadLocalMap.get(key);
+            if (excelWriterThreadLocal != null) {
+                ExcelWriter excelWriter = excelWriterThreadLocal.get();
+                if (excelWriter != null) {
+                    excelWriter.close();
+                    threadLocalMap.remove(key);
+                }
             }
             optExportClient.updateExportJustFinish(key);
         } catch (Exception e) {
