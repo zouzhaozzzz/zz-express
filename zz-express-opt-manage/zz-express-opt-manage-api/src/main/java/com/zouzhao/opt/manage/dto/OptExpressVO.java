@@ -34,7 +34,7 @@ public class OptExpressVO {
 
     @ExcelProperty(index = 2)
     @ApiModelProperty("客户类型:“业务员”、“承包区”、“下级网点”、“直营客户”")
-    private Short sendCustomerType;
+    private Integer sendCustomerType;
 
     @ExcelProperty(index = 3)
     @ApiModelProperty("寄件服务方式:“派送”、“自提")

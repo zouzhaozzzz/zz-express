@@ -68,4 +68,6 @@ public class SysOrgTest {
         sysOrgElementService.saveBatch(dataList,5566);
         dataList.clear();
     }
+
+
 }
