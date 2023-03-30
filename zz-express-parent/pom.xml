@@ -23,6 +23,9 @@
         <cn.hutool.version>5.8.9</cn.hutool.version>
         <io.springfox.version>2.9.2</io.springfox.version>
         <com.baomidou.version>3.5.2</com.baomidou.version>
+        <jwt.version>0.11.5</jwt.version>
+        <easyExcel.version>3.1.2</easyExcel.version>
+        <oss.version>3.10.2</oss.version>
     </properties>
 
 
