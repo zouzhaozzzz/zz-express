@@ -529,26 +529,11 @@
                 </if>
                 <if test="v.sendCompanyId != null  and v.sendCompanyId != ''">and send_company_id = #{v.sendCompanyId}
                 </if>
-                <if test="(v.sendCompanyId == null or v.sendCompanyId == '') and searchCompany == 1 ">
-                    and send_company_id
-                    in
-                    <foreach collection="orgList" item="org" open="(" close=")" separator=",">
-                        #{org.orgElementId}
-                    </foreach>
-
-                </if>
                 <if test="v.consigneeCustomerId != null  and v.consigneeCustomerId != ''">and consignee_customer_id =
                     #{v.consigneeCustomerId}
                 </if>
                 <if test="v.consigneeCompanyId != null  and v.consigneeCompanyId != ''">and consignee_company_id =
                     #{v.consigneeCompanyId}
-                </if>
-                <if test="(v.consigneeCompanyId == null or v.consigneeCompanyId == '') and searchCompany == 2 ">
-                    and consignee_company_id
-                    in
-                    <foreach collection="orgList" item="org" open="(" close=")" separator=",">
-                        #{org.orgElementId}
-                    </foreach>
                 </if>
                 <if test="v.shipTimeList != null and v.shipTimeList.size>1 ">
                     and ship_time >= #{v.shipTimeList[0]} and ship_time <![CDATA[<=]]> #{v.shipTimeList[1]}

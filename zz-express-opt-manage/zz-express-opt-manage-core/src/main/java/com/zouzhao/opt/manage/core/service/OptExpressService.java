@@ -3,7 +3,6 @@ package com.zouzhao.opt.manage.core.service;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.zouzhao.common.core.exception.MyException;
 import com.zouzhao.common.core.service.PageServiceImpl;
 import com.zouzhao.common.security.utils.RedisManager;
 import com.zouzhao.opt.file.dto.OptExportConditionVO;
@@ -23,7 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -113,18 +111,15 @@ public class OptExpressService extends PageServiceImpl<OptExpressMapper, OptExpr
     }
 
     @Override
-    public Page<OptExpressVO> pagePlus(Page<OptExpressVO> page, List<SysOrgElementVO> orgList) {
+    public Page<OptExpressVO> pagePlus(Page<OptExpressVO> page) {
         long current = page.getCurrent();
         long size = page.getSize();
-        if (ObjectUtils.isEmpty(page.getRecords()) || ObjectUtils.isEmpty(page.getRecords().get(0)) || ObjectUtil.isEmpty(page.getRecords().get(0).getExpressStatusFlag())) {
-            throw new MyException("相关信息传入不全");
-        }
+
         OptExpressVO optExpressVO = page.getRecords().get(0);
-        //是否差寄派件公司  1查寄件公司 2查派件公司
-        Integer searchCompany = optExpressVO.getExpressStatusFlag();
+
         long total = page.getTotal();
         if (page.searchCount()) {
-            total = getMapper().findCount(optExpressVO, searchCompany, orgList);
+            total = getMapper().findCount(optExpressVO);
         }
         List<OptExpressVO> records;
         if (total == 0) {
@@ -141,7 +136,7 @@ public class OptExpressService extends PageServiceImpl<OptExpressMapper, OptExpr
             page.setCurrent(newCurrent);
             page.setTotal(total);
             page.setPages(newCurrent);
-            records = getMapper().pagePlus((newCurrent - 1) * size, size, optExpressVO, searchCompany, orgList);
+            records = getMapper().pagePlus((newCurrent - 1) * size, size, optExpressVO);
         } else {
             //查询当前页
             long newCurrent = total / size;
@@ -150,7 +145,7 @@ public class OptExpressService extends PageServiceImpl<OptExpressMapper, OptExpr
             }
             page.setTotal(total);
             page.setPages(newCurrent);
-            records = getMapper().pagePlus((current - 1) * size, size, optExpressVO, searchCompany, orgList);
+            records = getMapper().pagePlus((current - 1) * size, size, optExpressVO);
         }
         page.setRecords(records);
         return page;

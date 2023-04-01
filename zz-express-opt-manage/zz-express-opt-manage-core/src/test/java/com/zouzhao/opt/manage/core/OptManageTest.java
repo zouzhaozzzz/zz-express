@@ -20,7 +20,7 @@ import java.util.List;
 public class OptManageTest {
 
     private final static int BATCH_SIZE = 10000;
-    private final static int ALL_SIZE = 1_120_000;
+    private final static int ALL_SIZE = 460_000;
 
     @Autowired
     private OptExpressService optExpressService;
@@ -65,6 +65,9 @@ public class OptManageTest {
         SysOrgElementVO vo=orgElementVOList.get(RandomUtils.randomNumber(0, orgElementVOList.size()));
         data.setSendCustomerId(vo.getOrgElementId());
         data.setSendCompanyId(vo.getOrgElementOrgId());
+        SysOrgElementVO vo2=orgElementVOList.get(RandomUtils.randomNumber(0, orgElementVOList.size()));
+        data.setConsigneeCustomerId(vo2.getOrgElementId());
+        data.setConsigneeCompanyId(vo2.getOrgElementOrgId());
         //付款方式
         data.setPayType(RandomUtils.randomNumber(0, 2));
         data.setShipper(RandomUtils.randomName());
@@ -118,7 +121,10 @@ public class OptManageTest {
         data.setFaceFee(BigDecimal.valueOf(RandomUtils.randomDouble()));
         data.setBounceFlag(RandomUtils.randomMoreFalseFlag());
         data.setQuestionFlag(RandomUtils.randomMoreFalseFlag());
-        double f1 = RandomUtils.randomFee(0, 1000);
+        double f1 = 0;
+        if(RandomUtils.randomNumber(100) < 90){
+            f1= RandomUtils.randomFee(0, 1000);
+        }
         data.setInsuredAmount(new BigDecimal(f1 * 10));
         data.setPremium(new BigDecimal(f1));
         data.setOtherCharges(BigDecimal.valueOf(RandomUtils.randomFee(0, 10)));
@@ -136,7 +142,7 @@ public class OptManageTest {
         } else data.setSendArriveCost(new BigDecimal(0));
         data.setSendTransitCost(data.getCustomerFreight().multiply(BigDecimal.valueOf(RandomUtils.randomDouble())));
         data.setFaceCost(BigDecimal.valueOf(RandomUtils.randomDouble()));
-        if (RandomUtils.randomNumber(0, 10) <= 8) {
+        if (RandomUtils.randomNumber(0, 100) <= 97) {
             data.setSendFine(new BigDecimal(0));
         } else {
             data.setSendFine(BigDecimal.valueOf(RandomUtils.randomFee(1, 200)));

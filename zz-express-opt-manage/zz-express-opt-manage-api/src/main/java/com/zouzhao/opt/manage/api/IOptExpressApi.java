@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zouzhao.common.api.IPageApi;
 import com.zouzhao.opt.file.dto.OptExportConditionVO;
 import com.zouzhao.opt.manage.dto.OptExpressVO;
-import com.zouzhao.sys.org.dto.SysOrgElementVO;
 import org.apache.ibatis.session.ResultHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 
@@ -27,7 +26,7 @@ public interface IOptExpressApi extends IPageApi<OptExpressVO> {
     void updateStatusBatch(List<String> ids,Integer status);
 
     @PostMapping("/pagePlus")
-    Page<OptExpressVO> pagePlus(Page<OptExpressVO> page, List<SysOrgElementVO> orgList);
+    Page<OptExpressVO> pagePlus(Page<OptExpressVO> page);
 
     @PostMapping("/refreshExport")
     String refreshExport();

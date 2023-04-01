@@ -81,7 +81,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         authorize -> authorize
                                 // 允许访问登录
                                 .antMatchers("/data/sys-org/SysAccount/checkLogin").permitAll()
-                                .antMatchers("/data/*","/api/*").authenticated()
+                                .antMatchers("/data/*").authenticated()
+                                .antMatchers("/api/*").permitAll()
                                 // .anyRequest().authenticated()
                 )
                 // 关闭跨域攻击后台响应的防护逻辑

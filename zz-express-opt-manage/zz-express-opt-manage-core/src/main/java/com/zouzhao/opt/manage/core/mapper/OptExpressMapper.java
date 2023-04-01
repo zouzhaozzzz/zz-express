@@ -54,9 +54,9 @@ public interface OptExpressMapper extends IPageMapper<OptExpress, OptExpressVO> 
 
 
     //分页plus start
-    long findCount(@Param("v") OptExpressVO e,@Param("searchCompany")int searchCompany,@Param("orgList") List<SysOrgElementVO> orgList);
+    long findCount(@Param("v") OptExpressVO e);
 
-    List<OptExpressVO> pagePlus(@Param("current") long current, @Param("size") long size, @Param("v") OptExpressVO optExpressVO,@Param("searchCompany")int searchCompany,@Param("orgList") List<SysOrgElementVO> orgList);
+    List<OptExpressVO> pagePlus(@Param("current") long current, @Param("size") long size, @Param("v") OptExpressVO optExpressVO);
     //分页plus end
 
     List<SysOrgElementVO> randomPerson();

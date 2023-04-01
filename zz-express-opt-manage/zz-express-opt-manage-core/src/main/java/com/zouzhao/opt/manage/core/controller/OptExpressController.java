@@ -1,6 +1,7 @@
 package com.zouzhao.opt.manage.core.controller;
 
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zouzhao.common.core.controller.BaseController;
 import com.zouzhao.common.core.controller.PageController;
@@ -95,15 +96,35 @@ public class OptExpressController extends BaseController<IOptExpressApi, OptExpr
 
     @PreAuthorize("hasAnyRole('OPT_MANAGE_EXPRESS_LIST','OPT_MANAGE_EXPRESS_ADMIN')")
     public Page<OptExpressVO> page(@RequestBody Page<OptExpressVO> page) {
-        OptExpressVO optExpressVO = ObjectUtils.isEmpty(page.getRecords()) ? null : page.getRecords().get(0);
-        List<SysOrgElementVO> orgList = null;
-        //前端没有传寄件公司或派件公司
-        if (optExpressVO == null || ObjectUtil.isEmpty(optExpressVO.getSendCompanyId()) || ObjectUtil.isEmpty(optExpressVO.getSendCompanyId())) {
-            //拿到当前登录人的组织和下级组织
-            orgList = getCurrentUserOrgList();
+        if (ObjectUtils.isEmpty(page.getRecords()) || ObjectUtils.isEmpty(page.getRecords().get(0)) || ObjectUtil.isEmpty(page.getRecords().get(0).getExpressStatusFlag())) {
+            throw new MyException("相关信息传入不全");
         }
+        OptExpressVO optExpressVO =page.getRecords().get(0);
+
+        //查询过滤
+        //是否差寄派件公司  1查寄件公司 2查派件公司
+        Integer searchCompany = optExpressVO.getExpressStatusFlag();
+        if(searchCompany == 1 && StrUtil.isEmpty(optExpressVO.getSendCustomerId()) && StrUtil.isEmpty(optExpressVO.getSendCompanyId()))
+        {
+            //拿到当前登录人的组织
+            SysOrgElementVO elementVO = getCurUser();
+            if(elementVO == null || StrUtil.isEmpty(elementVO.getOrgElementOrgId())){
+               return page;
+            }
+           optExpressVO.setSendCustomerId(elementVO.getOrgElementId());
+           optExpressVO.setSendCompanyId(elementVO.getOrgElementOrgId());
+        }else if(searchCompany == 2 && StrUtil.isEmpty(optExpressVO.getConsigneeCustomerId()) && StrUtil.isEmpty(optExpressVO.getConsigneeCustomerId())){
+            //拿到当前登录人的组织
+            SysOrgElementVO elementVO = getCurUser();
+            if(elementVO == null || StrUtil.isEmpty(elementVO.getOrgElementOrgId())){
+                return page;
+            }
+            optExpressVO.setConsigneeCustomerId(elementVO.getOrgElementId());
+            optExpressVO.setConsigneeCompanyId(elementVO.getOrgElementOrgId());
+        }
+
         //分页查询
-        Page<OptExpressVO> pageResult = getApi().pagePlus(page, orgList);
+        Page<OptExpressVO> pageResult = getApi().pagePlus(page);
         List<OptExpressVO> list = pageResult.getRecords();
         //填充
         if (list != null && list.size() > 0) list.forEach(
@@ -138,14 +159,15 @@ public class OptExpressController extends BaseController<IOptExpressApi, OptExpr
         return pageResult;
     }
 
-    //拿到当前登录人的组织和下级组织
-    private List<SysOrgElementVO> getCurrentUserOrgList() {
+    //拿到当前登录人
+    private SysOrgElementVO getCurUser() {
         String loginName = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         SysOrgElementVO request = new SysOrgElementVO();
-        request.setOrgElementType(0);
         request.setOrgElementLoginName(loginName);
-        return sysOrgElementClient.listInRoles(request);
+        SysOrgElementVO elementVO = sysOrgElementClient.findVOByLoginName(request);
+        return elementVO;
     }
+
 
     @PostMapping("/countExpressNum")
     @ApiOperation("统计符合条件的快递数量")
@@ -184,6 +206,15 @@ public class OptExpressController extends BaseController<IOptExpressApi, OptExpr
                 break;
         }
         return result;
+    }
+
+    //拿到当前登录人的组织和下级组织
+    private List<SysOrgElementVO> getCurrentUserOrgList() {
+        String loginName = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        SysOrgElementVO request = new SysOrgElementVO();
+        request.setOrgElementType(0);
+        request.setOrgElementLoginName(loginName);
+        return sysOrgElementClient.listInRoles(request);
     }
 
     //"每月的成本费（寄件代收货款手续费、到付手续费成本、中转费成本、面单成本），保费收入，运费，罚款，收入统计"

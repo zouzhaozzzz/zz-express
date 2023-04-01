@@ -150,6 +150,12 @@ public class SysOrgElementService extends PageServiceImpl<SysOrgElementMapper, S
     }
 
     @Override
+    public SysOrgElementVO findVOByLoginName(SysOrgElementVO request) {
+        return  getMapper().findByLoginName(request);
+    }
+
+
+    @Override
     public List<SysOrgElementVO> listInRoles(SysOrgElementVO request) {
         Integer type = request.getOrgElementType();
         if (ObjectUtil.isEmpty(type)) throw new MyException("组织类型为空");
@@ -189,6 +195,7 @@ public class SysOrgElementService extends PageServiceImpl<SysOrgElementMapper, S
         //拿到所有顶级组织
         return getMapper().findAllParentOrg();
     }
+
 
     private void addChildrenOrg(SysOrgElementVO org, List<SysOrgElementVO> data) {
         List<SysOrgElementVO> child = getMapper().findChildOrgById(org);

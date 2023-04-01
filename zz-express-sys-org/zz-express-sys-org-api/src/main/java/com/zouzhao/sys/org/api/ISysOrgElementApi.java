@@ -1,6 +1,7 @@
 package com.zouzhao.sys.org.api;
 
 import com.zouzhao.common.api.IPageApi;
+import com.zouzhao.common.dto.IdDTO;
 import com.zouzhao.common.dto.IdsDTO;
 import com.zouzhao.sys.org.dto.SysOrgElementVO;
 import io.swagger.annotations.ApiOperation;
@@ -39,4 +40,7 @@ public interface ISysOrgElementApi extends IPageApi<SysOrgElementVO> {
 
     @PostMapping("/findAllParentOrg")
     List<SysOrgElementVO> findAllParentOrg();
+
+    @PostMapping("/findVOByLoginName")
+    SysOrgElementVO findVOByLoginName(@RequestBody SysOrgElementVO request);
 }
