@@ -56,7 +56,7 @@ public class OptExportController extends BaseController<IOptExportApi, OptExport
     private String dir;
 
     @PostMapping("/exportSends")
-    @ApiOperation("导出快递")
+    @ApiOperation("导出物流")
     @PreAuthorize("hasAnyRole('OPT_MANAGE_EXPORT_EXPORT','OPT_MANAGE_EXPORT_ADMIN')")
     public ResponseEntity<String> exportSends(@RequestBody OptExportVO vo) {
         //检查条件
@@ -70,14 +70,14 @@ public class OptExportController extends BaseController<IOptExportApi, OptExport
         //开始导出,告诉寄件服务要生成文件
         kafkaTemplate.send("sendExport", dto.getId(), JSONUtil.toJsonStr(vo.getCondition()));
         //在redis中放入导出的文件名
-        String filename = dir + "快递导出" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + new Random().nextInt(10)+".xlsx";
+        String filename = dir + "物流导出" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + new Random().nextInt(10)+".xlsx";
         redisManager.setValue("export-filename:" + dto.getId(),filename );
         return new ResponseEntity<>("导出已开始", HttpStatus.OK);
     }
 
 
     @PostMapping("/importSends")
-    @ApiOperation("导入快递")
+    @ApiOperation("导入物流")
     @PreAuthorize("hasAnyRole('OPT_MANAGE_EXPORT_IMPORT','OPT_MANAGE_EXPORT_ADMIN')")
     public ResponseEntity<String> importSends(@RequestBody OptExportVO vo) {
         String fileId = vo.getExportFileId();

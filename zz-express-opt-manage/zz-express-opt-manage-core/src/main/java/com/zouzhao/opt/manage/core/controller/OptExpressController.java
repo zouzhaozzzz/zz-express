@@ -170,7 +170,7 @@ public class OptExpressController extends BaseController<IOptExpressApi, OptExpr
 
 
     @PostMapping("/countExpressNum")
-    @ApiOperation("统计符合条件的快递数量")
+    @ApiOperation("统计符合条件的物流数量")
     @PreAuthorize("hasAnyRole('OPT_MANAGE_EXPRESS_LIST','OPT_MANAGE_EXPRESS_ADMIN')")
     public int countExpressNum(@RequestBody OptExpressVO vo) {
         return getApi().countExpressNum(vo);
@@ -188,7 +188,7 @@ public class OptExpressController extends BaseController<IOptExpressApi, OptExpr
         List<SysOrgElementVO> orgList = getCurrentUserOrgList();
         if (orgList == null || orgList.size() < 1) return null;
         switch ((String) key) {
-            // "统计快递状态"
+            // "统计物流状态"
             case "countStatus":
                 countStatus(result, (boolean) relation, orgList);
                 break;
@@ -260,7 +260,7 @@ public class OptExpressController extends BaseController<IOptExpressApi, OptExpr
         if (value != null) list.get(i).setFee(list.get(i).getFee().add((BigDecimal) value));
     }
 
-    // "统计快递状态"
+    // "统计物流状态"
     private void countStatus(Map<String, Object> result, boolean relation, List<SysOrgElementVO> orgList) {
         if (relation) {
             AtomicInteger n0 = new AtomicInteger(0);
@@ -332,7 +332,7 @@ public class OptExpressController extends BaseController<IOptExpressApi, OptExpr
     }
 
     @PreAuthorize("hasAnyRole('OPT_MANAGE_REPORT_REFRESH')")
-    @ApiOperation("统计快递状态" +
+    @ApiOperation("统计物流状态" +
             "省份寄件派送个数" +
             "每月的问题件，退货件，每月的总件数统计" +
             "每月的成本费（寄件代收货款手续费、到付手续费成本、中转费成本、面单成本），保费收入，运费，罚款，收入统计")

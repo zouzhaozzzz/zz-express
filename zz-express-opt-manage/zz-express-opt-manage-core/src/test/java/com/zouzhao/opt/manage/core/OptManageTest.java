@@ -20,7 +20,7 @@ import java.util.List;
 public class OptManageTest {
 
     private final static int BATCH_SIZE = 10000;
-    private final static int ALL_SIZE = 460_000;
+    private final static int ALL_SIZE = 400000;
 
     @Autowired
     private OptExpressService optExpressService;
@@ -30,50 +30,78 @@ public class OptManageTest {
         //构造组织数据
         List<OptExpress> dataList = new ArrayList<>(BATCH_SIZE);
         int max = ALL_SIZE / BATCH_SIZE;
-        List<SysOrgElementVO> sysOrgElementVO = optExpressService.randomPerson();
+        List<SysOrgElementVO> personList = optExpressService.randomPerson();
+        //yaoc
+        SysOrgElementVO yaoc = new SysOrgElementVO();
+        yaoc.setOrgElementId("1629859691402641409");
+        yaoc.setOrgElementOrgId("1629690050902814722");
+        for (int i = 0; i < 13546; i++) {
+            generateData(dataList, personList, yaoc);
+        }
+        //admin
+        SysOrgElementVO admin = new SysOrgElementVO();
+        admin.setOrgElementId("1630210958100635649");
+        admin.setOrgElementOrgId("1628979321514078210");
+        for (int i = 0; i < 23665; i++) {
+            generateData(dataList, personList, admin);
+        }
         for (int j = 0; j < max; j++) {
             for (int i = 0; i < BATCH_SIZE; i++) {
-                generateData(dataList,sysOrgElementVO);
+                generateData(dataList, personList, null);
             }
             optExpressService.saveBatch(dataList, BATCH_SIZE);
             dataList.clear();
-        }
-        for (int i = 0; i < 6689; i++) {
-            generateData(dataList,sysOrgElementVO);
         }
         optExpressService.saveBatch(dataList, 6689);
         dataList.clear();
     }
 
-    private void generateData(List<OptExpress> dataList,List<SysOrgElementVO> orgElementVOList) {
+    private void generateData(List<OptExpress> dataList, List<SysOrgElementVO> orgElementVOList, SysOrgElementVO person) {
         OptExpress data = new OptExpress();
         //运单状态 2-2-2-6
-        int statusFlag = RandomUtils.randomNumber(0,12);
-        if(statusFlag<2){
+        int statusFlag = RandomUtils.randomNumber(0, 12);
+        if (statusFlag < 2) {
             data.setExpressStatus(0);
-        }else if(statusFlag<4){
+        } else if (statusFlag < 4) {
             data.setExpressStatus(1);
-        }else if(statusFlag<6){
+        } else if (statusFlag < 6) {
             data.setExpressStatus(2);
-        }else {
+        } else {
             data.setExpressStatus(3);
         }
 
         data.setSendCustomerType(RandomUtils.randomNumber(0, 4));
         data.setSendServiceType(RandomUtils.randomNumber(0, 2));
         //随机人员
-        SysOrgElementVO vo=orgElementVOList.get(RandomUtils.randomNumber(0, orgElementVOList.size()));
-        data.setSendCustomerId(vo.getOrgElementId());
-        data.setSendCompanyId(vo.getOrgElementOrgId());
-        SysOrgElementVO vo2=orgElementVOList.get(RandomUtils.randomNumber(0, orgElementVOList.size()));
-        data.setConsigneeCustomerId(vo2.getOrgElementId());
-        data.setConsigneeCompanyId(vo2.getOrgElementOrgId());
+        if (person == null) {
+            SysOrgElementVO vo = orgElementVOList.get(RandomUtils.randomNumber(0, orgElementVOList.size()));
+            data.setSendCustomerId(vo.getOrgElementId());
+            data.setSendCompanyId(vo.getOrgElementOrgId());
+            SysOrgElementVO vo2 = orgElementVOList.get(RandomUtils.randomNumber(0, orgElementVOList.size()));
+            data.setConsigneeCustomerId(vo2.getOrgElementId());
+            data.setConsigneeCompanyId(vo2.getOrgElementOrgId());
+        } else {
+            if (RandomUtils.randomNumber(10) < 4) {
+                data.setSendCustomerId(person.getOrgElementId());
+                data.setSendCompanyId(person.getOrgElementOrgId());
+                SysOrgElementVO vo2 = orgElementVOList.get(RandomUtils.randomNumber(0, orgElementVOList.size()));
+                data.setConsigneeCustomerId(vo2.getOrgElementId());
+                data.setConsigneeCompanyId(vo2.getOrgElementOrgId());
+            }else{
+                SysOrgElementVO vo = orgElementVOList.get(RandomUtils.randomNumber(0, orgElementVOList.size()));
+                data.setSendCustomerId(vo.getOrgElementId());
+                data.setSendCompanyId(vo.getOrgElementOrgId());
+                data.setConsigneeCustomerId(person.getOrgElementId());
+                data.setConsigneeCompanyId(person.getOrgElementOrgId());
+            }
+
+        }
         //付款方式
         data.setPayType(RandomUtils.randomNumber(0, 2));
         data.setShipper(RandomUtils.randomName());
         data.setShipperPhone(RandomUtils.randomNumber(100000000, 199999999) + "" + RandomUtils.randomNumber(10, 99));
         //省份
-        String[] provinces=RandomUtils.randomProvince();
+        String[] provinces = RandomUtils.randomProvince();
         //发货时间
         data.setShipTime(RandomUtils.randomTime2022());
         data.setSendProvince(provinces[0]);
@@ -86,7 +114,7 @@ public class OptManageTest {
             data.setConsigneeTime(RandomUtils.randomAddTime(data.getShipTime()));
         }
         data.setConsigneePhone(RandomUtils.randomNumber(100000000, 199999999) + "" + RandomUtils.randomNumber(10, 99));
-        String[] provinces2=RandomUtils.randomProvince();
+        String[] provinces2 = RandomUtils.randomProvince();
         data.setConsigneeProvince(provinces2[0]);
         data.setConsigneeCity(provinces2[1]);
         data.setConsigneeCounty(provinces2[2]);
@@ -94,11 +122,11 @@ public class OptManageTest {
         data.setObjMode("");
         //数量 5-3-2
         int numFlag = RandomUtils.randomNumber(0, 10);
-        if(numFlag<5) {
+        if (numFlag < 5) {
             data.setExpressNumber(1);
-        }else  if(numFlag<8){
+        } else if (numFlag < 8) {
             data.setExpressNumber(RandomUtils.randomNumber(1, 100));
-        }else {
+        } else {
             data.setExpressNumber(RandomUtils.randomNumber(100, 1000));
         }
 
@@ -122,8 +150,8 @@ public class OptManageTest {
         data.setBounceFlag(RandomUtils.randomMoreFalseFlag());
         data.setQuestionFlag(RandomUtils.randomMoreFalseFlag());
         double f1 = 0;
-        if(RandomUtils.randomNumber(100) < 90){
-            f1= RandomUtils.randomFee(0, 1000);
+        if (RandomUtils.randomNumber(100) > 80) {
+            f1 = RandomUtils.randomFee(0, 1000);
         }
         data.setInsuredAmount(new BigDecimal(f1 * 10));
         data.setPremium(new BigDecimal(f1));
@@ -142,10 +170,11 @@ public class OptManageTest {
         } else data.setSendArriveCost(new BigDecimal(0));
         data.setSendTransitCost(data.getCustomerFreight().multiply(BigDecimal.valueOf(RandomUtils.randomDouble())));
         data.setFaceCost(BigDecimal.valueOf(RandomUtils.randomDouble()));
-        if (RandomUtils.randomNumber(0, 100) <= 97) {
+        //罚款
+        if (RandomUtils.randomNumber(0, 100) < 97) {
             data.setSendFine(new BigDecimal(0));
         } else {
-            data.setSendFine(BigDecimal.valueOf(RandomUtils.randomFee(1, 200)));
+            data.setSendFine(BigDecimal.valueOf(RandomUtils.randomFee(1, 500)));
         }
         //成本费（寄件代收货款手续费、到付手续费成本、中转费成本、面单成本）
         data.setTotalCost(data.getSendCollectionFee().add(data.getSendArriveCost().add(data.getSendTransitCost().add(data.getFaceCost()))));
@@ -162,7 +191,7 @@ public class OptManageTest {
     // public void testOss(){
     //     OSS ossClient = ossService.getOssClient();
     //     // 调用ossClient.getObject返回一个OSSObject实例，该实例包含文件内容及文件元信息。
-    //     OSSObject ossObject = ossClient.getObject(bucketName, "template/快递导出模版.xlsx");
+    //     OSSObject ossObject = ossClient.getObject(bucketName, "template/物流导出模版.xlsx");
     //     // 调用ossObject.getObjectContent获取文件输入流，可读取此输入流获取其内容。
     //     InputStream content = ossObject.getObjectContent();
     //     ossClient.shutdown();

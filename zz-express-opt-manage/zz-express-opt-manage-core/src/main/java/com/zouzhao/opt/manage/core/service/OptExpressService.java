@@ -156,7 +156,7 @@ public class OptExpressService extends PageServiceImpl<OptExpressMapper, OptExpr
     public String refreshExport() {
         //省份寄件派送个数
         countByProvinces();
-        //统计快递状态，总件数统计
+        //统计物流状态，总件数统计
         countStatus();
         //每月的问题件,退货件,总件数
         countQuestionByMonth();
@@ -255,7 +255,7 @@ public class OptExpressService extends PageServiceImpl<OptExpressMapper, OptExpr
     }
 
     /**
-     * 统计快递状态
+     * 统计物流状态
      */
     private void countStatus() {
         //统计待取货，运输中，派件中，已签收
@@ -266,9 +266,9 @@ public class OptExpressService extends PageServiceImpl<OptExpressMapper, OptExpr
     }
 
     /**
-     * 统计快递状态(统计当前登录人的组织和下级组织)
+     * 统计物流状态(统计当前登录人的组织和下级组织)
      */
-    //统计快递状态
+    //统计物流状态
     // private List<Integer> countStatus(SysOrgElementVO parentOrg) {
     //     //统计待取货，运输中，派件中，已签收
     //     List<Integer> data = new ArrayList<>();
