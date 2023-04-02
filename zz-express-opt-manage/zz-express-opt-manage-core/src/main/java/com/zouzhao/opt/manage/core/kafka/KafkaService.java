@@ -116,18 +116,18 @@ public class KafkaService {
         //阿里云分片上传
         if (endFlag) {
             excelWriter.finish();
-            uploadOss(key, os);
+            uploadOss(key, os,expressVOList.size());
+        }else{
+            //在redis中放入成功数
+            log.debug(key+"写入");
+            if (expressVOList.size() > 0) incrementNum("export-success:" + key, expressVOList.size());
+            expressVOList.clear();
         }
-        //在redis中放入成功数
-        log.debug(key+"写入");
-        if (expressVOList.size() > 0) incrementNum("export-success:" + key, expressVOList.size());
-        expressVOList.clear();
-
     }
 
     //阿里云分片上传
 
-    private void uploadOss(String key, ByteArrayOutputStream os) throws IOException {
+    private void uploadOss(String key, ByteArrayOutputStream os,int size) throws IOException {
         if (os.size() < 1) throw new MyException("输出流为空");
         InputStream is = new ByteArrayInputStream(os.toByteArray());
         try {
@@ -191,7 +191,8 @@ public class KafkaService {
             // CompleteMultipartUploadResult completeMultipartUploadResult = ossClient.completeMultipartUpload(completeMultipartUploadRequest);
             // log.debug("上传完成--------------------------------{}",completeMultipartUploadResult.getETag());
             log.debug("{}上传完成",filename);
-
+            //在redis中放入成功数
+            incrementNum("export-success:" + key, size);
         } finally {
             //关闭输出流
             is.close();

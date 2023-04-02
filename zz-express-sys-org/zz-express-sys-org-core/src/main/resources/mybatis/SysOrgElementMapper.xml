@@ -144,8 +144,10 @@
         <include refid="selectSysOrgElementVo"/>
         <where>
             <if test="v != null">
-                <if test="v.orgElementName != null  and v.orgElementName != ''">and org_element_name like
+                <if test="v.orgElementName != null  and v.orgElementName != ''">and (org_element_name like
                     concat('%', #{v.orgElementName}, '%')
+                    or org_element_no like
+                    concat('%', #{v.orgElementNo}, '%'))
                 </if>
                 <if test="v.orgElementNo != null ">and org_element_no = #{v.orgElementNo}</if>
                 <if test="v.orgElementParentId != null  and v.orgElementParentId != ''">and org_element_parent_id =

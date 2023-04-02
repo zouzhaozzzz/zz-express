@@ -5,12 +5,10 @@ import com.zouzhao.common.core.controller.BaseController;
 import com.zouzhao.common.core.controller.PageController;
 import com.zouzhao.common.dto.IdDTO;
 import com.zouzhao.common.dto.IdsDTO;
-import com.zouzhao.sys.org.api.ISysOrgElementApi;
 import com.zouzhao.sys.org.api.ISysRightGroupApi;
 import com.zouzhao.sys.org.dto.SysRightGroupVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,9 +28,6 @@ import java.util.List;
 )
 @PreAuthorize("hasAnyRole('SYS_RIGHT_GROUP_DEFAULT')")
 public class SysRightGroupController extends BaseController<ISysRightGroupApi, SysRightGroupVO> implements PageController<ISysRightGroupApi, SysRightGroupVO> {
-
-    @Autowired
-    private ISysOrgElementApi sysOrgElementApi;
 
     @PostMapping("/listPersonId")
     @ApiOperation("查询角色附带分配的用户id")

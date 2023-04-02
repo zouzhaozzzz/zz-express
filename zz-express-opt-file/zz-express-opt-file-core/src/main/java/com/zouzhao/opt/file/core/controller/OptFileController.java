@@ -1,5 +1,6 @@
 package com.zouzhao.opt.file.core.controller;
 
+import cn.hutool.core.util.StrUtil;
 import com.zouzhao.common.core.exception.MyException;
 import com.zouzhao.common.dto.IdDTO;
 import com.zouzhao.opt.file.api.IOptFileApi;
@@ -40,7 +41,7 @@ public class OptFileController {
     public IdDTO uploadMoviePic(@RequestParam("file") MultipartFile file) {
         log.debug("新增的文件:{}", file);
         String path = ossService.upload(file);
-        if(path ==null)throw new MyException("文件上传失败");
+        if (path == null) throw new MyException("文件上传失败");
         //增加附件表记录
         OptFileVO vo = new OptFileVO();
         vo.setFilePath(path);
@@ -52,11 +53,19 @@ public class OptFileController {
     @PostMapping("/download")
     @PreAuthorize("hasAnyRole('OPT_MANAGE_FILE_DOWNLOAD')")
     public void uploadMoviePic(@RequestBody IdDTO idDTO, HttpServletResponse response) {
-        //拿到路径
-        OptFileVO fileVO = optFileApi.findVOById(idDTO);
-        String path = fileVO.getFilePath();
+        if (idDTO == null || StrUtil.isEmpty(idDTO.getId())) throw new MyException("没有传入相关信息");
+        //导入模版
+        String path;
+        if ("1".equals(idDTO.getId())) {
+            path = "template/物流导出模版.xlsx";
+        } else {
+            //拿到路径
+            OptFileVO fileVO = optFileApi.findVOById(idDTO);
+            path = fileVO.getFilePath();
+        }
+
         //传文件
-        ossService.download(path,response);
+        ossService.download(path, response);
     }
 
 

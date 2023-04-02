@@ -162,7 +162,6 @@ public class OptExpressService extends PageServiceImpl<OptExpressMapper, OptExpr
         countQuestionByMonth();
         countBounceByMonth();
         countExpressNumByMonth();
-
         //每月的成本费（寄件代收货款手续费、到付手续费成本、中转费成本、面单成本），保费收入，运费，罚款，收入统计
         countTotalCostByMonth();
         //保费收入=保费*0.6
@@ -173,7 +172,6 @@ public class OptExpressService extends PageServiceImpl<OptExpressMapper, OptExpr
         countSendFineByMonth();
         //收入=运费+罚款+保费收入-成本
         countIncomeByMouth();
-
         return "success";
     }
 

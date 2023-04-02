@@ -27,6 +27,7 @@ import java.util.List;
 public class SysRightRoleController extends BaseController<ISysRightRoleApi, SysRightRoleVO> implements ListController<ISysRightRoleApi, SysRightRoleVO> {
 
     @PostMapping("/allModule")
+    @PreAuthorize("hasAnyRole('SYS_RIGHT_ROLE_LIST')")
     public List<String> allModule(){
         return getApi().allModule();
     }
