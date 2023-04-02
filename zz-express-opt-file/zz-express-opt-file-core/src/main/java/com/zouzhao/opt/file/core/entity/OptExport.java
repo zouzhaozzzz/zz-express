@@ -34,6 +34,7 @@ public class OptExport extends BaseEntity {
     )
     private String exportId;
 
+    @Column(nullable = false)
     private String exportName;
 
     @Column(columnDefinition = " int(1) ")

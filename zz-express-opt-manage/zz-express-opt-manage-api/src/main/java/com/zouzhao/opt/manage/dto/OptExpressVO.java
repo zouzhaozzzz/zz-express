@@ -156,7 +156,7 @@ public class OptExpressVO {
     private BigDecimal finalWeight;
 
     @ExcelProperty(index = 29)
-    @ApiModelProperty("包装类型：下拉选择货物的包装类型")
+    @ApiModelProperty("包装类型*:0纸板类包装、1塑胶类包装、2木制类包装、3其他包装")
     private Integer packMode;
 
     @ExcelProperty(index = 30)

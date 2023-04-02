@@ -50,6 +50,7 @@ public class SysRightCategory extends BaseEntity {
     private Date rightCategoryAlterTime;
 
     @ApiModelProperty("类别名字")
+    @Column(nullable = false)
     private String rightCategoryName;
     private Boolean rightCategoryStatus;
 

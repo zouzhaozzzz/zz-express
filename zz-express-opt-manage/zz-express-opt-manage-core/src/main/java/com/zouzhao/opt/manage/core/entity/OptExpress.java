@@ -151,7 +151,7 @@ public class OptExpress extends BaseEntity {
     @Column(columnDefinition = "decimal(20,2)")
     private BigDecimal finalWeight;
 
-    @ApiModelProperty("包装类型：下拉选择货物的包装类型")
+    @ApiModelProperty("包装类型*:0纸板类包装、1塑胶类包装、2木制类包装、3其他包装")
     @Column(nullable = false,columnDefinition = "int(1)")
     private Integer packMode;
 

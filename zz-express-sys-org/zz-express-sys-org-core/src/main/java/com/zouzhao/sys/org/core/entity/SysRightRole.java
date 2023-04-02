@@ -46,11 +46,12 @@ public class SysRightRole extends BaseEntity implements GrantedAuthority {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", locale = "zh", timezone = "GMT+8")
     private Date rightRoleAlterTime;
 
+    @Column(nullable = false)
     private String rightRoleName;
-    @Column(length = 50)
+    @Column(length = 50,nullable = false)
     @ApiModelProperty("权限Code")
     private String rightRoleCode;
-    @Column(length = 30)
+    @Column(length = 30,nullable = false)
     @ApiModelProperty("类别模块")
     private String rightRoleModule = "未分类";
     @Column(length = 200)

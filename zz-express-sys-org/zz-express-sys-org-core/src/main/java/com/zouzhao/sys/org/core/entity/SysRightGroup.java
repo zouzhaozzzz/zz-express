@@ -41,6 +41,7 @@ public class SysRightGroup extends BaseEntity {
     @Column(insertable = false,updatable = false,columnDefinition="DATETIME  DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", locale = "zh", timezone = "GMT+8")
     private Date rightGroupAlterTime;
+    @Column(nullable = false)
     private String rightGroupName;
     @ApiModelProperty("描述")
     private String rightGroupDesc;

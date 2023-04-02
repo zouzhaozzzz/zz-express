@@ -47,7 +47,7 @@ public class SysOrgAccount extends BaseEntity implements UserDetails {
     private Date orgAccountAlterTime;
 
     @ApiModelProperty("登录名")
-    @Column(unique = true)
+    @Column(unique = true,nullable = false)
     private String orgAccountLoginName;
     @ApiModelProperty("密码")
     @Column(nullable = false)
