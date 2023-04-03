@@ -40,7 +40,7 @@ public class JwtFilter extends OncePerRequestFilter { // 保证每一个请求�
 
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException, RuntimeException {
         // 首先从request中获取token信息
-        String jwtToken = request.getHeader("access-token");
+        String jwtToken = request.getHeader("accessToken");
         log.debug("接收到的token:{}", jwtToken);
         //如果是登陆请求不走filter
         if ((request.getRequestURI().matches("[a-z/]+[-][a-z/,A-Z/]+checkLogin$") && request.getMethod().equals("POST"))
