@@ -110,6 +110,7 @@ public class RandomUtils {
             "台湾省,台北市,中正区", "台湾省,台北市,大同区", "台湾省,台北市,中山区", "台湾省,台北市,松山区",
     };
 
+
     //随机城市
     public static String[] randomProvince() {
         String province = provinces[randomNumber(0, provinces.length)];
@@ -298,6 +299,7 @@ public class RandomUtils {
         date.setTime(date.getTime() + (long) randomNumber(0, 168) * 60 * 60 * 1000);
         return date;
     }
+
 
 
 }

@@ -119,7 +119,8 @@ public class OptManageTest {
         data.setConsigneeCity(provinces2[1]);
         data.setConsigneeCounty(provinces2[2]);
         data.setConsigneeAddr(RandomUtils.randomString(20));
-        data.setObjMode("");
+        //物品类型
+        data.setObjMode(String.valueOf(RandomUtils.randomNumber(0,8)));
         //数量 5-3-2
         int numFlag = RandomUtils.randomNumber(0, 10);
         if (numFlag < 5) {

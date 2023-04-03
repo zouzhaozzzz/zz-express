@@ -124,6 +124,9 @@ public class OptExportService extends PageServiceImpl<OptExportMapper, OptExport
             if (success != null) {
                 builder.append("成功导入").append((int) success).append("条数据 ");
                 redisManager.deleteKey(redisKey);
+                builder.append("重复数据(未导入)有").append((int) all-(int) success).append("条 ");
+            }else {
+                builder.append("重复数据(未导入)有").append((int) all).append("条 ");
             }
             getMapper().updateJustFinish(exportId, new Date(), builder.toString());
         }

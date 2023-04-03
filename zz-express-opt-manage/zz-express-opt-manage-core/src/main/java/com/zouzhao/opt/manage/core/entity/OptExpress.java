@@ -127,7 +127,7 @@ public class OptExpress extends BaseEntity {
     private String consigneeAddr;
 
 
-    @ApiModelProperty("物品类型")
+    @ApiModelProperty("物品类型:食品,药物,含液体、膏体、粉末物品,带电池类物品,名牌物品、奢侈品,磁性物品,光碟、CD,贵重物品")
     @Column(length = 20,nullable = false)
     private String objMode;
 
