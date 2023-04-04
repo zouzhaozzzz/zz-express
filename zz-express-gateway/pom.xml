@@ -78,7 +78,7 @@
                             <!--jar包不包含唯一版本标识-->
                             <useUniqueVersions>false</useUniqueVersions>
                             <!--指定启动类-->
-                            <mainClass>com.zouzhao.sys.org.core.SysOrgApplication</mainClass>
+                            <mainClass>com.zouzhao.gateway.server.GatewayServerApplication</mainClass>
                         </manifest>
                         <manifestEntries>
                             <!--MANIFEST.MF 中 Class-Path 加入配置目录信息-->
