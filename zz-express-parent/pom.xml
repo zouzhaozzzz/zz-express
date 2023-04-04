@@ -8,9 +8,6 @@
     <artifactId>zz-express-parent</artifactId>
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
-    <modules>
-        <module>../zz-express-opt-file</module>
-    </modules>
 
     <properties>
         <java.version>1.8</java.version>

@@ -13,7 +13,6 @@
     <packaging>pom</packaging>
     <modules>
         <module>zz-express-opt-manage-api</module>
-        <module>zz-express-opt-manage-core</module>
         <module>zz-express-opt-manage-client</module>
     </modules>
 

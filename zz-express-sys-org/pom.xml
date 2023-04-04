@@ -13,7 +13,6 @@
     <packaging>pom</packaging>
     <modules>
         <module>zz-express-sys-org-api</module>
-        <module>zz-express-sys-org-core</module>
         <module>zz-express-sys-org-client</module>
     </modules>
 

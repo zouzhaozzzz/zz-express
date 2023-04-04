@@ -14,7 +14,6 @@
     <modules>
         <module>zz-express-opt-file-api</module>
         <module>zz-express-opt-file-client</module>
-        <module>zz-express-opt-file-core</module>
     </modules>
 
     <properties>
