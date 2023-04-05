@@ -2,6 +2,7 @@ package com.zouzhao.sys.org.core.security.filter;
 
 import cn.hutool.core.util.StrUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.zouzhao.sys.org.core.security.utils.JsonUtils;
 import com.zouzhao.sys.org.core.security.utils.JwtUtils;
 import com.zouzhao.sys.org.dto.SysOrgAccountVO;
 import com.zouzhao.sys.org.dto.SysRightRoleVO;
@@ -12,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -50,7 +52,14 @@ public class JwtFilter extends OncePerRequestFilter { // 保证每一个请求�
         }
         // jwtToken证明是非登录请求，需要对jwtToken进行有效性检查
 
-        Jws<Claims> claims = JwtUtils.getClaims(jwtToken);
+        Jws<Claims> claims = null;
+        try {
+            claims = JwtUtils.getClaims(jwtToken);
+        } catch (Exception e) {
+            e.printStackTrace();
+            JsonUtils.writeToJson(response, HttpStatus.UNAUTHORIZED.value());
+            return;
+        }
         String subject = claims.getBody().getSubject();
         ObjectMapper mapper = new ObjectMapper();
         SysOrgAccountVO user = mapper.readValue(subject, SysOrgAccountVO.class);
