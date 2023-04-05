@@ -43,21 +43,6 @@ import org.springframework.stereotype.Component;
                         name = "ROLE_OPT_MANAGE_EXPRESS_DELETE",
                         messageKey = "运单管理:寄派件管理-删除",
                         desc = "允许删除寄派件"
-                ),
-                @AuthRole(
-                        name = "ROLE_OPT_MANAGE_REPORT_DEFAULT",
-                        messageKey = "运营报表:运营报表-默认权限",
-                        desc = "拥有该基本权限才可以访问运营报表"
-                ),
-                @AuthRole(
-                        name = "ROLE_OPT_MANAGE_REPORT_LIST",
-                        messageKey = "运营报表:运营报表-阅读所有",
-                        desc = "允许删除寄派件"
-                ),
-                @AuthRole(
-                        name = "ROLE_OPT_MANAGE_REPORT_REFRESH",
-                        messageKey = "运营报表:运营报表-刷新数据",
-                        desc = "允许删除寄派件"
                 )
         }
 )
