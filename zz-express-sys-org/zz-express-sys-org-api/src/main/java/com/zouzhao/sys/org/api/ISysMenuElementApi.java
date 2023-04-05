@@ -15,8 +15,10 @@ public interface ISysMenuElementApi extends IApi<SysMenuElementVO> {
     @PostMapping("/treeData")
     List<SysMenuElementVO> treeData(@RequestBody SysMenuElementVO vo);
 
+    @PostMapping("/treeDataInRoles")
+    List<SysMenuElementVO> treeDataInRoles(@RequestBody SysMenuElementVO vo);
+
+
     @PostMapping("/listInRoles")
     List<SysMenuElementVO> listInRoles(@RequestBody SysMenuElementVO vo);
-
-
 }

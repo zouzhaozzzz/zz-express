@@ -4,10 +4,14 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.zouzhao.common.core.controller.BaseController;
 import com.zouzhao.common.core.exception.MyException;
+import com.zouzhao.sys.org.api.ISysMenuElementApi;
 import com.zouzhao.sys.org.api.ISysOrgAccountApi;
+import com.zouzhao.sys.org.core.security.utils.JsonUtils;
+import com.zouzhao.sys.org.dto.SysMenuElementVO;
 import com.zouzhao.sys.org.dto.SysOrgAccountVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,6 +20,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -29,6 +36,8 @@ import java.util.Map;
 )
 public class SysOrgAccountController extends BaseController<ISysOrgAccountApi, SysOrgAccountVO> {
 
+    @Autowired
+    private ISysMenuElementApi sysMenuElementApi;
 
     @PostMapping("/checkLogin")
     @ApiOperation("登陆")
@@ -62,12 +71,28 @@ public class SysOrgAccountController extends BaseController<ISysOrgAccountApi, S
 
     @PostMapping("/findByLoginName")
     @ApiOperation("根据用户名查询")
+    @PreAuthorize("hasAnyRole('SYS_ORG_ACCOUNT_DEFAULT')")
     public String findByLoginName(@RequestBody SysOrgAccountVO user) {
         String loginName = user.getOrgAccountLoginName();
         if (StrUtil.isBlank(loginName)) throw new MyException("登录名为空或者有空字符");
         SysOrgAccountVO accountVO = getApi().findVOByLoginName(loginName);
         if (accountVO != null) return "false";
         return "success";
+    }
+
+    @PostMapping("/checkPath")
+    @ApiOperation("检测是否拥有路由")
+    @PreAuthorize("hasAnyRole('SYS_ORG_ACCOUNT_DEFAULT')")
+    public void checkPath(@RequestBody Map<String,String> path, HttpServletResponse response) throws IOException {
+        if (StrUtil.isEmpty(path.get("path"))) throw new MyException("没有传入路由路径");
+        SysMenuElementVO vo = new SysMenuElementVO();
+        vo.setMenuElementPath(path.get("path"));
+        vo.setMenuElementStatus(true);
+        //是否有菜单的权限
+        List<SysMenuElementVO> list = sysMenuElementApi.listInRoles(vo);
+        if (list == null || list.size() < 1) {
+            JsonUtils.writeToJson(response, HttpStatus.FORBIDDEN.value());
+        }else JsonUtils.writeToJson(response, "success");
     }
 }
 

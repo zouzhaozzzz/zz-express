@@ -88,11 +88,16 @@ public class SysMenuElementService extends BaseServiceImpl<SysMenuElementMapper,
     }
 
     @Override
-    public List<SysMenuElementVO> listInRoles(SysMenuElementVO vo) {
-        List<SysRightRoleVO> authorities = (List<SysRightRoleVO>) SecurityContextHolder.getContext().getAuthentication().getAuthorities();
-        List<SysMenuElementVO> voListInRoles = getMapper().findVOListInRoles(authorities, vo);
+    public List<SysMenuElementVO> treeDataInRoles(SysMenuElementVO vo) {
+        List<SysMenuElementVO> voListInRoles = listInRoles(vo);
         //菜单分级
         return loadMenu(voListInRoles);
+    }
+
+    @Override
+    public List<SysMenuElementVO> listInRoles(SysMenuElementVO vo) {
+        List<SysRightRoleVO> authorities = (List<SysRightRoleVO>) SecurityContextHolder.getContext().getAuthentication().getAuthorities();
+        return getMapper().findVOListInRoles(authorities, vo);
     }
 
     public List<SysMenuElementVO> treeData(SysMenuElementVO vo) {

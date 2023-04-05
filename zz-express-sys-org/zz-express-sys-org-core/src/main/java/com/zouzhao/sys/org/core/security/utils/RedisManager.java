@@ -1,4 +1,5 @@
 package com.zouzhao.sys.org.core.security.utils;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
@@ -17,45 +18,76 @@ import java.util.function.Function;
 public class RedisManager {
 
     @Autowired
-    private static RedisTemplate<String,Object> redisTemplate;
+    private RedisTemplate<String, Object> redisTemplate;
 
-    public static  <T> T getValue(String key, Function<Integer,T> mapper) {
+    public <T> T getValue(String key, Function<Integer, T> mapper) {
         Object o = redisTemplate.opsForValue().get(key);
         if (ObjectUtils.isEmpty(o)) {
             String[] split = key.split(":");
             T t = mapper.apply(Integer.valueOf(split[1]));
-            setValue(key,t);
+            setValue(key, t);
             return t;
         }
         return (T) o;
     }
 
-    public static String getValue(String key) {
+    public Object getValue(String key) {
         Object o = redisTemplate.opsForValue().get(key);
         if (ObjectUtils.isEmpty(o)) return null;
-        return (String) o;
+        return o;
+    }
+
+    public Long incrementAndGet(String key) {
+        return redisTemplate.opsForValue().increment(key);
     }
 
 
-    public static void setValue(String key,Object value){
-        redisTemplate.opsForValue().set(key,value,1, TimeUnit.DAYS);
+
+    public void setValue(String key, Object value) {
+        redisTemplate.opsForValue().set(key, value, 1, TimeUnit.DAYS);
     }
 
-    public static void setValueForever(String key,Object value){
-        redisTemplate.opsForValue().set(key,value);
+    public void appendStrValue(String key, String value) {
+        Object result = getValue(key);
+        String appendValue = value;
+        if (result != null)
+            appendValue = value + result;
+
+        if (appendValue!=null && appendValue.length() > 250) {
+            redisTemplate.opsForValue().set(key, (value + result).substring(0, 250), 1, TimeUnit.DAYS);
+        } else {
+            redisTemplate.opsForValue().set(key, appendValue, 1, TimeUnit.DAYS);
+        }
     }
 
-    public static <T> T getHashValue(String key,String hashKey, Function<Integer,T> mapper) {
-        Object o = redisTemplate.opsForHash().get(key,hashKey);
+    public <T> T getHashValue(String key, String hashKey, Function<Integer, T> mapper) {
+        Object o = redisTemplate.opsForHash().get(key, hashKey);
         if (ObjectUtils.isEmpty(o)) {
             T t = mapper.apply(Integer.valueOf(hashKey));
-            setHashValue(key,hashKey,t);
+            setHashValue(key, hashKey, t);
             return t;
         }
         return (T) o;
     }
-    public static void setHashValue(String key,String hashKey,Object value){
-        redisTemplate.opsForHash().put(key,hashKey,value);
+
+    public void setHashValue(String key, String hashKey, Object value) {
+        redisTemplate.opsForHash().put(key, hashKey, value);
+    }
+
+    public Object getHashValue(String key, String hashKey) {
+        return redisTemplate.opsForHash().get(key, hashKey);
+    }
+
+    public void addSetValue(String key, Object value) {
+        redisTemplate.opsForSet().add(key, value);
+    }
+
+    public Object getSetMembers(String key) {
+        return redisTemplate.opsForSet().members(key);
+    }
+
+    public void deleteKey(String redisKey) {
+        redisTemplate.delete(redisKey);
     }
 }
 

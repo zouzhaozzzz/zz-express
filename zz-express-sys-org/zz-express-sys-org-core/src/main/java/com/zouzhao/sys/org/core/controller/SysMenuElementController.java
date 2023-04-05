@@ -27,10 +27,11 @@ import java.util.List;
 )
 public class SysMenuElementController extends BaseController<ISysMenuElementApi, SysMenuElementVO> implements CombineController<ISysMenuElementApi, SysMenuElementVO> {
 
-    @PostMapping("/listInRoles")
-    public List<SysMenuElementVO> listInRoles(@RequestBody SysMenuElementVO vo){
-        return getApi().listInRoles(vo);
+    @PostMapping("/treeDataInRoles")
+    public List<SysMenuElementVO> treeDataInRoles(@RequestBody SysMenuElementVO vo){
+        return getApi().treeDataInRoles(vo);
     }
+
 
     @PostMapping({"/treeData"})
     @ApiOperation("列表查询接口")

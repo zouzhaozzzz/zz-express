@@ -90,7 +90,6 @@
     <select id="findVOListInRoles" parameterType="map" resultMap="SysMenuElementVOResult">
         <include refid="selectSysMenuElementVo"/>
         <where>
-            r.right_role_id is null
             <if test="v.menuElementName != null  and v.menuElementName != ''">and a.menu_element_name like concat('%',
                 #{v.menuElementName}, '%')
             </if>
@@ -107,17 +106,22 @@
                 #{v.menuElementStatus}
             </if>
             <if test="list != null and list.size != 0">
-                or r.right_role_id in
+                and (r.right_role_id is null or r.right_role_id in
                 <foreach collection="list" item="role" open="(" close=")" separator=",">
                     #{role.rightRoleId}
-                </foreach>
+                </foreach>)
+            </if>
+            <if test="list == null">
+                and r.right_role_id is null
             </if>
         </where>
         order by a.menu_element_order
     </select>
 
     <select id="findRoleRela" resultType="string">
-        select right_role_id  from sys_menu_mr_rela where menu_element_id=#{id}
+        select right_role_id
+        from sys_menu_mr_rela
+        where menu_element_id = #{id}
     </select>
 
     <insert id="insertRoleRela" parameterType="map">
@@ -134,8 +138,10 @@
         </foreach>
     </delete>
 
-    <delete id="deleteAllRoleRela" >
-        delete from sys_menu_mr_rela where menu_element_id=#{id}
+    <delete id="deleteAllRoleRela">
+        delete
+        from sys_menu_mr_rela
+        where menu_element_id = #{id}
     </delete>
 
 </mapper>
