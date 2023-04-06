@@ -135,7 +135,7 @@ public class OptExportService extends PageServiceImpl<OptExportMapper, OptExport
     @Override
     @Transactional
     public void updateExportJustFinish(String exportId) {
-        //更新导入记录 完成时间 文件路径 根据redis记录增加导入信息
+        //更新导出记录 完成时间 文件路径 根据redis记录增加导入信息
         Object err = redisManager.getValue("export-err:" + exportId);
         if (err != null) {
             getMapper().updateExportJustFinish(exportId, new Date(), (String) err,null);
@@ -154,7 +154,9 @@ public class OptExportService extends PageServiceImpl<OptExportMapper, OptExport
                 redisManager.deleteKey(redisKey);
             }
             //增加附件
-            String filePath=(String) redisManager.getValue("export-filename:"+exportId);
+            redisKey="export-filename:"+exportId;
+            String filePath=(String) redisManager.getValue(redisKey);
+            redisManager.deleteKey(redisKey);
             OptFileVO optFileVO=new OptFileVO();
             optFileVO.setFilePath(filePath);
             IdDTO idDTO = optFileApi.add(optFileVO);
