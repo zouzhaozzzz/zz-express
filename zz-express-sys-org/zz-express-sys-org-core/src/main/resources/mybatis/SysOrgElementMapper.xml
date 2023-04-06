@@ -79,8 +79,10 @@
                     #{id}
                 </foreach>
             </if>
-            <if test="orgElementName != null  and orgElementName != ''">and org_element_name like concat('%',
-                #{orgElementName}, '%')
+            <if test="orgElementName != null  and orgElementName != ''">and (org_element_name like
+                concat('%', #{orgElementName}, '%')
+                or org_element_no like
+                concat('%', #{orgElementName}, '%'))
             </if>
             <if test="orgElementNo != null ">and org_element_no = #{orgElementNo}</if>
             <if test="orgElementParentId != null  and orgElementParentId != ''">and org_element_parent_id =
@@ -109,8 +111,10 @@
                     #{id}
                 </foreach>
             </if>
-            <if test="orgElementName != null  and orgElementName != ''">and org_element_name like concat('%',
-                #{orgElementName}, '%')
+            <if test="orgElementName != null  and orgElementName != ''">and (org_element_name like
+                concat('%', #{orgElementName}, '%')
+                or org_element_no like
+                concat('%', #{orgElementName}, '%'))
             </if>
             <if test="orgElementNo != null ">and org_element_no = #{orgElementNo}</if>
             <if test="orgElementParentId != null  and orgElementParentId != ''">and org_element_parent_id =
@@ -147,7 +151,7 @@
                 <if test="v.orgElementName != null  and v.orgElementName != ''">and (org_element_name like
                     concat('%', #{v.orgElementName}, '%')
                     or org_element_no like
-                    concat('%', #{v.orgElementNo}, '%'))
+                    concat('%', #{v.orgElementName}, '%'))
                 </if>
                 <if test="v.orgElementNo != null ">and org_element_no = #{v.orgElementNo}</if>
                 <if test="v.orgElementParentId != null  and v.orgElementParentId != ''">and org_element_parent_id =
@@ -171,13 +175,15 @@
     <select id="countOrg" resultType="java.lang.Integer">
         select count(*)
         from sys_org_element
-        where org_element_type = 0 and org_element_status =1;
+        where org_element_type = 0
+          and org_element_status = 1;
     </select>
 
     <select id="countPerson" resultType="java.lang.Integer">
         select count(*)
         from sys_org_element
-        where org_element_type = 1 and org_element_status =1;
+        where org_element_type = 1
+          and org_element_status = 1;
     </select>
     <select id="findByLoginName" resultType="com.zouzhao.sys.org.dto.SysOrgElementVO">
         select e.org_element_id, e.org_element_name, e.org_element_org_id

@@ -13,6 +13,7 @@ import com.zouzhao.opt.manage.dto.OptExpressVO;
 import com.zouzhao.sys.org.client.SysOrgElementClient;
 import com.zouzhao.sys.org.dto.SysOrgElementVO;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -65,6 +66,13 @@ public class OptExpressController extends BaseController<IOptExpressApi, OptExpr
         if (ObjectUtil.isEmpty(idList) || status == null) throw new MyException("未传入ids或状态");
         getApi().updateStatusBatch(idList, status);
         return new ResponseEntity("修改成功", HttpStatus.OK);
+    }
+
+    @PostMapping("/countExpressNum")
+    @ApiOperation("统计符合条件的物流数量")
+    @PreAuthorize("hasAnyRole('OPT_MANAGE_EXPRESS_LIST','OPT_MANAGE_EXPRESS_ADMIN')")
+    public int countExpressNum(@RequestBody OptExpressVO vo) {
+        return getApi().countExpressNum(vo);
     }
 
     @PreAuthorize("hasAnyRole('OPT_MANAGE_EXPRESS_DELETE','OPT_MANAGE_EXPRESS_ADMIN')")

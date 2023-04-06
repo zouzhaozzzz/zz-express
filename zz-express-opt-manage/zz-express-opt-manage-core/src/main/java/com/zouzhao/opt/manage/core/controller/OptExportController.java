@@ -47,12 +47,6 @@ public class OptExportController extends BaseController<IOptExpressApi, OptExpre
     private final String[] month = {"01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12",};
 
 
-    @PostMapping("/countExpressNum")
-    @ApiOperation("统计符合条件的物流数量")
-    @PreAuthorize("hasAnyRole('OPT_MANAGE_EXPRESS_LIST','OPT_MANAGE_EXPRESS_ADMIN')")
-    public int countExpressNum(@RequestBody OptExpressVO vo) {
-        return getApi().countExpressNum(vo);
-    }
 
     @PreAuthorize("hasAnyRole('OPT_MANAGE_REPORT_LIST','OPT_MANAGE_EXPRESS_ADMIN')")
     @ApiOperation("从redis中拿统计数据")
@@ -163,13 +157,13 @@ public class OptExportController extends BaseController<IOptExpressApi, OptExpre
             result.put("countStatus3", n3.get());
         } else {
             String orgElementId = orgList.get(0).getOrgElementId();
-            Object value = redisManager.getHashValue("report-express:" + orgElementId, "0");
+            Object value = redisManager.getHashValue("report-express:countStatus:" + orgElementId, "0");
             result.put("countStatus0", value != null ? value : 0);
-            value = redisManager.getHashValue("report-express:" + orgElementId, "1");
+            value = redisManager.getHashValue("report-express:countStatus:" + orgElementId, "1");
             result.put("countStatus1", value != null ? value : 0);
-            value = redisManager.getHashValue("report-express:" + orgElementId, "2");
+            value = redisManager.getHashValue("report-express:countStatus:" + orgElementId, "2");
             result.put("countStatus2", value != null ? value : 0);
-            value = redisManager.getHashValue("report-express:" + orgElementId, "3");
+            value = redisManager.getHashValue("report-express:countStatus:" + orgElementId, "3");
             result.put("countStatus3", value != null ? value : 0);
         }
     }

@@ -15,6 +15,11 @@ import org.springframework.stereotype.Component;
 @AuthRoles(
         roles = {
                 @AuthRole(
+                        name = "ROLE_OPT_MANAGE_DEFAULT",
+                        messageKey = "运单管理:运单管理-默认权限",
+                        desc = "拥有该基本权限才可以访问运单管理"
+                ),
+                @AuthRole(
                         name = "ROLE_OPT_MANAGE_EXPRESS_DEFAULT",
                         messageKey = "运单管理:寄派件管理-默认权限",
                         desc = "拥有该基本权限才可以访问寄派件管理"
