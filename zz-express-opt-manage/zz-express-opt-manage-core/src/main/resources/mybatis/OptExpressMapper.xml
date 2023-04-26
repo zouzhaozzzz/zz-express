@@ -291,9 +291,7 @@
                 </if>
                 <if test="v.bounceFlag != null ">and bounce_flag = #{v.bounceFlag}</if>
                 <if test="v.cleanType != null ">and clean_type = #{v.cleanType}</if>
-                <if test="v.consignee != null  and v.consignee != ''">and consignee concat('%',
-                    #{v.consignee}, '%')
-                </if>
+                <if test="v.consignee != null  and v.consignee != ''">and consignee =#{v.consignee}</if>
                 <if test="v.consigneePhone != null  and v.consigneePhone != ''">and consignee_phone =
                     #{v.consigneePhone}
                 </if>
@@ -340,8 +338,7 @@
                 <if test="v.shipTimeList != null and v.shipTimeList.size>1 ">
                     and ship_time >= #{v.shipTimeList[0]} and ship_time <![CDATA[<=]]> #{v.shipTimeList[1]}
                 </if>
-                <if test="v.shipper != null  and v.shipper != ''">and shipper like concat('%',
-                    #{v.shipper}, '%')
+                <if test="v.shipper != null  and v.shipper != ''">and shipper =#{v.shipper}
                 </if>
                 <if test="v.shipperPhone != null  and v.shipperPhone != ''">and shipper_phone = #{v.shipperPhone}</if>
                 <if test="v.totalCost != null ">and total_cost = #{v.totalCost}</if>
@@ -439,8 +436,7 @@
                 <if test="v.bounceFlag != null ">and bounce_flag = #{v.bounceFlag}</if>
                 <if test="v.consignee != null  and v.consignee != ''">and consignee = #{v.consignee}
                 </if>
-                <if test="v.shipper != null  and v.shipper != ''">and shipper like concat('%',
-                    #{v.shipper}, '%')
+                <if test="v.shipper != null  and v.shipper != ''">and shipper =#{v.shipper}
                 </if>
                 <if test="v.shipTimeList != null and v.shipTimeList.size>1 ">
                     and ship_time >= #{v.shipTimeList[0]} and ship_time <![CDATA[<=]]> #{v.shipTimeList[1]}
@@ -500,8 +496,7 @@
                 <if test="v.consigneeCompanyId != null  and v.consigneeCompanyId != ''">and consignee_company_id =
                     #{v.consigneeCompanyId}
                 </if>
-                <if test="v.shipper != null  and v.shipper != ''">and shipper like concat('%',
-                    #{v.shipper}, '%')
+                <if test="v.shipper != null  and v.shipper != ''">and shipper =#{v.shipper}
                 </if>
             </if>
         </where>
@@ -515,7 +510,7 @@
                     </foreach>
                 </if>
                 <if test="v.bounceFlag != null ">and bounce_flag = #{v.bounceFlag}</if>
-                <if test="v.consignee != null  and v.consignee != ''">and consignee concat('%',
+                <if test="v.consignee != null  and v.consignee != ''">and consignee like concat(
                     #{v.consignee}, '%')
                 </if>
                 <if test="v.expressStatusList != null and v.expressStatusList.size >0">and express_status in
@@ -538,7 +533,7 @@
                 <if test="v.shipTimeList != null and v.shipTimeList.size>1 ">
                     and ship_time >= #{v.shipTimeList[0]} and ship_time <![CDATA[<=]]> #{v.shipTimeList[1]}
                 </if>
-                <if test="v.shipper != null  and v.shipper != ''">and shipper like concat('%',
+                <if test="v.shipper != null  and v.shipper != ''">and shipper like concat(
                     #{v.shipper}, '%')
                 </if>
             </if>

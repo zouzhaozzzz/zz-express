@@ -21,6 +21,8 @@ spring:
           - express-dataSource.yaml
           - express-redis.yaml
           - express-jwt.yaml
+          - express-kafka.yaml
+          - express-oss.yaml
   #jpa配置
   jpa:
     hibernate:
@@ -33,19 +35,6 @@ spring:
       max-file-size: 200MB
       # 设置总上传的文件大小
       max-request-size: 200MB
-  kafka:
-    consumer:
-      # 消费者上线的时候，能拉取到最早的消息（下线的时候，生产者向响应的主体发送的消息）
-      auto-offset-reset: earliest
-      # 设置批拉取的条数，因为每次拉取有一定的间隔（每次拉取都有一定的等待时间）
-      max-poll-records: 100
-#      # 关闭自动提交
-#      enable-auto-commit: false
-#    listener:
-#      # acknowledge 知会 应答
-#      ack-mode: manual_immediate
-    bootstrap-servers:
-      - 192.168.247.128:9092
 
 mybatis-plus:
   type-aliases-package: com.zouzhao.opt.manage.core.entity
@@ -57,11 +46,3 @@ module:
   
 export:
   batchSize: 1000
-
-#阿里云oss
-oss:
-  endpoint: http://oss-cn-guangzhou.aliyuncs.com
-  accessKeyId: LTAI5tNWAM2XmkiXS8HUesK6
-  accessKeySecret: dDMTZAjjoAdP76vQ0CHZd4OsO82SMc
-  bucketName: zouzhaobucket
-  dir: excel/

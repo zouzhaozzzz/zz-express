@@ -9,10 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -24,7 +21,16 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "opt_express")
+@Table(name = "opt_express", indexes = {
+        @Index(columnList = "consigneeCustomerId"),
+        @Index(columnList = "consigneeCompanyId"),
+        @Index(columnList = "sendCustomerId"),
+        @Index(columnList = "sendCompanyId"),
+        @Index(columnList = "shipper"),
+        @Index(columnList = "consignee"),
+        @Index(columnList = "shipTime"),
+        @Index(columnList = "consigneeTime")}
+)
 public class OptExpress extends BaseEntity {
 
     @Id
