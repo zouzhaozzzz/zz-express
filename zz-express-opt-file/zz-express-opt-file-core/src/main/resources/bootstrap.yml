@@ -12,6 +12,8 @@ spring:
       discovery:
         namespace: dev
         server-addr: 192.168.247.128:8848
+        username: nacos
+        password: nacos
       config:
         server-addr: 192.168.247.128:8848
         group: DEV_GROUP   # 指定分组名
@@ -23,6 +25,8 @@ spring:
           - express-jwt.yaml
           - express-kafka.yaml
           - express-oss.yaml
+        username: nacos
+        password: nacos
   #jpa配置
   jpa:
     hibernate:
