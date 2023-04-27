@@ -2,28 +2,13 @@ server:
   port: 9000
   
 spring:
+  profiles:
+    active: prod
   application:
     name: gateway-server
   main:
     allow-bean-definition-overriding: true
   cloud:
-    nacos:
-      discovery:
-        namespace: dev
-        server-addr: 192.168.247.128:8848
-        username: nacos
-        password: nacos
-      config:
-        server-addr: 192.168.247.128:8848
-        group: DEV_GROUP   # 指定分组名
-        file-extension: yaml
-        username: nacos
-        password: nacos
-        namespace: dev
-        extension-configs:
-          - express-dataSource.yaml
-          - express-redis.yaml
-          - express-jwt.yaml
     gateway:
       routes:
         - id: zz-sys-org
@@ -38,4 +23,3 @@ spring:
           uri: lb://zz-opt-file
           predicates:
             - Path=/data/opt-file/**,/api/opt-file/**
-      

@@ -1,0 +1,21 @@
+spring:
+  cloud:
+    nacos:
+      discovery:
+        namespace: dev
+        server-addr: 47.120.39.65:8848
+        username: nacos
+        password: ZouzhaoN@0418
+      config:
+        server-addr: 47.120.39.65:8848
+        group: DEV_GROUP   # 指定分组名
+        file-extension: yaml
+        username: nacos
+        password: ZouzhaoN@0418
+        namespace: dev
+        extension-configs:
+          - express-dataSource.yaml
+          - express-redis.yaml
+          - express-jwt.yaml
+          - express-kafka.yaml
+          - express-oss.yaml
