@@ -3,7 +3,7 @@ server:
 
 spring:
   profiles:
-    active: local
+    active: prod
   application:
     name: zz-opt-file
   #允许存在多个Feign调用相同Service的接口

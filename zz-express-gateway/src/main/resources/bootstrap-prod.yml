@@ -6,6 +6,7 @@ spring:
         server-addr: 47.120.39.65:8848
         username: nacos
         password: ZouzhaoN@0418
+        ip: 192.168.247.1
       config:
         server-addr: 47.120.39.65:8848
         group: DEV_GROUP   # 指定分组名
