@@ -3,7 +3,7 @@ server:
   
 spring:
   profiles:
-    active: prod
+    active: local
   application:
     name: gateway-server
   main:
@@ -23,3 +23,6 @@ spring:
           uri: lb://zz-opt-file
           predicates:
             - Path=/data/opt-file/**,/api/opt-file/**
+ribbon:
+  ConnectTimeout: 5000 # 连接超时时间(ms)
+  ReadTimeout: 5000 # 通信超时时间(ms)

@@ -3,7 +3,7 @@ server:
 
 spring:
   profiles:
-    active: prod
+    active: local
   application:
     name: zz-opt-manage
   #允许存在多个Feign调用相同Service的接口
@@ -32,3 +32,7 @@ module:
   
 export:
   batchSize: 1000
+
+ribbon:
+  ConnectTimeout: 5000 # 连接超时时间(ms)
+  ReadTimeout: 5000 # 通信超时时间(ms)
