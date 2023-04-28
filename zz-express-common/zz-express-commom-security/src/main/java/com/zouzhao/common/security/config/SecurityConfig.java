@@ -80,8 +80,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests(
                         authorize -> authorize
                                 // 允许访问登录
-                                .antMatchers("/data/sys-org/SysAccount/checkLogin").permitAll()
-                                .antMatchers("/data/sys-org/SysAccount/layout").permitAll()
+                                .antMatchers("/data/sys-org/sysOrgAccount/checkLogin").permitAll()
+                                .antMatchers("/data/sys-org/sysOrgAccount/layout").permitAll()
                                 .antMatchers("/data/**").authenticated()
                                 .antMatchers("/api/**").permitAll()
                                 // .anyRequest().authenticated()
