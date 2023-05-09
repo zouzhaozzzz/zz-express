@@ -211,8 +211,10 @@
         <foreach collection="list" item="item" open="(" separator="," close=")">
             #{item.orgElementId}
         </foreach>
-        <if test="v.orgElementName != null  and v.orgElementName != ''">and org_element_name like concat('%',
-            #{v.orgElementName}, '%')
+        <if test="v.orgElementName != null  and v.orgElementName != ''">and  (org_element_name like
+            concat('%', #{v.orgElementName}, '%')
+            or org_element_no like
+            concat('%', #{v.orgElementName}, '%'))
         </if>
         order by org_element_order ,org_element_status desc
         limit 0,100
