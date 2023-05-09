@@ -3,7 +3,7 @@ server:
   
 spring:
   profiles:
-      active: prod
+      active: local
   application:
     name: gateway-server
   main:
@@ -12,14 +12,12 @@ spring:
     gateway:
       # 全局的跨域配置
       globalcors:
-        # 解决options请求被拦截问题
-        add-to-simple-url-handler-mapping: true
         cors-configurations:
           # 拦截的请求
           '[/**]':
             # 允许跨域的请求
-            #allowedOrigins: "*" # spring boot2.4以前的配置
-            allowedOriginPatterns: "*" # spring boot2.4以后的配置
+            allowedOrigins: "*" # spring boot2.4以前的配置
+#            allowedOriginPatterns: "*" # spring boot2.4以后的配置
             # 允许请求中携带的头信息
             allowedHeaders: "*"
             # 运行跨域的请求方式
