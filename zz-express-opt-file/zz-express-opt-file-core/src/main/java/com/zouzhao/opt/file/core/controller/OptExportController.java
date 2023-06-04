@@ -124,7 +124,7 @@ public class OptExportController extends BaseController<IOptExportApi, OptExport
         } else {
             //保留一位小数
             BigDecimal var5 = BigDecimal.valueOf(Double.valueOf((Integer) successStr) / (Double.valueOf((Integer) allStr)) * 100);
-            return var5.setScale(1, RoundingMode.HALF_UP).doubleValue();
+            return var5.setScale(1, RoundingMode.DOWN).doubleValue();
         }
     }
 

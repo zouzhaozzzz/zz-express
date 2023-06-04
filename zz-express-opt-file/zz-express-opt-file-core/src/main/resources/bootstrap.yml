@@ -36,7 +36,7 @@ module:
   moduleNameList: opt-file
   
 export:
-  batchSize: 1000
+  batchSize: 500
 
 ribbon:
   ConnectTimeout: 5000 # 连接超时时间(ms)
